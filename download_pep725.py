@@ -96,7 +96,7 @@ def download(limit=5, **options):
     # termID instead of planStructurePrensenceTypes, etc.
     base_url = f"https://biscicol.org/api/v3/download/_search?limit={limit}"
     query = "&q=" + "+AND+".join([f"{k}:{v}" for k, v in options.items()])
-    print(base_url +query)
+    print(f"Retrieving data from {base_url +query}")
 
     r = requests.get(base_url + query)
     if r.status_code == 200:
@@ -113,4 +113,12 @@ def download(limit=5, **options):
     raise ValueError(f"Request failed with status code {r.status_code}")
 
 
-download(genus="Quercus")
+df = download(genus="Quercus")
+df = download(
+    genus="Syringa",
+    source="PEP725",
+    year="[2000 TO 2021]",
+    latitude="[40 TO 70]",
+    longitude="[-10 TO 40]",
+    termID="\"obo:PPO_0002330\"",  # flowers present
+    )

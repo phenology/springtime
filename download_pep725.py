@@ -160,6 +160,9 @@ def _to_dataframe(response, explode):
     return df
 
 
+def _termID(id_code):
+    return f"\"{id_code}\""
+
 
 if __name__ == "__main__":
     # get_traits(present=True)

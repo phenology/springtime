@@ -75,14 +75,7 @@ def get_terms(present=None):
     raise ValueError(f"Request failed with status code {r.status_code}")
 
 
-
-
-def to_dataframe(response):
-    sources = [source['_source'] for source in response['hits']['hits']]
-    return pd.DataFrame(sources)#[columns]
-
-
-def download(limit=5, **options):
+def download(limit=5, explode=True, **options):
     """Download data from the plant phenology data portal.
 
     This function builds a query string from the provided arguments, and uses it
@@ -91,6 +84,7 @@ def download(limit=5, **options):
 
     Args:
         limit: Maximum number of records to retreive.
+        explode: If True, each termID will get its own row.
         **options: keyword arguments used to filter the data before retreiving
             it from the server.
 
@@ -116,33 +110,7 @@ def download(limit=5, **options):
     r = requests.get(base_url + query)
 
     if r.status_code == 200:
-
-        with tempfile.TemporaryDirectory() as tempdir:
-
-            # Save data to tempfile
-            tf = tempdir + '/tempzip.zip'
-            with open(tf, 'wb') as f:
-                f.write(r.content)
-
-            # Extract data
-            file = zipfile.ZipFile(tf)
-            file.extractall(path=tempdir)
-
-            # Load data
-            df = pd.read_csv(f'{tempdir}/data.csv')
-
-            # Add README to dataframe
-            with open(tempdir + '/README.txt', 'r') as f:
-                readme = ''.join(f.readlines())
-            df.attrs["request_info"] = readme
-
-            # Add license info to dataframe
-            with open(tempdir + '/citation_and_data_use_policies.txt', 'r') as f:
-                licence = ''.join(f.readlines())
-            df.attrs["license"] = licence
-            print(readme)
-
-        return df
+        return _to_dataframe(r, explode)
 
     if r.status_code == 204:
         # 204 means "no data"
@@ -154,6 +122,42 @@ def download(limit=5, **options):
     # If something bad happens, return the response object for debugging purposes.
     print(f"Requests failed with status code {r.status_code}. Please raise an issue.")
     return r
+
+
+def _to_dataframe(response, explode):
+    """Extract response body and load as pandas dataframe."""
+
+    with tempfile.TemporaryDirectory() as tempdir:
+
+        # Save data to tempfile
+        tf = tempdir + '/tempzip.zip'
+        with open(tf, 'wb') as f:
+            f.write(response.content)
+
+        # Extract data
+        file = zipfile.ZipFile(tf)
+        file.extractall(path=tempdir)
+
+        # Load data
+        df = pd.read_csv(f'{tempdir}/data.csv')
+
+        # Add README to dataframe
+        with open(tempdir + '/README.txt', 'r') as f:
+            readme = ''.join(f.readlines())
+        df.attrs["request_info"] = readme
+
+        # Add license info to dataframe
+        with open(tempdir + '/citation_and_data_use_policies.txt', 'r') as f:
+            licence = ''.join(f.readlines())
+        df.attrs["license"] = licence
+        print(readme)
+
+    if explode:
+        # Split termID observations into their own rows
+        df['termID'] = df['termID'].apply(lambda x: x.split(','))
+        df = df.explode('termID').reset_index(drop=True)
+
+    return df
 
 
 
@@ -181,3 +185,4 @@ if __name__ == "__main__":
     # TODO: accept multiple inputs for e.g. genus
     # TODO: accept either a single year or a range
     # TODO: utility for formatting ranges
+    # TODO: Add functions to convert state to event

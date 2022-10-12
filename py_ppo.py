@@ -17,9 +17,15 @@ Useful resources:
 * Data portal frontend: http://plantphenology.org/
 * Data portal backend: https://github.com/biocodellc/biscicol-server
 * Similar R-package: https://docs.ropensci.org/rppo/reference/rppo-package.html
+
+TODO:
+- document options (see https://github.com/ropensci/rppo/blob/master/R/ppo_data.R#L6-L29)
+- write more tests
+- accept multiple inputs for options
+- accept either a single year or a range
+- pythonic formatting of ranges
+- save and reload already downloaded data
 """
-
-
 import zipfile
 import requests
 import pandas as pd
@@ -81,7 +87,7 @@ def get_terms(present=None):
     raise InvalidRequestError(f"Request failed with status code {r.status_code}")
 
 
-def download(explode=True, limit=5, timeout=3.05, **options):
+def download(explode=False, limit=100, timeout=3.05, debug=False, **options):
     """Download data from the plant phenology data portal.
 
     This function builds a query string from the provided arguments, and uses it
@@ -108,6 +114,9 @@ def download(explode=True, limit=5, timeout=3.05, **options):
     """
     url = _build_url(limit, **options)
 
+    if debug:
+        print(f"Trying to fetch data from {url}")
+
     # Wait 3 seconds for a connection, 30 for the response.
     response = requests.get(url, timeout=timeout)
 
@@ -121,7 +130,6 @@ def download(explode=True, limit=5, timeout=3.05, **options):
     raise InvalidRequestError(f"Requests failed with status code {response.status_code}. Please raise an issue.")
 
 
-# Having this as a separate function makes it much easier to write tests :-)
 def _build_url(limit, **options):
     """Parse options to build query string."""
     base_url = f"https://biscicol.org/api/v3/download/_search?limit={limit}"
@@ -171,80 +179,3 @@ def _to_dataframe(response, explode):
         df = df.explode('termID').reset_index(drop=True)
 
     return df
-
-
-if __name__ == "__main__":
-    # Perform some tests
-    import pytest
-
-    def test(f):
-        """Immediately invoke test function.
-
-        Temporarily used as decorator for real test functions.
-        """
-        print('---')
-        print(f"Testing function {f.__name__}")
-        f()
-        print('test passed')
-        print('---')
-
-    @test
-    def get_terms_plain():
-        terms = get_terms()
-        assert list(terms.items())[:5] == [
-            ('abscised cones or seeds absent', 'obo:PPO_0002658'),
-            ('abscised cones or seeds present', 'obo:PPO_0002359'),
-            ('abscised fruits or seeds absent', 'obo:PPO_0002657'),
-            ('abscised fruits or seeds present', 'obo:PPO_0002358'),
-            ('abscised leaves absent','obo:PPO_0002656')
-        ]
-
-    @test
-    def get_terms_absent():
-        terms = get_terms(present=False)
-        assert list(terms.items())[:5] == [
-            ('abscised cones or seeds absent', 'obo:PPO_0002658'),
-            ('abscised fruits or seeds absent', 'obo:PPO_0002657'),
-            ('abscised leaves absent', 'obo:PPO_0002656'),
-            ('breaking leaf buds absent', 'obo:PPO_0002610'),
-            ('cones absent', 'obo:PPO_0002645')
-        ]
-
-    @test
-    def download_passes_simple():
-        df = download(genus="Quercus")
-
-    @test
-    def download_empty():
-        df = download(genus="nonsense")
-        assert isinstance(df, pd.DataFrame)
-        assert len(df) == 0
-
-    @test
-    def download_timeout():
-        with pytest.raises(requests.exceptions.Timeout):
-            # this request with bad formatting hangs
-            download(genus="[1to2]")
-
-    # df = download(genus="Syringa", source="PEP725")
-    # df = download(genus="Syringa", source="PEP725", year="[2000 TO 2021]")
-    # df = download(genus="Syringa", source="PEP725", year="[2000 TO 2021]", latitude="[40 TO 70]", longitude="[-10 TO 40]")
-
-    df = download(
-        genus="Syringa",
-        source="PEP725",
-        year="[2000 TO 2021]",
-        latitude="[40 TO 70]",
-        longitude="[-10 TO 40]",
-        termID="obo:PPO_0002330",  # flowers present
-        )
-
-
-    import IPython; IPython.embed(); quit()
-
-    # TODO: document options (see https://github.com/ropensci/rppo/blob/master/R/ppo_data.R#L6-L29)
-    # TODO: write tests
-    # TODO: accept multiple inputs for options
-    # TODO: accept either a single year or a range
-    # TODO: utility for formatting ranges
-    # TODO: Add functions to convert state to event

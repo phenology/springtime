@@ -1,7 +1,10 @@
-# phenologyX
-Exploring phenological data with explainable AI methods
+# Springtime
+Spatiotemporal phenology research with interpretable models.
 
-Testing a random commit from CRIB
-Testing from Mahdi
-Test from different branch
-Test branch protection rule again
+We recommend setting up a rich working environment, e.g. using [mambaforge](https://mamba.readthedocs.io/en/latest/installation.html#installation):
+
+```
+mamba create -n springtime python=3 jupyterlab numpy pandas xarray matplotlib cartopy requests pytest isort black
+```
+
+We anticipate that parts of this repository might turn into self-contained packages. At that stage we will clarify the exact reqruiements in those packages.

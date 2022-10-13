@@ -1,5 +1,5 @@
 import pytest
-from download_pep725 import get_terms, download
+from py_ppo import get_terms, download
 import numpy as np
 import pandas as pd
 import requests

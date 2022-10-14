@@ -79,7 +79,7 @@ def get_terms(present=None):
     else:
         raise ValueError(f"Present should be None or Boolean, got {present}")
 
-    r = requests.get(url)
+    r = requests.get(url, timeout=3.05)
 
     if r.status_code == 200:
         return r.json()

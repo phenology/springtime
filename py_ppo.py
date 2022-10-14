@@ -24,12 +24,13 @@ TODO:
 - accept multiple inputs for options
 - accept either a single year or a range
 - pythonic formatting of ranges
-- save and reload already downloaded data
+- save and reload already downloaded data  #7
 """
 import zipfile
 import requests
 import pandas as pd
 import tempfile
+import re
 
 
 class InvalidRequestError(Exception):
@@ -87,7 +88,7 @@ def get_terms(present=None):
     raise InvalidRequestError(f"Request failed with status code {r.status_code}")
 
 
-def download(explode=False, limit=100, timeout=3.05, debug=False, **options):
+def download(explode=False, limit=100, timeout=3.05, **options):
     """Download data from the plant phenology data portal.
 
     This function builds a query string from the provided arguments, and uses it
@@ -114,8 +115,7 @@ def download(explode=False, limit=100, timeout=3.05, debug=False, **options):
     """
     url = _build_url(limit, **options)
 
-    if debug:
-        print(f"Trying to fetch data from {url}")
+    print(f"Sending request: {url}\n")
 
     # Wait 3 seconds for a connection, 30 for the response.
     response = requests.get(url, timeout=timeout)
@@ -127,7 +127,7 @@ def download(explode=False, limit=100, timeout=3.05, debug=False, **options):
         print("No data found, you may try to broaden your search.")
         return pd.DataFrame()  # Trying to be consistent in what we return
 
-    raise InvalidRequestError(f"Requests failed with status code {response.status_code}. Please raise an issue.")
+    raise InvalidRequestError(f"Request failed with status code {response.status_code}. Please raise an issue.")
 
 
 def _build_url(limit, **options):
@@ -171,11 +171,21 @@ def _to_dataframe(response, explode):
         with open(tempdir + '/citation_and_data_use_policies.txt', 'r') as f:
             licence = ''.join(f.readlines())
         df.attrs["license"] = licence
-        print(readme)
 
     if explode:
         # Split termID observations into their own rows
         df['termID'] = df['termID'].apply(lambda x: x.split(','))
         df = df.explode('termID').reset_index(drop=True)
+
+    # Print a nice message
+    try:
+        # Extract info about totals from README
+        result = re.search('total results possible = (.+?)\n', readme)
+        total = result.group(1)
+        print(f"Retrieved {len(df)} of {total} total possible results.")
+    except AttributeError:
+        print(f"Retrieved {len(df)} results.")
+        pass
+    print("Please note the additional download and license information in df.attrs")
 
     return df

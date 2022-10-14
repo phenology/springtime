@@ -30,7 +30,7 @@ class TestGetTerms:
 class TestDownload:
 
     def test_download_passes(self):
-        df = download(genus="Quercus")
+        download(genus="Quercus")
 
     def test_download_empty(self):
         df = download(genus="nonsense")

@@ -71,11 +71,11 @@ def get_terms(present=None):
          ('cones absent', 'obo:PPO_0002645')]
     """
     if present is None:
-        url = f"https://biscicol.org/api/v2/ppo/all_short"
+        url = "https://biscicol.org/api/v2/ppo/all_short"
     elif present is True:
-        url = f"https://biscicol.org/api/v2/ppo/present_short"
+        url = "https://biscicol.org/api/v2/ppo/present_short"
     elif present is False:
-        url = f"https://biscicol.org/api/v2/ppo/absent_short"
+        url = "https://biscicol.org/api/v2/ppo/absent_short"
     else:
         raise ValueError(f"Present should be None or Boolean, got {present}")
 

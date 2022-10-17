@@ -59,7 +59,6 @@ def fit_model(model_name, X, Y):
         Model = utils.load_model(model_name)
         model = Model()
         model.fit(Y, X, optimizer_params='practical')
-        return model
     elif model_source == "sklearn.linear_model":
         # select the model
         Model = getattr(linear_model, model_name)
@@ -67,10 +66,10 @@ def fit_model(model_name, X, Y):
         # prepare data
         Y, X, _ = models_utils.misc.temperature_only_data_prep(Y, X, for_prediction=False)
         model.fit(X.T, Y)
-        return model
     else:
         print(f"Unsupported model {model_name}.")
-        return None
+        model = None
+    return model
         
 
 def predict(model, X, Y):
@@ -80,7 +79,7 @@ def predict(model, X, Y):
     
     elif model_source == "sklearn.linear_model":
         # prepare data
-        Y, X, _ = models_utils.misc.temperature_only_data_prep(Y, X, for_prediction=False)
+        X, _ = models_utils.misc.temperature_only_data_prep(Y, X, for_prediction=True)
         return model.predict(X.T)
     
     else:

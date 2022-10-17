@@ -83,7 +83,7 @@ def fit_model(model_name, X, Y):
     return model
         
 
-def predict(model, X, Y):
+def predict(model_name, model, X, Y):
     model_source = MODELS_SOURCE.get(model_name, False)
     if model_source == "pyPhenology.primary_model":
         return model.predict(Y, X)
@@ -110,7 +110,7 @@ results = {
 
 for model_name in models_to_test:
     if fitted_model:= fit_model(model_name, predictors, observations_train):
-        predictions = predict(fitted_model, predictors, observations_test)
+        predictions = predict(model_name, fitted_model, predictors, observations_test)
     
     model_rmse = rmse(observations_test.doy.values, predictions)
     

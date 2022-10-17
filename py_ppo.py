@@ -23,6 +23,7 @@ TODO:
 - write more tests
 - accept multiple inputs for options
 - accept either a single year or a range
+- allow a "nearest" or "nearby" criterion for lat/lon search
 - pythonic formatting of ranges
 - save and reload already downloaded data  #7
 """

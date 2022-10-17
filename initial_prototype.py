@@ -100,6 +100,6 @@ for model_name in models_to_test:
         best_model_name = model_name
         best_rmse = model_rmse
         
-    print('model {m} got an rmse of {a}'.format(m=model_name,a=model_rmse))
+    print(f'model {model_name} got an rmse of {model_rmse}')
     
-print('Best model: {m}'.format(m=best_model_name))
+print(f'Best model: {best_model_name}')

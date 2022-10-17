@@ -17,7 +17,8 @@ python initial_prototype.py
 
 output:
 model ThermalTime got an rmse of 5.513619500836088
-model Alternating got an rmse of 5.039841267341661
+model Alternating got an rmse of 4.1952353926806065
+model Linear got an rmse of 9.754014106073047
 model LinearRegression got an rmse of 6.797252144708919
 Best model: ThermalTime
 
@@ -37,7 +38,7 @@ observations_test = observations[:10]
 observations_train = observations[10:]
 
 # 5 basic/benchmark/reference models
-models_to_test = ["ThermalTime", "Alternating"]
+models_to_test = ["ThermalTime", "Alternating", "Linear"]
 
 # 6 ML models
 models_to_test.append("LinearRegression")
@@ -49,8 +50,9 @@ def rmse(obs, pred):
 
 # Run the workflow
 MODELS_SOURCE = {"ThermalTime": "pyPhenology.primary_model",
-              "Alternating": "pyPhenology.primary_model",
-              "LinearRegression": "sklearn.linear_model",
+                 "Alternating": "pyPhenology.primary_model",
+                 "Linear": "pyPhenology.primary_model",
+                 "LinearRegression": "sklearn.linear_model",
              }
     
 def fit_model(model_name, X, Y):
@@ -86,7 +88,7 @@ def predict(model, X, Y):
         print(f"Unsupported model {model_name}.")
         return None
     
-best_rmse= 0.0
+best_rmse = 0.0
 best_base_model = None
 best_base_model_name = None
 

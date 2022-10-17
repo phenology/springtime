@@ -11,6 +11,8 @@ numpy
 pandas
 joblib
 pyPhenology
+scikit-learn # for ML methods
+plotnine # for visualization
 
 usage:
 python initial_prototype.py
@@ -25,20 +27,28 @@ Best model: ThermalTime
 """
 from pyPhenology import utils
 import numpy as np
+import pandas as pd
 from pyPhenology.models import utils as models_utils
 from sklearn import linear_model
 
 # 1 and 2 load observations and predictors
-observations, predictors = utils.load_test_data(name='vaccinium', phenophase='flowers')
+dataset='vaccinium'
+phenophase='flowers'
+observations, predictors = utils.load_test_data(name=dataset, phenophase=phenophase)
 
 # 3 Preprocesses the data
 
 # 4 Define train/test strategy
-observations_test = observations[:10]
-observations_train = observations[10:]
+from sklearn.model_selection import ShuffleSplit
+
+rs = ShuffleSplit(n_splits=2, test_size=.25, random_state=2)
+for train_index, test_index in rs.split(observations):
+    observations_test = observations.iloc[test_index]
+    observations_train = observations.iloc[train_index]
+
 
 # 5 basic/benchmark/reference models
-models_to_test = ["ThermalTime", "Alternating", "Linear"]
+models_to_test = ["ThermalTime", "Linear"]
 
 # 6 ML models
 models_to_test.append("LinearRegression")
@@ -50,7 +60,6 @@ def rmse(obs, pred):
 
 # Run the workflow
 MODELS_SOURCE = {"ThermalTime": "pyPhenology.primary_model",
-                 "Alternating": "pyPhenology.primary_model",
                  "Linear": "pyPhenology.primary_model",
                  "LinearRegression": "sklearn.linear_model",
              }
@@ -88,9 +97,16 @@ def predict(model, X, Y):
         print(f"Unsupported model {model_name}.")
         return None
     
-best_rmse = 0.0
+best_rmse = np.Inf
 best_base_model = None
 best_base_model_name = None
+
+results = {
+    "dataset": [],
+    "phenophase": [],
+    "model": [],
+    "rmse": [],
+}
 
 for model_name in models_to_test:
     if fitted_model:= fit_model(model_name, predictors, observations_train):
@@ -103,5 +119,10 @@ for model_name in models_to_test:
         best_rmse = model_rmse
         
     print(f'model {model_name} got an rmse of {model_rmse}')
+    
+    results['rmse'].append(model_rmse)
+    results['dataset'].append(dataset)
+    results['phenophase'].append(phenophase)
+    results['model'].append(model_name)
     
 print(f'Best model: {best_model_name}')

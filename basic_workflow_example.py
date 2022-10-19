@@ -23,7 +23,6 @@ RMSE_comparison.jpg
 """
 from springtime import build_workflow, run_workflow
 import pandas as pd
-import numpy as np
 import seaborn
 
 # dataset and phenophases to test
@@ -64,10 +63,8 @@ for phenophase in phenophases:
         workflow_name = f"{dataset}_{phenophase}_{model_name}"
         workflow = build_workflow(options, name=workflow_name)
         results = run_workflow(workflow)
-
-        model_rmse = results["metric_value"]
    
-        all_results['rmse'].append(model_rmse)
+        all_results['rmse'].append(results["metric_value"])
         all_results['dataset'].append(dataset)
         all_results['phenophase'].append(phenophase)
         all_results['model'].append(model_name)

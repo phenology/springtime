@@ -89,7 +89,7 @@ def rmse(obs, pred):
 
 
 # model utilities
-def check_model_name(model_name):
+def get_full_model_name(model_name):
     models_source = {
         "ThermalTime": "pyPhenology.primary_model",
         "Linear": "pyPhenology.primary_model",
@@ -101,9 +101,9 @@ def check_model_name(model_name):
 
     
 def select_model(model_name):
-    if check_model_name(model_name) == "pyPhenology.primary_model":
+    if get_full_model_name(model_name) == "pyPhenology.primary_model":
         Model = pyPhenology.utils.load_model(model_name)
-    elif check_model_name(model_name) == "sklearn.linear_model":
+    elif get_full_model_name(model_name) == "sklearn.linear_model":
         Model = getattr(linear_model, model_name)
     return Model()
     
@@ -180,10 +180,10 @@ def run_workflow(workflow):
 
     model_name = workflow["options"]["model_name"]
 
-    if check_model_name(model_name) == "pyPhenology.primary_model":
+    if get_full_model_name(model_name) == "pyPhenology.primary_model":
         fitted_model, predictions, metric_value = run_pyPhenology_workflow(workflow)
        
-    elif check_model_name(model_name) == "sklearn.linear_model":
+    elif get_full_model_name(model_name) == "sklearn.linear_model":
         fitted_model, predictions, metric_value= run_sklearn_workflow(workflow)
     
     workflow.update({

@@ -44,6 +44,10 @@ all_results = {
 
 for phenophase in phenophases:
     for model_name in models_to_test:
+        print(
+            f"Runing workflow for data {phenophase} "
+            f"and model {model_name}"
+            )
         ## Create options for workflow
         options = {
             "dataset": dataset, 
@@ -62,9 +66,13 @@ for phenophase in phenophases:
         all_results['model'].append(model_name)
 
 # save results 
+results_df_name = "RMSE_comparison.csv"
 results_df = pd.DataFrame.from_dict(all_results)
-results_df.to_csv("RMSE_comparison.csv", sep=',')
+results_df.to_csv(results_df_name, sep=',')
 
 # plot results
+results_plot_name = "RMSE_comparison.jpg"
 ax = seaborn.barplot(results_df, x="model", y="rmse", hue='phenophase')
-ax.figure.savefig("RMSE_comparison.jpg")
+ax.figure.savefig(results_plot_name)
+
+print(f"Runs are done! check {results_df_name} and {results_plot_name}")

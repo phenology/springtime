@@ -1,24 +1,16 @@
 """ Model selection via RMSE
-This scripts runs the workflow defined in 
+This scripts runs the workflow defined in
 https://github.com/phenology/phenologyX/issues/4
 
-Required dependencies for pyPhenology:
-Python
-scipy
-numpy
-pandas
-joblib
+Required dependencies can be installed using
+the conda environment `springtime`, see 
+https://github.com/phenology/phenologyX#springtime
 
-pyPhenology
-scikit-learn #for ML methods
-seaborn #for plotting
-
-usage:
+usage: 
+mamba activate springtime
 python basic_workflow_example.py
 
-output:
-RMSE_comparison.csv
-RMSE_comparison.jpg
+output: RMSE_comparison.csv RMSE_comparison.jpg
 
 """
 from springtime import build_workflow, run_workflow

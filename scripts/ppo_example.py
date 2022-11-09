@@ -9,7 +9,7 @@ Use as:
 """
 import matplotlib.pyplot as plt
 from cartopy import crs
-from packages.py_ppo.py_ppo import download
+from py_ppo import download
 
 
 def flowers_present(df):

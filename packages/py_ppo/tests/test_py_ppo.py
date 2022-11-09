@@ -1,8 +1,9 @@
 import pytest
-from packages.py_ppo.py_ppo import get_terms, download
+from py_ppo import get_terms, download
 import numpy as np
 import pandas as pd
 import requests
+
 
 class TestGetTerms:
 

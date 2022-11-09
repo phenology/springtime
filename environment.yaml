@@ -1,0 +1,13 @@
+name: springtime
+channels:
+  - conda-forge
+dependencies:
+  - cartopy
+  - jupyterlab
+  - matplotlib
+  - pip
+  - python=3.10
+  - seaborn
+  - pip:
+    - -e packages/py_ppo
+    - -e packages/springtime

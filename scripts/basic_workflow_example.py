@@ -13,7 +13,7 @@ python basic_workflow_example.py
 output: RMSE_comparison.csv RMSE_comparison.jpg
 
 """
-from packages.springtime.springtime import build_workflow, run_workflow
+from springtime import build_workflow, run_workflow
 import pandas as pd
 import seaborn
 

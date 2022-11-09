@@ -18,6 +18,7 @@ data                       <-- Data directory. Excluded from version control
 Makefile                   <-- Use make to reproduce all project outputs, set up environment, run tests, etc.
 LICENCE                    <-- Allow others to build upon our work
 docs                       <-- Sphinx documentation - help others build upon our work
+environment.yaml           <-- Keep track of, and easily (re-) install, project dependencies
 ```
 
 Feel free to propose modifications to this structure by [opening an
@@ -25,13 +26,20 @@ issue](https://github.com/phenology/springtime/issues/new).
 
 ## Environment
 
-We recommend setting up a rich working environment, e.g. using
-[mambaforge](https://mamba.readthedocs.io/en/latest/installation.html#installation):
+The top level directory contains an environment file which can be used with
+[conda](https://docs.conda.io/en/latest/miniconda.html#latest-miniconda-installer-links)
+or
+[mamba](https://mamba.readthedocs.io/en/latest/installation.html#installation):
 
 ```
-mamba create -n springtime python=3 jupyterlab numpy pandas xarray matplotlib cartopy requests pytest isort black scipy joblib scikit-learn seaborn
+# Using conda:
+conda env create --file environment.yaml
+
+# Using mamba (newer, faster reimplementation of conda):
+mamba env create --file environment.yaml
 ```
 
-We anticipate that parts of this repository might turn into self-contained
-packages. At that stage we will clarify the exact reqruiements in those
-packages.
+This will install a rich Python working environment with jupyterLab, matplotlib,
+cartopy, etc. pre-installed. Moreover, this environment will install everyting
+under the `packages` directory as editable packages. That means you can easily
+import from these packages, but also modify them and see the changes right away.

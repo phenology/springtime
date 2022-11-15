@@ -1,6 +1,12 @@
 # Springtime
 Spatiotemporal phenology research with interpretable models.
 
+Example task: predict the day of first bloom of the common 
+lilac given indirect observations (e.g. satellite data) and/or 
+other indicators (e.g. sunshine and temperature).
+
+![illustration_example_use_case](https://user-images.githubusercontent.com/17080502/201969464-fb7af60d-f9c3-4310-8ca5-acff2f8121e9.png)
+
 ## Structure
 
 This repository is structured as follows:

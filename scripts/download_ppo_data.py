@@ -1,10 +1,8 @@
-"""Example script using pyPPO.
-
-Download some data from ppo and plot it on a map
+"""Download data from ppo and plot it on a map.
 
 Use as:
 
-  > python ppo_example.py
+  > python download_ppo_data.py
 
 """
 import matplotlib.pyplot as plt
@@ -42,6 +40,7 @@ if __name__ == "__main__":
         termID="obo:PPO_0002313",
         explode=False,
         limit=1535,
+        timeout=10,
         )
 
     event = leafing_out_date(df)

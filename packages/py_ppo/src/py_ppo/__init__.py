@@ -1,1 +1,1 @@
-from main import download, get_terms
+from py_ppo.main import download, get_terms

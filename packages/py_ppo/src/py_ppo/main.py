@@ -89,7 +89,7 @@ def get_terms(present=None):
     raise InvalidRequestError(f"Request failed with status code {r.status_code}")
 
 
-def download(explode=False, limit=100, timeout=3.05, **options):
+def download(explode=False, limit=100, timeout=10, **options):
     """Download data from the plant phenology data portal.
 
     This function builds a query string from the provided arguments, and uses it

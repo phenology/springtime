@@ -50,3 +50,11 @@ This will install a rich Python working environment with jupyterLab, matplotlib,
 cartopy, etc. pre-installed. Moreover, this environment will install everyting
 under the `packages` directory as editable packages. That means you can easily
 import from these packages, but also modify them and see the changes right away.
+
+For updating an existing environment, use
+
+```
+# conda or mamba
+conda activate myenv
+conda env update --prune
+```

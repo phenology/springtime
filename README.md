@@ -1,11 +1,11 @@
 # Springtime
 Spatiotemporal phenology research with interpretable models.
 
-Example task: predict the day of first bloom of the common 
-lilac given indirect observations (e.g. satellite data) and/or 
+Example task: predict the day of first bloom of the common
+lilac given indirect observations (e.g. satellite data) and/or
 other indicators (e.g. sunshine and temperature).
 
-![illustration_example_use_case](https://user-images.githubusercontent.com/17080502/201969464-fb7af60d-f9c3-4310-8ca5-acff2f8121e9.png)
+![illustration_example_use_case](task_illustration.png.png)
 
 ## Structure
 
@@ -30,19 +30,20 @@ environment.yaml           <-- Keep track of, and easily (re-) install, project 
 Feel free to propose modifications to this structure by [opening an
 issue](https://github.com/phenology/springtime/issues/new).
 
-## Environment
+## Environment setup
 
-The top level directory contains an environment file which can be used with
+The top level directory contains a file `environment.yml` which can be installed
+with
 [conda](https://docs.conda.io/en/latest/miniconda.html#latest-miniconda-installer-links)
 or
 [mamba](https://mamba.readthedocs.io/en/latest/installation.html#installation):
 
 ```
 # Using conda:
-conda env create --file environment.yaml
+conda env create
 
 # Using mamba (newer, faster reimplementation of conda):
-mamba env create --file environment.yaml
+mamba env create
 ```
 
 This will install a rich Python working environment with jupyterLab, matplotlib,

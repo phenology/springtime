@@ -23,6 +23,7 @@ xarray + pydap
 pyproj
 """
 
+from pandas import DataFrame
 import xarray as xr
 import pyproj
 import datetime
@@ -138,44 +139,35 @@ def get_dataset(longitudes, latitudes, var_names, years):
             for year in year_range:
                 remote_data = _open_dataset(region, var_name, year)
                 data_array = _clip_dataset(longitudes, latitudes, remote_data)
-                # TODO project data_array
-                # TODO statistics 
                 data_arrays.append(data_array)
-    # or a dataframe? 
+    # no download
     return data_arrays
 
 
 def download(longitudes, latitudes, var_names, years, dir="."):
 
-    # TODO check longitudes [-180, 180], latitudes [0, 90]
-    # TODO check var_names ['dayl', 'prcp', 'srad', 'swe', 'tmax', 'tmin', 'vp']
-    # TODO check years
-    now = datetime.datetime.now()
-    max_year = now.year - 1 
-    min_year = 1980 #The begining of the Daymet time series
-
-    start_year, end_year = years
-    year_range = [str(year) for year in range(start_year, end_year + 1)]
-
-    regions = _find_region(longitudes, latitudes)
-    
-    data_arrays = []
-    for region in regions:
-        for var_name in var_names:
-            for year in year_range:
-                remote_data = _open_dataset(region, var_name, year)
-                data_array = _clip_dataset(longitudes, latitudes, remote_data)
-                data_arrays.append(data_array)
+    data_arrays = get_dataset(longitudes, latitudes, var_names, years)
 
     # download starts, memory usage
     data_set = xr.merge(data_arrays)
+    now = datetime.datetime.now()
     timestamp = now.strftime("%m_%d_%Y_%H_%M")
     data_file_name = f"{dir}/daymet_v4_daily_{timestamp}.nc"
     data_set.to_netcdf(data_file_name)
-    return data_set
+    return data_file_name
 
 
-                
+def compute_stat(longitudes, latitudes, var_names, years):
+    
+    data_arrays = get_dataset(longitudes, latitudes, var_names, years)
+
+    # TODO select statistics
+    data_frames = []
+    for data_array in data_arrays:
+        # download starts, memory usage
+        stat = data_array.groupby('time.year').mean('time')
+        data_frames.append(stat.to_dataframe())
+    return data_frames
 
 
 

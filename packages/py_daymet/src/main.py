@@ -1,0 +1,182 @@
+""""Download Daymet data from 
+Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1
+https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2129
+
+temporal coverage: 1950-01-01 to 2021-12-31
+spatial coverage: 
+    N:        S:       E:      W: 
+hi 23.52	17.95	-154.77	-160.31
+na 82.91	14.07	-53.06	-178.13
+pr 19.94	16.84	-64.12	-67.99
+
+
+dayl	Duration of the daylight period (seconds/day)
+prcp	Daily total precipitation (mm/day)
+srad	Incident shortwave radiation flux density(W/m2)
+swe	Snow water equivalent (kg/m2)
+tmax	Daily maximum 2-meter air temperature (°C)
+tmin	Daily minimum 2-meter air temperature (°C)
+vp	Water vapor pressure (Pa)
+
+requires: 
+xarray + pydap
+pyproj
+"""
+
+import xarray as xr
+import pyproj
+import datetime
+
+
+def _build_url(file_name):
+    """Build dataset url.
+    
+    Args:
+        file_name(str): example "na_tmin_2015.nc"
+    
+    """
+    base_url = "https://thredds.daac.ornl.gov/thredds/dodsC/ornldaac/2129/daymet_v4_daily_"
+    return f"{base_url}{file_name}"
+
+
+def _build_file_name(region, var_name, year):
+    """"Build the file name of the dataset to be retrieved.
+
+
+    Returns:
+        str: example "na_tmin_2015.nc"
+    """
+    return f"{region}_{var_name}_{year}.nc"
+
+
+def _project_bbox(user_lon, user_lat):
+    """Convert lon/lat (in degrees) to x/y native Daymet projection coordinates (in
+    meters).
+    
+    """
+    daymet_proj =(
+        "+proj=lcc +lat_1=25 +lat_2=60 +lat_0=42.5 +lon_0=-100 "
+        "+x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs"
+        )
+
+    return pyproj.Proj(daymet_proj)(user_lon, user_lat)
+
+
+def _find_region(user_lon, user_lat):
+    """Find Daymet regions where Daymet bbox falls into.
+    
+    """
+    regions = {
+        "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},
+        "na": {"lon": [-178.13, -53.06], "lat": [14.07, 82.91]},
+        "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
+    }
+    found_regions = []
+    for region, coords in regions.items():
+        region_lon = coords["lon"]
+        region_lat = coords["lat"]
+        if _has_overlap(user_lon, user_lat, region_lon, region_lat):
+            found_regions.append(region)
+        
+    if not found_regions:
+        raise ValueError("Change bbox")
+    return found_regions
+
+
+def _has_overlap(user_lon, user_lat, region_lon, region_lat):
+    x1, x2 = user_lon
+    y1, y2 = user_lat
+
+    X1, X2 = region_lon
+    Y1, Y2 = region_lat
+    
+    # it works only if user bbox is smaller than region bbox
+    if (x1>=X1) and (x2<=X2) and (y1>=Y1) and (y2<=Y2):
+        return True
+    return False
+
+
+def _clip_dataset(longitudes, latitudes, data):
+
+    daymet_longitudes,  daymet_latitudes = _project_bbox(longitudes, latitudes)
+
+    x1, x2 = daymet_longitudes
+    y1, y2 = daymet_latitudes
+
+    return data.sel(x=slice(x1, x2), y=slice(y2, y1))
+
+
+def _open_dataset(region, var_name, year):
+
+    file_name = _build_file_name(region, var_name, year)
+    data_url = _build_url(file_name)
+
+    # not downloded
+    return xr.open_dataset(
+        xr.backends.PydapDataStore.open(data_url, timeout=500),
+        decode_coords="all"
+        )
+    
+
+def get_dataset(longitudes, latitudes, var_names, years):
+
+    # TODO check longitudes [-180, 180], latitudes [0, 90]
+    # TODO check var_names ['dayl', 'prcp', 'srad', 'swe', 'tmax', 'tmin', 'vp']
+    # TODO check years
+    now = datetime.datetime.now()
+    max_year = now.year - 1 
+    min_year = 1980 #The begining of the Daymet time series
+
+    start_year, end_year = years
+    year_range = [str(year) for year in range(start_year, end_year + 1)]
+
+    regions = _find_region(longitudes, latitudes)
+    
+    data_arrays = []
+    for region in regions:
+        for var_name in var_names:
+            for year in year_range:
+                remote_data = _open_dataset(region, var_name, year)
+                data_array = _clip_dataset(longitudes, latitudes, remote_data)
+                # TODO project data_array
+                # TODO statistics 
+                data_arrays.append(data_array)
+    # or a dataframe? 
+    return data_arrays
+
+
+def download(longitudes, latitudes, var_names, years, dir="."):
+
+    # TODO check longitudes [-180, 180], latitudes [0, 90]
+    # TODO check var_names ['dayl', 'prcp', 'srad', 'swe', 'tmax', 'tmin', 'vp']
+    # TODO check years
+    now = datetime.datetime.now()
+    max_year = now.year - 1 
+    min_year = 1980 #The begining of the Daymet time series
+
+    start_year, end_year = years
+    year_range = [str(year) for year in range(start_year, end_year + 1)]
+
+    regions = _find_region(longitudes, latitudes)
+    
+    data_arrays = []
+    for region in regions:
+        for var_name in var_names:
+            for year in year_range:
+                remote_data = _open_dataset(region, var_name, year)
+                data_array = _clip_dataset(longitudes, latitudes, remote_data)
+                data_arrays.append(data_array)
+
+    # download starts, memory usage
+    data_set = xr.merge(data_arrays)
+    timestamp = now.strftime("%m_%d_%Y_%H_%M")
+    data_file_name = f"{dir}/daymet_v4_daily_{timestamp}.nc"
+    data_set.to_netcdf(data_file_name)
+    return data_set
+
+
+                
+
+
+
+

@@ -45,7 +45,7 @@ all_results = {
 for phenophase in phenophases:
     for model_name in models_to_test:
         print(
-            f"Runing workflow for data {phenophase} "
+            f"Running workflow for data {phenophase} "
             f"and model {model_name}"
             )
         ## Create options for workflow

@@ -5,7 +5,7 @@ Example task: predict the day of first bloom of the common
 lilac given indirect observations (e.g. satellite data) and/or
 other indicators (e.g. sunshine and temperature).
 
-![illustration_example_use_case](task_illustration.png)
+![illustration_example_use_case](illustration.png)
 
 ## Structure
 

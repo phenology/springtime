@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import requests
 
+
 class TestGetTerms:
 
     def test_get_terms_plain(self):

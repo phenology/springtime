@@ -3,10 +3,10 @@ This scripts runs the workflow defined in
 https://github.com/phenology/phenologyX/issues/4
 
 Required dependencies can be installed using
-the conda environment `springtime`, see 
+the conda environment `springtime`, see
 https://github.com/phenology/phenologyX#springtime
 
-usage: 
+usage:
 mamba activate springtime
 python basic_workflow_example.py
 
@@ -32,7 +32,7 @@ models_to_test.append("LinearRegression")
 
 # model selection strategy
 metric_name = "RMSE"
- 
+
 # Run the workflow
 ## store the results
 all_results = {
@@ -45,12 +45,12 @@ all_results = {
 for phenophase in phenophases:
     for model_name in models_to_test:
         print(
-            f"Runing workflow for data {phenophase} "
+            f"Running workflow for data {phenophase} "
             f"and model {model_name}"
             )
         ## Create options for workflow
         options = {
-            "dataset": dataset, 
+            "dataset": dataset,
             "phenophase": phenophase,
             "model_name": model_name,
             "train_test_strategy": train_test_strategy,
@@ -59,13 +59,13 @@ for phenophase in phenophases:
         workflow_name = f"{dataset}_{phenophase}_{model_name}"
         workflow = build_workflow(options, name=workflow_name)
         results = run_workflow(workflow)
-   
+
         all_results['rmse'].append(results["metric_value"])
         all_results['dataset'].append(dataset)
         all_results['phenophase'].append(phenophase)
         all_results['model'].append(model_name)
 
-# save results 
+# save results
 results_df_name = "RMSE_comparison.csv"
 results_df = pd.DataFrame.from_dict(all_results)
 results_df.to_csv(results_df_name, sep=',')

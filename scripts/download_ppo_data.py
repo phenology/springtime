@@ -1,15 +1,14 @@
-"""Example script using pyPPO.
-
-Download some data from ppo and plot it on a map
+"""Download data from ppo and plot it on a map.
 
 Use as:
 
-  > python ppo_example.py
+  > python download_ppo_data.py
 
 """
 import matplotlib.pyplot as plt
 from cartopy import crs
 from py_ppo import download
+from pathlib import Path
 
 
 def flowers_present(df):
@@ -42,7 +41,12 @@ if __name__ == "__main__":
         termID="obo:PPO_0002313",
         explode=False,
         limit=1535,
+        timeout=10,
         )
+
+    # TODO: better way to save data to a predefined path
+    base_dir = Path(__file__).parent.parent
+    df.to_csv(f'{base_dir}/data/raw/ppo_testdata.csv')
 
     event = leafing_out_date(df)
     fig = plt.figure()

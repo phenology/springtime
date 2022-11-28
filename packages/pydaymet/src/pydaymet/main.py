@@ -23,18 +23,17 @@ xarray + pydap
 pyproj
 """
 
-from pandas import DataFrame
+import datetime
 import xarray as xr
 import pyproj
-import datetime
 
 
 def _build_url(file_name):
     """Build dataset url.
-    
+
     Args:
         file_name(str): example "na_tmin_2015.nc"
-    
+
     """
     base_url = "https://thredds.daac.ornl.gov/thredds/dodsC/ornldaac/2129/daymet_v4_daily_"
     return f"{base_url}{file_name}"
@@ -90,7 +89,7 @@ def _has_overlap(user_lon, user_lat, region_lon, region_lat):
 
     X1, X2 = region_lon
     Y1, Y2 = region_lat
-    
+
     # it works only if user bbox is smaller than region bbox
     if (x1>=X1) and (x2<=X2) and (y1>=Y1) and (y2<=Y2):
         return True
@@ -117,7 +116,7 @@ def _open_dataset(region, var_name, year):
         xr.backends.PydapDataStore.open(data_url, timeout=500),
         decode_coords="all"
         )
-    
+
 
 def get_dataset(longitudes, latitudes, var_names, years):
 
@@ -132,7 +131,7 @@ def get_dataset(longitudes, latitudes, var_names, years):
     year_range = [str(year) for year in range(start_year, end_year + 1)]
 
     regions = _find_region(longitudes, latitudes)
-    
+
     data_arrays = []
     for region in regions:
         for var_name in var_names:
@@ -144,7 +143,7 @@ def get_dataset(longitudes, latitudes, var_names, years):
     return data_arrays
 
 
-def download(longitudes, latitudes, var_names, years, dir="."):
+def download(longitudes, latitudes, var_names, years, download_dir="."):
 
     data_arrays = get_dataset(longitudes, latitudes, var_names, years)
 
@@ -152,23 +151,6 @@ def download(longitudes, latitudes, var_names, years, dir="."):
     data_set = xr.merge(data_arrays)
     now = datetime.datetime.now()
     timestamp = now.strftime("%m_%d_%Y_%H_%M")
-    data_file_name = f"{dir}/daymet_v4_daily_{timestamp}.nc"
+    data_file_name = f"{download_dir}/daymet_v4_daily_{timestamp}.nc"
     data_set.to_netcdf(data_file_name)
     return data_file_name
-
-
-def compute_stat(longitudes, latitudes, var_names, years):
-    
-    data_arrays = get_dataset(longitudes, latitudes, var_names, years)
-
-    # TODO select statistics
-    data_frames = []
-    for data_array in data_arrays:
-        # download starts, memory usage
-        stat = data_array.groupby('time.year').mean('time')
-        data_frames.append(stat.to_dataframe())
-    return data_frames
-
-
-
-

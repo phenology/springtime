@@ -4,7 +4,7 @@ longitudes = [-80, -79.5]
 latitudes = [35, 35.1]
 
 var_names = ['dayl', 'prcp']
-years = [2019, 2019]
+years = [2019]
 
 # no download
 data_arrays = get_dataset(longitudes, latitudes, var_names, years)

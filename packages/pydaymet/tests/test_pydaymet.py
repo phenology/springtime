@@ -1,5 +1,7 @@
 import pytest
+from unittest.mock import patch
 import numpy as np
+import xarray as xr
 from pydaymet import download, get_dataset
 
 
@@ -43,3 +45,20 @@ def test_get_multiple_dataset():
     assert "tmax" in data_arrays[2]
     assert data_arrays[1].attrs["start_year"] == 2020
 
+
+def test_download_multiple_dataset(tmp_path):
+    longitudes = [-80, -79.95]
+    latitudes = [35, 35.05]
+    var_names = ["prcp", "tmax"]
+    years = [2019]
+
+    with patch("time.strftime") as mocked_time:
+        mocked_time.return_value = "2022_11_29_1200"
+        data_file_name = download(
+                longitudes, latitudes, var_names, years, download_dir=tmp_path
+                )
+    assert data_file_name == f"{tmp_path}/daymet_v4_daily_2022_11_29_1200.nc"
+    
+    dataset = xr.open_dataset(data_file_name)
+    assert "tmax" in dataset
+    assert "prcp" in dataset

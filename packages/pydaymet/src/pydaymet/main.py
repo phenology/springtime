@@ -24,9 +24,10 @@ pyproj
 """
 
 import datetime
-import xarray as xr
+from typing import Iterable, Tuple
+
 import pyproj
-from typing import Tuple, Iterable
+import xarray as xr
 
 
 def _build_url(file_name:str) -> str:

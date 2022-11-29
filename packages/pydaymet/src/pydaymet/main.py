@@ -62,7 +62,7 @@ def _build_file_name(region:str, var_name:str, year:str) -> str:
 
 def _project_bbox(
         user_lon:Iterable[float] , user_lat:Iterable[float]
-        ) -> Tuple(Iterable[float], Iterable[float]):
+        ) -> Tuple[Iterable[float], Iterable[float]]:
     """Convert lon/lat (in degrees) to x/y native Daymet projection coordinates
     (in meters).
 
@@ -71,7 +71,7 @@ def _project_bbox(
         user_lat(list): a list containing min and max values of latitudes in degree.
 
     Returns:
-        Tuple(list, list): converted coordinates in daymet projection.
+        tuple(list, list): converted coordinates in daymet projection.
     """
     daymet_proj =(
         "+proj=lcc +lat_1=25 +lat_2=60 +lat_0=42.5 +lon_0=-100 "
@@ -189,12 +189,18 @@ def _check_lon(longitudes:Iterable[float]):
     """Check if longitude falls in [-180, 180]."""
     if min(longitudes) < -180 or max(longitudes) > 180:
         raise ValueError("Longitudes should be in [-180, 180].")
+    if min(longitudes) == max(longitudes):
+        raise ValueError("Provide min and max values of longitudes.")
+    return min(longitudes), max(longitudes)
 
 
 def _check_lat(latitudes:Iterable[float]):
     """Check if latitudes falls in [0, 90]."""
     if min(latitudes) < 0 or max(latitudes) > 90:
         raise ValueError("Latitudes should be in [0, 90].")
+    if min(latitudes) == max(latitudes):
+        raise ValueError("Provide min and max values of latitudes.")
+    return min(latitudes), max(latitudes)
 
 
 def _check_var_name(var_names:Iterable[str]):
@@ -206,10 +212,11 @@ def _check_var_name(var_names:Iterable[str]):
 
 def _check_years(years:Iterable[str]):
     now = datetime.datetime.now()
-    max_year = str(now.year - 1)
+    max_year = now.year - 1
     #1980 is the begining of the Daymet time series
-    if min(years) < "1980" or max(years) > max_year:
+    if min(years) < 1980 or max(years) > max_year:
         raise ValueError(f"years should be in [1980 to {max_year}].")
+    return [str(year) for year in range(min(years), max(years) + 1)]
 
 
 def get_dataset(
@@ -219,34 +226,29 @@ def get_dataset(
     """Return a list of data arrays that contains requested data.
 
     Args:
-        longitudes(list): an array containing min and max values of
-        longitudes in degree.
-        latitudes(list): an array containing min and max values of
-        latitudes in degree.
+        longitudes(list): an array of min, max longitudes in degree.
+        latitudes(list): an array of min, max latitudes in degree.
         var_names(list): variable names of daymet, a list of the "dayl", "prcp",
         "srad", "swe", "tmax", "tmin", "vp".
-        years(list): the year which daymet is available, from 1950-01-01 to
+        years(list): an array of year/s in which daymet is available, from 1950-01-01 to
         2021-12-31
 
     Retruns:
         a lsit of xr.DataArray
     """
-    _check_lon(longitudes)
-    _check_lat(latitudes)
+    lon_range = _check_lon(longitudes)
+    lat_tange = _check_lat(latitudes)
+    year_range = _check_years(years)
     _check_var_name(var_names)
-    _check_years(years)
 
-    start_year, end_year = years
-    year_range = [str(year) for year in range(start_year, end_year + 1)]
-
-    regions = _find_region(longitudes, latitudes)
+    regions = _find_region(lon_range, lat_tange)
 
     data_arrays = []
     for region in regions:
         for var_name in var_names:
             for year in year_range:
                 remote_data = _open_dataset(region, var_name, year)
-                data_array = _clip_dataset(longitudes, latitudes, remote_data)
+                data_array = _clip_dataset(lon_range, lat_tange, remote_data)
                 data_arrays.append(data_array)
     # no download
     return data_arrays

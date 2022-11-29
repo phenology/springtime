@@ -279,9 +279,9 @@ def download(
     data_arrays = get_dataset(longitudes, latitudes, var_names, years)
 
     # download starts, memory usage
-    data_set = xr.merge(data_arrays)
+    data_set = xr.merge(data_arrays, compat='override')
     now = datetime.datetime.now()
-    timestamp = now.strftime("%m_%d_%Y_%H_%M")
+    timestamp = now.strftime("%m_%d_%Y_%H%M")
     data_file_name = f"{download_dir}/daymet_v4_daily_{timestamp}.nc"
     data_set.to_netcdf(data_file_name)
     return data_file_name

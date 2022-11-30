@@ -1,7 +1,7 @@
 from pyPhenology.models.utils.misc import temperature_only_data_prep
 from pyPhenology.utils import load_test_data
 import pandas as pd
-from springtime import PROJECT_ROOT
+from springtime import PROJECT_ROOT, Dataset
 
 
 def align_data(obs, pred):
@@ -45,7 +45,21 @@ def main():
         combined_data = align_data(obs, pred)
 
         # Save
-        combined_data.to_csv(f"{PROJECT_ROOT}/data/processed/pyphenology_{name}_{phenophase}.csv")
+        relative_path = f"/data/processed/pyphenology_{name}_{phenophase}.csv"
+        combined_data.to_csv(f"{PROJECT_ROOT}/{relative_path}")
+
+        # Register metadata in local database
+        dataset = Dataset(
+            name = f"pyPhenology_{name}_{phenophase}",
+            description = "Sample data from pyPhenology package pre-processed for ML applications.",
+            path = relative_path,
+            license = "MIT",
+            provenance = "springtime/scripts/dataprep_pyphenology_testdata.py",
+            reference = "Original source: https://doi.org/10.21105/joss.00827",
+        )
+        dataset.register()
+
+        # TODO: print the dataset and show how to fetch it from the database.
 
 
 if __name__ == "__main__":

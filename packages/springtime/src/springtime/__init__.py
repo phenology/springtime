@@ -1,4 +1,6 @@
 from springtime.main import *
+from springtime.database import Dataset
+
 from pathlib import Path as _Path
 
 

@@ -234,8 +234,8 @@ def get_dataset(
         years(list): an array of year/s in which daymet is available, from 1950-01-01 to
         2021-12-31
 
-    Retruns:
-        a lsit of xr.DataArray
+    Returns:
+        a list of xr.DataArray
     """
     lon_range = _check_lon(longitudes)
     lat_tange = _check_lat(latitudes)

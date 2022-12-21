@@ -53,7 +53,7 @@ if __name__ == "__main__":
         name = f"ppo_example_data",
         description = "Example dataset downloaded using py_ppo.",
         path = relative_path,
-        license = "See http://biscicol.org/",
+        licence = "See http://biscicol.org/",
         provenance = "springtime/scripts/download_ppo_data.py",
         reference = "Original source: http://biscicol.org/",
     )

@@ -53,7 +53,7 @@ def main():
             name = f"pyPhenology_{name}_{phenophase}",
             description = "Sample data from pyPhenology package pre-processed for ML applications.",
             path = relative_path,
-            license = "MIT",
+            licence = "MIT",
             provenance = "springtime/scripts/dataprep_pyphenology_testdata.py",
             reference = "Original source: https://doi.org/10.21105/joss.00827",
         )

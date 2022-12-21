@@ -57,10 +57,11 @@ def main():
             provenance = "springtime/scripts/dataprep_pyphenology_testdata.py",
             reference = "Original source: https://doi.org/10.21105/joss.00827",
         )
-        dataset.register()
+        dataset.add_to_database()
 
         # TODO: print the dataset and show how to fetch it from the database.
 
 
 if __name__ == "__main__":
+
     main()

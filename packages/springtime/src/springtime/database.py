@@ -5,17 +5,55 @@ Data are stored in a local SQLite database file.
 Designed after OpenML Python API (https://www.openml.org/apis)
 """
 import pandas as pd
-from sqlmodel import Field, SQLModel, create_engine, Session
+from sqlmodel import Field, SQLModel, create_engine, Session, select
+
+from pathlib import Path
 
 
-sqlite_file_name = "test.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-sqlite_url = f"sqlite:///"  # for now an in-memory database (development)
+# Springtime project setup should have a database in the folder ./data
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
+DATABASE_ENGINE = create_engine(
+    f"sqlite:///{PROJECT_ROOT}/data/project_data.sqlite"
+)
 
-engine = create_engine(sqlite_url)
+
+class Client(SQLModel, table=False):
+    """Extends SQLModel with methods to interact with database."""
+    def add_to_database(self):
+        """Add an entry to the database."""
+        with Session(DATABASE_ENGINE) as session:
+            session.add(self)
+            session.commit()
+            session.refresh(self)
+
+    def remove_from_database(self):
+        """Remove an entry from the database."""
+        with Session(DATABASE_ENGINE) as session:
+            session.delete(self)
+            session.commit()
+
+    def update_in_database(self):
+        """Update an entry in the database."""
+        self.add_to_database()
+
+    @classmethod
+    def list_all(cls):
+        with Session(DATABASE_ENGINE) as session:
+            query = select(cls)
+            entries = session.exec(query).all()
+
+        for entry in entries:
+            print(repr(entry), '\n')
+
+    @classmethod
+    def get_by_id(cls, id):
+        with Session(DATABASE_ENGINE) as session:
+            entry = session.get(cls, id)
+
+        return entry
 
 
-class Dataset(SQLModel, table=True):
+class Dataset(Client, table=True):
     """Dataset metadata object modelled after OpenMLDataset."""
     id: int | None = Field(default=None, primary_key=True)
     name: str
@@ -25,50 +63,24 @@ class Dataset(SQLModel, table=True):
     provenance: str | None = None
     reference: str | None = None
 
-    def get_data(self):
+    def load_data(self):
         """Read data from disk."""
         return pd.read_csv(self.path)
 
-    def register(self):
-        with Session(engine) as session:
-            session.add(self)
-            session.commit()
-            session.refresh(self)
+
+# More ORM classes can be added here, e.g. RegressionTask
 
 
-class RegressionTask(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
-    description: str | None = None
-    dataset_id: int = Field(foreign_key="dataset.id")
+def initialize_database():
+    """First time setup of database."""
+    print(f"Creating database in {DATABASE_ENGINE.url}")
+    SQLModel.metadata.create_all(DATABASE_ENGINE)
 
 
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-def create_example_dataset_entry():
-    dummy_dataset = Dataset(name="Example", path="./path/to/example.csv", )
-    with Session(engine) as session:
-        session.add(dummy_dataset)
-        session.commit()
-        session.refresh(dummy_dataset)
-
-    dummy_task = RegressionTask(name="lilac", dataset_id=1)
-    with Session(engine) as session:
-        session.add(dummy_task)
-        session.commit()
-        session.refresh(dummy_task)
-
-
-def main():
-    create_db_and_tables()
-    create_example_dataset_entry()
-
-
-# TODO: eventually we want to do the database creation only once.
-SQLModel.metadata.create_all(engine)
+def clear_database():
+    """Clear the database file of all its content."""
+    SQLModel.metadata.drop_all(DATABASE_ENGINE)
 
 
 if __name__ == "__main__":
-    main()
+    initialize_database()

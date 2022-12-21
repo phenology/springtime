@@ -21,4 +21,7 @@ dependencies = [
   "scikit-learn",
   "numpy",
   "pyphenology",
+  "pytest",
+  "pandas",
+  "sqlmodel",
 ]

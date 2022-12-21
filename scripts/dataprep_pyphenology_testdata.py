@@ -45,7 +45,7 @@ def main():
         combined_data = align_data(obs, pred)
 
         # Save
-        relative_path = f"/data/processed/pyphenology_{name}_{phenophase}.csv"
+        relative_path = f"data/processed/pyphenology_{name}_{phenophase}.csv"
         combined_data.to_csv(f"{PROJECT_ROOT}/{relative_path}")
 
         # Register metadata in local database

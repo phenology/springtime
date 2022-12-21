@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from cartopy import crs
 from py_ppo import download
 from pathlib import Path
+from springtime import PROJECT_ROOT, Dataset
 
 
 def flowers_present(df):
@@ -44,9 +45,20 @@ if __name__ == "__main__":
         timeout=10,
         )
 
-    # TODO: better way to save data to a predefined path
-    base_dir = Path(__file__).parent.parent
-    df.to_csv(f'{base_dir}/data/raw/ppo_testdata.csv')
+    relative_path = f"data/raw/ppo_testdata.csv"
+    df.to_csv(f"{PROJECT_ROOT}/{relative_path}")
+
+    # Register metadata in local database
+    dataset = Dataset(
+        name = f"ppo_example_data",
+        description = "Example dataset downloaded using py_ppo.",
+        path = relative_path,
+        license = "See http://biscicol.org/",
+        provenance = "springtime/scripts/download_ppo_data.py",
+        reference = "Original source: http://biscicol.org/",
+    )
+    dataset.add_to_database()
+
 
     event = leafing_out_date(df)
     fig = plt.figure()

@@ -80,7 +80,3 @@ def initialize_database():
 def clear_database():
     """Clear the database file of all its content."""
     SQLModel.metadata.drop_all(DATABASE_ENGINE)
-
-
-if __name__ == "__main__":
-    initialize_database()

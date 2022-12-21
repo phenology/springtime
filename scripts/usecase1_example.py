@@ -28,7 +28,7 @@ options = {
     "model_name": ["LinearRegression"],
     "train_test_strategy": "ShuffleSplit",
     "metric_name": "RMSE",
-    "usecase_id": "2",
+    "usecase_id": "1",
 }
 
 workflow_name = f"usecase1_{dataset}"

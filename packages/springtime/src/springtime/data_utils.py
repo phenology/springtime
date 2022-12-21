@@ -133,8 +133,8 @@ def load_daymet_ppo(options):
 
 
 USECASE_ID = {
-    "1": "pyPhenology",
-    "2": "daymet_ppo",
+    "0": "pyPhenology",
+    "1": "daymet_ppo",
 }
 
 

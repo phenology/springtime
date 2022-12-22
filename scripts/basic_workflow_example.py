@@ -55,6 +55,7 @@ for phenophase in phenophases:
             "model_name": model_name,
             "train_test_strategy": train_test_strategy,
             "metric_name": metric_name,
+            "usecase_id": "0",
         }
         workflow_name = f"{dataset}_{phenophase}_{model_name}"
         workflow = build_workflow(options, name=workflow_name)

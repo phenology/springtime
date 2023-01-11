@@ -96,7 +96,6 @@ def prepare_eo(dataset, options):
 def _prepare_daymet(options):
     """"""
     ## one array per year per var
-    # TODO add log info
     daymet_arrays = get_dataset(
         options["longitudes"],
         options["latitudes"],
@@ -159,8 +158,7 @@ def split_data(data, method_name):
         for train_index, test_index in rs.split(data):
             return data.iloc[test_index], data.iloc[train_index]
 
-    print(f"Unsupported train_test strategy {method_name}")
-    return None
+    raise NotImplementedError(f"Unsupported train_test strategy {method_name}")
 
 
 def prepare_daymet_ppo_data(options):
@@ -169,7 +167,7 @@ def prepare_daymet_ppo_data(options):
     obs_df = prepare_observations("ppo", obs_options)
 
     eo_options = options["eo_options"]
-    eo_ds =  prepare_eo("Daymet", eo_options)
+    eo_ds = prepare_eo("Daymet", eo_options)
 
     # TODO check if merging data in this way makes sense!
     eo_obs_df = merge_eo_obs(eo_ds, obs_df)

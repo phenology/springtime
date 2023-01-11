@@ -8,7 +8,6 @@ TODO:
 - add documentations
 
 """
-
 import numpy as np
 import pyPhenology
 import pyproj
@@ -17,6 +16,12 @@ from py_ppo import download
 from pydaymet import get_dataset
 from pyPhenology.models import utils as models_utils
 from sklearn.model_selection import ShuffleSplit
+
+
+USECASE = {
+    "0": {"data_name": "pyPhenology"},
+    "1": {"data_name": "daymet_ppo"},
+}
 
 
 def prepare_observations(dataset_name, options):
@@ -72,7 +77,7 @@ def season_mean(ds):
     weighted_average = (ds * weights).groupby("time.season").sum(dim="time")
 
     # Add year and return
-    return weighted_average.assign_coords(year=np.unique(ds.time.dt.year.values))
+    return weighted_average.expand_dims("year").assign_coords(year=np.unique(ds.time.dt.year.values))
 
 
 def _daymet_project(lon, lat):
@@ -105,12 +110,14 @@ def _prepare_daymet(options):
     print("Daymet data are retrieved.")
 
     # calculate statistics
-    print("Calculating statistics (loading eo data in memory) ...")
+    print("Calculating statistics (loading data into memory) ...")
     if options["statistics"] == "annual monlthly average":
         daymet_stat_arrays = [season_mean(data_array) for data_array in daymet_arrays]
+    else:
+        raise NotImplementedError
 
-    # merge data arrays
-    daymet_dataset = xr.merge(daymet_stat_arrays, compat='override')
+    # combine data arrays
+    daymet_dataset = xr.combine_by_coords(daymet_stat_arrays, combine_attrs="drop_conflicts")
     daymet_dataset.attrs = {"dataset": "Daymet"}
     return daymet_dataset
 
@@ -175,7 +182,8 @@ def prepare_daymet_ppo_data(options):
     # organize data in dataframes
     # TODO check if organizng data in this way makes sense!
     data_frames = {}
-    data_frames["targets"], data_frames["predictors"] = obs_df, eo_ds.to_dataframe().reset_index()
+    data_frames["targets"] = obs_df
+    data_frames["predictors"] = eo_ds.to_dataframe().reset_index()
 
     test_df, train_df = split_data(eo_obs_df, options["train_test_strategy"])
     data_frames["targets_test"] = test_df[["dayOfYear"]]
@@ -231,16 +239,9 @@ def prepare_pyPhenology_data(options):
     return {"data_frames": data_frames, "data_arrays": data_arrays}
 
 
-
-USECASE = {
-    "0": {"dataset_name": "pyPhenology"},
-    "1": {"dataset_name": "daymet_ppo"},
-}
-
-
 def load_data(options):
     usecase_id = options["usecase_id"]
-    dataset_name = USECASE[usecase_id]["dataset_name"]
+    dataset_name = USECASE[usecase_id]["data_name"]
     if dataset_name == "pyPhenology":
         return prepare_pyPhenology_data(options)
     if dataset_name == "daymet_ppo":

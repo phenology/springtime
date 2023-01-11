@@ -200,6 +200,8 @@ def prepare_daymet_ppo_data(options):
     data_arrays["predictors_test"] = data_frames["predictors_test"].to_numpy()
     data_arrays["predictors_train"] = data_frames["predictors_train"].to_numpy()
 
+    data_arrays["predictors"] = eo_ds
+
     return {"data_frames": data_frames, "data_arrays": data_arrays}
 
 

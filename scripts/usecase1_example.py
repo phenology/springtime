@@ -4,7 +4,7 @@ weather data as predictors. The observations are available for a few locations,
 whereas the weather data is available on a full raster. So, we want to apply the
 model for the full raster.
 
-output: 69.767
+output: 69.136
 """
 
 from springtime import build_workflow, run_workflow

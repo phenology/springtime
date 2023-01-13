@@ -25,7 +25,7 @@ daymet_options = {
     "latitudes": [35, 35.1],
     "var_names": ['tmax', 'tmin', 'prcp'], # features
     "years": [2019, 2020],
-    "statistics": "annual monlthly average", # convert daily to monthly
+    "statistics": "annual seasonal average", # convert daily to seasonal
 }
 
 # create options for workflow

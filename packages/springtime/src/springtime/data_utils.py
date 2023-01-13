@@ -64,7 +64,7 @@ def _mask_obs(dataset, x_coord, y_coord):
 
 
 def season_mean(ds):
-    """Calculate annual monlthly average"""
+    """Calculate annual seasonal average"""
     # Make a DataArray with the number of days in each month
     month_length = ds.time.dt.days_in_month
 
@@ -111,7 +111,7 @@ def _prepare_daymet(options):
 
     # calculate statistics
     print("Calculating statistics (loading data into memory) ...")
-    if options["statistics"] == "annual monlthly average":
+    if options["statistics"] == "annual seasonal average":
         daymet_stat_arrays = [season_mean(data_array) for data_array in daymet_arrays]
     else:
         raise NotImplementedError

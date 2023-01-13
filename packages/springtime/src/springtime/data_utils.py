@@ -57,10 +57,20 @@ def _prepare_ppo(options):
     return df
 
 
-def _mask_obs(dataset, x_coord, y_coord):
-    x_obs_array = xr.DataArray(x_coord, dims=['samples'])
-    y_obs_array = xr.DataArray(y_coord, dims=['samples'])
-    return dataset.sel(x=x_obs_array, y=y_obs_array, method='nearest')
+def _mask_obs(eo_dataset, obs_dataframe):
+
+    dataset_name = eo_dataset.attrs["dataset"]
+    if dataset_name == "Daymet":
+        x_obs, y_obs = _daymet_project(
+            obs_dataframe.longitude,
+            obs_dataframe.latitude,
+            )
+    else:
+        raise NotImplementedError
+
+    x_obs_array = xr.DataArray(x_obs, dims=['samples'])
+    y_obs_array = xr.DataArray(y_obs, dims=['samples'])
+    return eo_dataset.sel(x=x_obs_array, y=y_obs_array, method='nearest')
 
 
 def season_mean(ds):
@@ -126,17 +136,8 @@ def _prepare_daymet(options):
 
 def merge_eo_obs(eo_dataset, obs_dataframe):
     """"""
-    dataset_name = eo_dataset.attrs["dataset"]
-    if dataset_name == "Daymet":
-        x_obs, y_obs = _daymet_project(
-            obs_dataframe.longitude,
-            obs_dataframe.latitude,
-            )
-    else:
-        raise NotImplementedError
-
     # obs coords don't match exactly ratser coords
-    data_subset = _mask_obs(eo_dataset, x_obs, y_obs)
+    data_subset = _mask_obs(eo_dataset, obs_dataframe)
 
     # to a dataframe
     eo_dataframe = data_subset.to_dataframe().reset_index()

@@ -49,7 +49,7 @@ def _prepare_ppo(options):
 
     # clean the dataframe
     df.drop(
-        ["specificEpithet","eventRemarks","termID","source","eventId"],
+        ["specificEpithet", "eventRemarks", "termID", "source", "eventId"],
         axis=1,
         inplace=True,
     )
@@ -77,14 +77,16 @@ def season_mean(ds):
     weighted_average = (ds * weights).groupby("time.season").sum(dim="time")
 
     # Add year and return
-    return weighted_average.expand_dims("year").assign_coords(year=np.unique(ds.time.dt.year.values))
+    return weighted_average.expand_dims("year").assign_coords(
+        year=np.unique(ds.time.dt.year.values)
+        )
 
 
 def _daymet_project(lon, lat):
     """Convert lon/lat (in degrees) to x/y native Daymet projection coordinates
         (in meters).
     """
-    daymet_proj =(
+    daymet_proj = (
         "+proj=lcc +lat_1=25 +lat_2=60 +lat_0=42.5 +lon_0=-100 "
         "+x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs"
         )
@@ -100,7 +102,7 @@ def prepare_eo(dataset, options):
 
 def _prepare_daymet(options):
     """"""
-    ## one array per year per var
+    # one array per year per var
     daymet_arrays = get_dataset(
         options["longitudes"],
         options["latitudes"],
@@ -133,14 +135,14 @@ def merge_eo_obs(eo_dataset, obs_dataframe):
     else:
         raise NotImplementedError
 
-    ### obs coords don't match exactly ratser coords
+    # obs coords don't match exactly ratser coords
     data_subset = _mask_obs(eo_dataset, x_obs, y_obs)
 
     # to a dataframe
     eo_dataframe = data_subset.to_dataframe().reset_index()
 
     # merge into obs
-    eo_obs_dataframe = obs_dataframe.merge(eo_dataframe, on=["location", "year"], how="right")
+    eo_obs_dataframe = eo_dataframe.merge(obs_dataframe, on=["location", "year"], how="left")
     return eo_obs_dataframe.dropna()
 
 
@@ -159,7 +161,7 @@ def split_data(data, method_name):
         test, train : tuple
             arrays for testing and training.
     """
-    if method_name=="ShuffleSplit":
+    if method_name == "ShuffleSplit":
         # TODO pass arguments to function
         rs = ShuffleSplit(n_splits=2, test_size=.25, random_state=2)
         for train_index, test_index in rs.split(data):
@@ -170,42 +172,50 @@ def split_data(data, method_name):
 
 def prepare_daymet_ppo_data(options):
     """"""
+    obs_varname = "dayOfYear"
     obs_options = options["obs_options"]
     obs_df = prepare_observations("ppo", obs_options)
 
     eo_options = options["eo_options"]
     eo_ds = prepare_eo("Daymet", eo_options)
 
-    # TODO check if merging data in this way makes sense!
+    # mask obs from eo data and merg einto one
     eo_obs_df = merge_eo_obs(eo_ds, obs_df)
 
-    # organize data in dataframes
-    # TODO check if organizng data in this way makes sense!
-    data_frames = {}
-    data_frames["targets"] = obs_df
-    data_frames["predictors"] = eo_ds.to_dataframe().reset_index()
+    # reshape data frame
+    if eo_options["statistics"] == "annual seasonal average":
+        features = "season"
+    else:
+        raise NotImplementedError
+    eo_obs_df = eo_obs_df.pivot(
+        index=["location", "year", obs_varname],
+        columns=[features],
+        values=eo_options["var_names"]
+        )
+    eo_obs_df = eo_obs_df.reset_index(level=obs_varname)
+
+    # organize data in dict
+    train_test = {}
+    train_test["targets"] = obs_df
+
+    eo_df = eo_ds.to_dataframe().reset_index()
+    train_test["predictors"] = eo_df.pivot(
+        index=["x", "y", "year"],
+        columns=[features],
+        values=eo_options["var_names"]
+        )
 
     test_df, train_df = split_data(eo_obs_df, options["train_test_strategy"])
-    data_frames["targets_test"] = test_df[["dayOfYear"]]
-    data_frames["targets_train"] = train_df[["dayOfYear"]]
+    train_test["targets_test"] = test_df[[obs_varname]]
+    train_test["targets_train"] = train_df[[obs_varname]]
 
-    data_frames["predictors_test"] = test_df[eo_options["var_names"]]
-    data_frames["predictors_train"] = train_df[eo_options["var_names"]]
+    train_test["predictors_test"] = test_df[eo_options["var_names"]]
+    train_test["predictors_train"] = train_df[eo_options["var_names"]]
 
-    # organize data for fitting and prediction in sklearn models in data arrays
-    data_arrays = {}
-    data_arrays["targets_test"] = data_frames["targets_test"].dayOfYear.values
-    data_arrays["targets_train"] = data_frames["targets_train"].dayOfYear.values
-
-    data_arrays["predictors_test"] = data_frames["predictors_test"].to_numpy()
-    data_arrays["predictors_train"] = data_frames["predictors_train"].to_numpy()
-
-    data_arrays["predictors"] = eo_ds
-
-    return {"data_frames": data_frames, "data_arrays": data_arrays}
+    return {"train_test": train_test, "eo_data": eo_ds, "obs_data": obs_df}
 
 
-def prepare_pyPhenology_data(options):
+def prepare_pyphenology_data(options):
     """Load and prepare data from pyPhenology package.
 
     Datasets are available with pyPhenology package.
@@ -213,39 +223,43 @@ def prepare_pyPhenology_data(options):
 
     Returns:
     """
+    obs_varname = "doy"
 
-    # dataframes
-    data_frames = {}
-    data_frames["targets"], data_frames["predictors"] = pyPhenology.utils.load_test_data(
-        name=options["dataset"],phenophase=options["phenophase"]
+    # dataframes for pyPhenology
+    pyphenology_data = {}
+    pyphenology_data["targets"], pyphenology_data["predictors"] = pyPhenology.utils.load_test_data(
+        name=options["dataset"], phenophase=options["phenophase"]
+        )
+    pyphenology_data["targets_test"], pyphenology_data["targets_train"] = split_data(
+        pyphenology_data["targets"], options["train_test_strategy"]
         )
 
-    data_frames["targets_test"], data_frames["targets_train"] = split_data(
-        data_frames["targets"], options["train_test_strategy"]
-        )
+    # dataframes for sklearn
+    train_test = {}
+    _, predictors_train, _ = models_utils.misc.temperature_only_data_prep(
+       pyphenology_data["targets_train"],
+       pyphenology_data["predictors"],
+       for_prediction=False,
+       )
+    train_test["predictors_train"] = predictors_train.T
 
-    # organize data for fitting in sklearn models in data arrays
-    data_arrays = {}
-    data_arrays["targets_train"], data_arrays["predictors_train"], _ = models_utils.misc.temperature_only_data_prep(
-        data_frames["targets_train"], data_frames["predictors"], for_prediction=False
+    predictors_test, _ = models_utils.misc.temperature_only_data_prep(
+        pyphenology_data["targets_test"],
+        pyphenology_data["predictors"],
+        for_prediction=True,
         )
-    data_arrays["predictors_train"] = data_arrays["predictors_train"].T
+    train_test["predictors_test"] = predictors_test.T
 
-    # organize data for prediction in sklearn models
-    data_arrays["predictors_test"], _ = models_utils.misc.temperature_only_data_prep(
-        data_frames["targets_test"], data_frames["predictors"], for_prediction=True
-        )
-    data_arrays["predictors_test"] = data_arrays["predictors_test"].T
-
-    data_arrays["targets_test"] = data_frames["targets_test"].doy.values
-    return {"data_frames": data_frames, "data_arrays": data_arrays}
+    train_test["targets_train"] = pyphenology_data["targets_train"][[obs_varname]]
+    train_test["targets_test"] = pyphenology_data["targets_test"][[obs_varname]]
+    return {"train_test": train_test, "pyPhenology": pyphenology_data}
 
 
 def load_data(options):
     usecase_id = options["usecase_id"]
     dataset_name = USECASE[usecase_id]["data_name"]
     if dataset_name == "pyPhenology":
-        return prepare_pyPhenology_data(options)
+        return prepare_pyphenology_data(options)
     if dataset_name == "daymet_ppo":
         return prepare_daymet_ppo_data(options)
     raise NotImplementedError

@@ -45,7 +45,7 @@ def _prepare_ppo(options):
         timeout=10)
 
     # this is needed for merging later
-    df.index.name = "location"
+    df.index.name = "samples"
 
     # clean the dataframe
     df.drop(
@@ -58,8 +58,8 @@ def _prepare_ppo(options):
 
 
 def _mask_obs(dataset, x_coord, y_coord):
-    x_obs_array = xr.DataArray(x_coord, dims=['location'])
-    y_obs_array = xr.DataArray(y_coord, dims=['location'])
+    x_obs_array = xr.DataArray(x_coord, dims=['samples'])
+    y_obs_array = xr.DataArray(y_coord, dims=['samples'])
     return dataset.sel(x=x_obs_array, y=y_obs_array, method='nearest')
 
 
@@ -142,7 +142,7 @@ def merge_eo_obs(eo_dataset, obs_dataframe):
     eo_dataframe = data_subset.to_dataframe().reset_index()
 
     # merge into obs
-    eo_obs_dataframe = eo_dataframe.merge(obs_dataframe, on=["location", "year"], how="left")
+    eo_obs_dataframe = eo_dataframe.merge(obs_dataframe, on=["samples", "year"], how="left")
     return eo_obs_dataframe.dropna()
 
 
@@ -188,7 +188,7 @@ def prepare_daymet_ppo_data(options):
     else:
         raise NotImplementedError
     eo_obs_df = eo_obs_df.pivot(
-        index=["location", "year", obs_varname],
+        index=["samples", "year", obs_varname],
         columns=[features],
         values=eo_options["var_names"]
         )

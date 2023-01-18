@@ -180,7 +180,7 @@ def prepare_daymet_ppo_data(options):
     eo_options = options["eo_options"]
     eo_ds = prepare_eo("Daymet", eo_options)
 
-    # mask obs from eo data and merg einto one
+    # mask obs from eo data and merge into one
     eo_obs_df = merge_eo_obs(eo_ds, obs_df)
 
     # reshape data frame

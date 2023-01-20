@@ -1,4 +1,4 @@
-"""Run a basic workflow. 
+"""Run a basic workflow.
 
 This script contains function to run a basic workflow with steps below:
 - load (preprocessed) data
@@ -15,61 +15,15 @@ TODO:
 - write tests
 - save/load workflow
 - plot results
-- see other todo below 
+- see other todo below
 - add documentations
 """
-import pyPhenology
 import numpy as np
-from pyPhenology.models import utils as models_utils
+import pyPhenology
 from sklearn import linear_model
-from sklearn.model_selection import ShuffleSplit
 
+from . import data_utils
 
-# data utilities
-def load_data(dataset, phenophase):
-    """Load test data from pyPhenology package.
-
-    Datasets are available with pyPhenology package.
-    Args:
-        dataset : str
-            Name of the test dataset
-
-        phenophase : str
-            Name of the phenophase. Either 'budburst','flowers', 'colored_leaves',
-            or 'all'.
-
-    Returns:
-        obs, predictors : tuple
-            Pandas dataframes of phenology observations
-            and associated temperatures.
-    """
-    return pyPhenology.utils.load_test_data(name=dataset, phenophase=phenophase)
-
-
-def split_data(data, method_name):
-    """Split arrays into random train and test subsets.
-
-    Methods are available with sklearn package.
-    Args:
-        dataset : array
-            data to be splitted.
-
-        method_name : str
-            one of the sklearn train test split functions.
-
-    Returns:
-        test, train : tuple
-            arrays for testing and training.
-    """
-    if method_name=="ShuffleSplit":
-        # TODO pass arguments to function
-        rs = ShuffleSplit(n_splits=2, test_size=.25, random_state=2)
-        for train_index, test_index in rs.split(data):
-            return data.iloc[test_index], data.iloc[train_index]
-
-    print(f"Unsupported train_test strategy {method_name}")
-    return None
-            
 
 # metric utilities
 def rmse(obs, pred):
@@ -99,18 +53,18 @@ def get_full_model_name(model_name):
         return models_source.get(model_name)
     raise ValueError(f"Unsupported model {model_name}.")
 
-    
+
 def select_model(model_name):
     if get_full_model_name(model_name) == "pyPhenology.primary_model":
-        Model = pyPhenology.utils.load_model(model_name)
+        model = pyPhenology.utils.load_model(model_name)
     elif get_full_model_name(model_name) == "sklearn.linear_model":
-        Model = getattr(linear_model, model_name)
-    return Model()
-    
+        model = getattr(linear_model, model_name)
+    return model()
+
 
 # workflow utilities
 def define_metrics(metric_name):
-    if metric_name=="RMSE":
+    if metric_name == "RMSE":
         return rmse
     print(f"Unsupported metric method {metric_name}")
     return None
@@ -118,15 +72,8 @@ def define_metrics(metric_name):
 
 def build_workflow(options, name):
     # TODO validate_options(options)
-    workflow = {}
-    workflow["observations"], workflow["predictors"] = load_data(
-        options["dataset"], options["phenophase"]
-        )
+    workflow = {"data": data_utils.load_data(options)}
 
-    workflow["observations_test"], workflow["observations_train"] = split_data(
-        workflow["observations"], options["train_test_strategy"]
-        )
-    
     workflow["metric_func"] = define_metrics(options["metric_name"])
     workflow["model"] = select_model(options["model_name"])
 
@@ -136,43 +83,39 @@ def build_workflow(options, name):
     return workflow
 
 
-def run_pyPhenology_workflow(workflow):
+def run_pyphenology_workflow(workflow):
     model = workflow["model"]
-    Y = workflow["observations_train"]
-    X = workflow["predictors"]
+    y = workflow["data"]["pyPhenology"]["targets_train"]
+    x = workflow["data"]["pyPhenology"]["predictors"]
 
     # TODO pass extra arguments to fit()
-    model.fit(Y, X, optimizer_params='practical')
+    model.fit(y, x, optimizer_params='practical')
 
-    Y = workflow["observations_test"]
-    Y_predict = model.predict(Y, X)
+    y = workflow["data"]["pyPhenology"]["targets_test"]
+    y_predict = model.predict(y, x)
 
-    Y = workflow["observations_test"].doy.values
+    y = workflow["data"]["train_test"]["targets_test"].to_numpy()
     if metric_func:= workflow["metric_func"]:
-        metric_val = metric_func(Y, Y_predict)
-    return model, Y_predict, metric_val
+        metric_val = metric_func(y, y_predict)
+    return model, y_predict, metric_val
 
 
 def run_sklearn_workflow(workflow):
     model = workflow["model"]
-    
-    # organize data for fitting
-    Y, X, _ = models_utils.misc.temperature_only_data_prep(
-        workflow["observations_train"], workflow["predictors"], for_prediction=False
-        )
 
+    y = workflow["data"]["train_test"]["targets_train"]
+    x = workflow["data"]["train_test"]["predictors_train"]
     # TODO pass extra arguments to fit()
-    model.fit(X.T, Y)
+    model.fit(x, y)
 
     # organize data for prediction
-    X, _ = models_utils.misc.temperature_only_data_prep(
-        workflow["observations_test"], workflow["predictors"], for_prediction=True)
-    Y_predict = model.predict(X.T)
+    x = workflow["data"]["train_test"]["predictors_test"]
+    y_predict = model.predict(x)  # this is a numpy array
 
-    Y = workflow["observations_test"].doy.values
+    y = workflow["data"]["train_test"]["targets_test"].to_numpy()
     if metric_func:= workflow["metric_func"]:
-        metric_val = metric_func(Y, Y_predict)
-    return model, Y_predict, metric_val
+        metric_val = metric_func(y, y_predict)
+    return model, y_predict, metric_val
 
 
 def run_workflow(workflow):
@@ -181,11 +124,11 @@ def run_workflow(workflow):
     model_name = workflow["options"]["model_name"]
 
     if get_full_model_name(model_name) == "pyPhenology.primary_model":
-        fitted_model, predictions, metric_value = run_pyPhenology_workflow(workflow)
-       
+        fitted_model, predictions, metric_value = run_pyphenology_workflow(workflow)
+
     elif get_full_model_name(model_name) == "sklearn.linear_model":
-        fitted_model, predictions, metric_value= run_sklearn_workflow(workflow)
-    
+        fitted_model, predictions, metric_value = run_sklearn_workflow(workflow)
+
     workflow.update({
         "fitted_model": fitted_model,
         "predictions": predictions,
@@ -193,4 +136,3 @@ def run_workflow(workflow):
     })
 
     return workflow
-    

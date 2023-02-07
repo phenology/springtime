@@ -1,0 +1,13 @@
+datasets:
+  pyphenology_aspen_budburst:
+    dataset: pyphenology
+    name: aspen
+    phenophase: budburst
+  pyphenology_vaccinium_budburst:
+    dataset: pyphenology
+    name: vaccinium
+    phenophase: budburst
+  dataset3:
+    dataset: pyphenology
+    name: vaccinium
+    phenophase: flowers

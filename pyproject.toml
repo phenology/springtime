@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "springtime"
+description = "Spatiotemporal phenology research with interpretable models"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "Apache 2.0" }
+keywords = [
+  "phenology",
+]
+authors = [
+  { name = "Peter Kalverla", email = "peter.kalverla@gmx.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Intended Audience :: Science/Research",
+]
+dependencies = [
+  "jupyterlab",
+  "matplotlib",
+  "pip",
+  "seaborn",
+  "Sphinx",
+  "xarray",
+  "pydap",  # for pydaymet see issue 26
+  "sphinxawesome-theme",
+  "pyproj",
+  "requests",
+  "pyphenology",
+  "scipy",  # unspecified dependency of pyphenology
+  "joblib",  # unspecified dependency of pyphenology
+  "shapely",
+  "pyyaml",
+  "pandas",
+  "pydantic",
+  "click",
+  "black",
+  "isort",
+]
+dynamic = ["version"]
+
+[project.scripts]
+springtime = "springtime.main:main"
+
+[project.urls]
+Documentation = "https://github.com/phenology/springtime#readme"
+Issues = "https://github.com/phenology/springtime/issues"
+Source = "https://github.com/phenology/springtime"
+
+[tool.hatch.version]
+path = "src/springtime/__init__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/springtime --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

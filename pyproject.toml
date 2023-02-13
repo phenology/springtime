@@ -49,6 +49,8 @@ dependencies = [
   "click",
   "black",
   "isort",
+  "rpy2",
+  "geopandas",
 ]
 dynamic = ["version"]
 

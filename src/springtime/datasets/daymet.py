@@ -84,28 +84,20 @@ class DaymetThredds(BaseModel):
         return f"{base_url}/daymet_v4_daily_{region}_{variable}_{year}.nc"
 
     def _local_file(self, variable, year):
-        base_url = CONFIG.datadir / f"daymet_v4_daily_{self.area.name}_{variable}_{year}.nc"
-
-    # TODO: perhaps a single location property doesn't make sense after all
-    @property
-    def location(self) -> Path:
-        """Show filename(s) that this dataset would have on disk."""
-        # TODO one variable per file, or only allow all?
-        return [_local_file(variable, year)
-            for variable in self.variables
-            for year in range(self.years[0], self.years[1])]
+        return CONFIG.datadir / f"daymet_v4_daily_{self.area.name}_{variable}_{year}.nc"
 
     def download(self):
         for variable in self.variables:
             for year in range(self.years[0], self.years[1]):
-                if not self.local_file(variable, year).exists() or CONFIG.force_override:
+                localfile = self._local_file(variable, year)
+                if not localfile.exists() or CONFIG.force_override:
                     remote_url = self._remote_url(self.region, variable, year)
                     remote_data = xr.open_dataset(
                         xr.backends.PydapDataStore.open(remote_url, timeout=500),
                         decode_coords="all"
                     )
                     data_array = _clip_dataset(self.area, remote_data)
-                    data_array.to_netcdf(file)
+                    data_array.to_netcdf(localfile)
 
     def load(self):
         # TODO: add pre-processing to convert to dataframe.

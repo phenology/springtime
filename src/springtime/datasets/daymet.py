@@ -29,7 +29,13 @@ pyproj
 """
 
 import datetime
-from typing import Iterable, Tuple, Literal
+import tempfile
+import subprocess
+from rpy2.robjects.packages import importr
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+
+from typing import Iterable, Tuple, Literal, Union
 
 import pyproj
 import xarray as xr
@@ -127,3 +133,44 @@ def _clip_dataset(
     [x1, x2], [y1, y2] = daymet_proj(lon_range, lat_range)
 
     return data.sel(x=slice(x1, x2), y=slice(y2, y1))
+
+
+class DaymetSinglePoint(BaseModel):
+    """Daymet data for (multiple) single pixel using
+    daymetr.
+    Requires daymetr. Install with
+    ```R
+    devtools::install_github("bluegreen-labs/daymetr@v1.4")
+    ```
+
+    ."""
+
+    dataset: Literal["daymet_thredds"] = "daymet_thredds"
+    area: NamedArea  # TODO also verify that region and namedArea consistent
+    coordinates: Union[tuple(float, float), Iterable[tuple(float, float)]]
+    variables: Iterable[DaymetVariables]
+    years: Iterable[int]
+
+    def _concat_args(self):
+        # TODO use self.area to create file names
+        lines = [f"Variables:{','.join(self.variables)}\n",
+        f"years:{', '.join(self.years)}\n"
+        ]
+        lines.extend(','.join(coords) for coords in self.coordinates)
+        return lines
+
+    # TODO fix it
+    def download(self):
+        subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+        def _r_download(self):
+            return f"""\
+            library(daymetr)
+            species_id <- phenor::check_pep725_species(species = "{self.species}")
+            daymetr::download_daymet(
+                site = "Oak Ridge National Laboratories",
+                lat = 36.0133,
+                lon = -84.2625,
+                start = 1980,
+                end = 2010,
+                internal = TRUE)
+            """

@@ -32,3 +32,15 @@ hatch run pytest
 hatch run isort src tests
 hatch run black src tests
 ```
+
+## R dependencies
+
+Some datasets use [R](https://www.r-project.org/) libraries.
+
+The R dependencies can be installed from R shell with
+```R
+if(!require(devtools)){install.packages(devtools)}
+devtools::install_github("bluegreen-labs/phenor@v1.3.1")
+```
+
+To complete installation you might need to install some OS dependencies.

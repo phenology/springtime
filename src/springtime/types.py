@@ -4,6 +4,7 @@ from typing import List, Literal, Protocol, Tuple, Union
 from shapely import Point, Polygon
 
 
+
 class Dataset(Protocol):
     """Interface for working with phenology datasets."""
 
@@ -16,17 +17,6 @@ class Dataset(Protocol):
     Also see: https://stackoverflow.com/q/69322097
     TODO: checkout https://github.com/pydantic/pydantic/issues/503
     """
-
-    @property
-    def location(self) -> Union[Path, List[Path]]:
-        """Show filename(s) that this dataset would have on disk.
-
-        Should use a generic data reference sytax combined with a local
-        filesystem configuration.
-        """
-
-    def exists_locally(self) -> bool:
-        """Tell if the data is already present on disk."""
 
     def download(self):
         """Download the data."""

@@ -1,0 +1,13 @@
+datasets:
+  daymet_thredds:
+    region: hi  # or pr or na
+    geometry:
+      type: point
+      coordinates: [...]
+      properties:  # TODO allow `name: newyork` and parse as property implicitly?
+        name: newyork
+      # or:
+      type: polygon
+      bbox: [..., ..., ..., ...]
+    variables: "dayl" # "prcp", "srad", "swe", "tmax", "tmin", "vp"
+    years:

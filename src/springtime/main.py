@@ -1,6 +1,7 @@
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict, List, Optional
+import logging
 
 import click
 import pandas as pd
@@ -9,6 +10,8 @@ from pydantic import BaseModel, validator
 
 from springtime import CONFIG
 from springtime.datasets import Datasets
+
+logger = logging.getLogger(__name__)
 
 
 class Session(BaseModel):
@@ -69,8 +72,9 @@ class Workflow(BaseModel):
     def load_data(self):
         """Load and merge input datasets."""
         data = []
-        for dataset in self.datasets.values():
+        for dataset_name, dataset in self.datasets.items():
             df = dataset.load()
+            logger.warn(f'Dataset {dataset_name} loaded with {len(df)} rows')
             data.append(df)
 
         df = pd.concat(data)

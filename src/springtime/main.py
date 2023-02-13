@@ -70,9 +70,10 @@ class Workflow(BaseModel):
         """Load and merge input datasets."""
         data = []
         for dataset in self.datasets.values():
-            data.append(dataset.load())
+            df = dataset.load()
+            data.append(df)
 
-        df = pd.concat(data, axis=1)
+        df = pd.concat(data)
         df.to_csv(self.session.output_dir / "data.csv")
 
         return df

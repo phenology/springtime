@@ -30,16 +30,13 @@ pyproj
 
 import datetime
 import subprocess
-import tempfile
+import pandas as pd
 from pathlib import Path
-from typing import Iterable, Literal, Sequence, Tuple, Union
+from typing import Iterable, Literal, Sequence, Tuple
 
 import pyproj
-import rpy2.robjects as ro
 import xarray as xr
 from pydantic import BaseModel, validator
-from rpy2.robjects import pandas2ri
-from rpy2.robjects.packages import importr
 
 from springtime import CONFIG
 
@@ -154,8 +151,9 @@ class DaymetSinglePoint(BaseModel):
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
     point: tuple[float, float]
     variables: Iterable[DaymetVariables] = tuple()
-    years: Sequence[int]
-# daymet_single_point_-84.2625_36.0133_1980_2010.csv
+    years: tuple[int, int]
+    """ years is passed as range for example years=[2000, 2002] downloads data
+    for three years."""
 
     @property
     def _path(self):
@@ -166,6 +164,16 @@ class DaymetSinglePoint(BaseModel):
     def download(self):
         if not self._path.exists() or CONFIG.force_override:
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+
+    def load(self):
+        with open(self._path) as file:
+            headers = [file.readline() for _ in range(7)]
+            df = pd.read_csv(file)
+            df.attrs["headers"] = "\n".join(headers)
+        # TODO df cols contain units that should be moved somewhere else
+        # TODO filter columns on self.variables
+
+        return df
 
     def _r_download(self):
         return f"""\

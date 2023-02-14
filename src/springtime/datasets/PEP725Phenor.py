@@ -59,8 +59,12 @@ class PEP725Phenor(BaseModel):
 
     def download(self):
         """Download the data."""
-        self.location.mkdir(parents=True)
-        subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+        if self.location.exists():
+            print("File already exists:", self.location)
+        else:
+            self.location.mkdir(parents=True)
+            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+
 
     def load(self):
         """Load the dataset from disk into memory."""

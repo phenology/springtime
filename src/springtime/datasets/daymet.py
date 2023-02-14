@@ -138,8 +138,10 @@ def _clip_dataset(area: NamedArea, data: xr.DataArray) -> xr.DataArray:
 
 
 class DaymetSinglePoint(BaseModel):
-    """Daymet data for (multiple) single pixel using
-    daymetr.
+    """Daymet data for single pixel using daymetr.
+
+    Fetches data from https://daymet.ornl.gov/.
+
     Requires daymetr. Install with
     ```R
     devtools::install_github("bluegreen-labs/daymetr@v1.4")
@@ -161,10 +163,20 @@ class DaymetSinglePoint(BaseModel):
         return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
 
     def download(self):
+        """Download the data.
+
+        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        is TRUE.
+        """
         if not self._path.exists() or CONFIG.force_override:
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         with open(self._path) as file:
             nr_of_metadata_lines = 7
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]

@@ -68,6 +68,8 @@ class PEP725Phenor(BaseModel):
 
     def load(self):
         """Load the dataset from disk into memory."""
+        from rpy2.robjects import r
+        r[".libPaths"]("/data/private/MyRlibs")
         phenor = importr("phenor")
         r_df = phenor.pr_merge_pep725(str(self.location))
         with ro.default_converter + pandas2ri.converter:

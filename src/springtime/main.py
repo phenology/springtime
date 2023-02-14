@@ -65,9 +65,8 @@ class Workflow(BaseModel):
     def download_data(self):
         """Download the data."""
         for name, dataset in self.datasets.items():
-            if not dataset.exists_locally() or CONFIG.force_override:
-                print("Downloading dataset: ", name)
-                dataset.download()
+            print("Downloading dataset: ", name)
+            dataset.download()
 
     def load_data(self):
         """Load and merge input datasets."""

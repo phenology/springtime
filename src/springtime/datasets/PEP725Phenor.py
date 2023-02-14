@@ -19,7 +19,7 @@ class PEP725Phenor(BaseModel):
     Example:
 
         ```python
-        from springtime.datasets.PEP725 import PhenorPEP725
+        from springtime.datasets.PEP725Phenor import PEP725Phenor
         dataset = PEP725Phenor(species='Syringa vulgaris')
         dataset.download()
         df = dataset.load()

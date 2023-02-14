@@ -65,9 +65,12 @@ class PEP725Phenor(BaseModel):
             self.location.mkdir(parents=True)
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
-
     def load(self):
         """Load the dataset from disk into memory."""
+        # Try: Add Mahdi's library path
+        base = importr('base')
+        base.setLibPaths("/data/private/MyRlibs")
+
         phenor = importr("phenor")
         r_df = phenor.pr_merge_pep725(str(self.location))
         with ro.default_converter + pandas2ri.converter:

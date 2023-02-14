@@ -28,10 +28,10 @@ xarray + pydap
 pyproj
 """
 
-import datetime
+from datetime import datetime
 import subprocess
 from pathlib import Path
-from typing import Iterable, Literal, Tuple
+from typing import Iterable, Literal, Sequence, Tuple, Union
 
 import pandas as pd
 import pyproj
@@ -77,7 +77,7 @@ class DaymetThredds(BaseModel):
     def _valid_years(cls, years):
         assert years[0] > 1980, "No data before 1980"
         assert years[1] > years[0], "Start year must be smaller than end year"
-        assert years[1] < datetime.now.year - 1, "Recent data not available"
+        assert years[1] < datetime.now().year - 1, "Recent data not available"
         return years
 
     def _remote_url(self, region, variable, year):
@@ -196,3 +196,82 @@ class DaymetSinglePoint(BaseModel):
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """
+
+
+class DaymetBoundingBox(BaseModel):
+    """Daymet data for a bounding box using daymetr.
+
+    Fetches data from https://daymet.ornl.gov/.
+
+    Requires daymetr. Install with
+    ```R
+    install.packages("daymetr")
+    ```
+
+    Do not make bounding box too large as there is a 6Gb maximum download size.
+    """
+
+    dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
+    box: Tuple[float, float, float, float]
+    """Bounding box as top left / bottom right pair (lat,lon,lat,lon) aka north,west,south,east in WGS84 projection."""
+    years: Tuple[int, int]
+    """ years is passed as range for example years=[2000, 2002] downloads data
+    for three years."""
+    mosaic: Literal["na", "hi", "pr"] = "na"
+    """tile mosaic to use, defaults to “na” for North America (use “pr” for Puerto Rico and “hi” for Hawaii)."""
+    variables: Sequence[DaymetVariables] = tuple()
+    """climate variable you want to download vapour pressure (vp), 
+    minimum and maximum temperature (tmin,tmax), snow water equivalent (swe), 
+    solar radiation (srad), precipitation (prcp) , day length (dayl). 
+    When empty will download all the previously mentioned climate variables.
+    """
+    frequency: Literal["daily", "monthly", "annual"] = "daily"
+
+    def download(self):
+        """Download the data.
+
+        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        is TRUE.
+        """
+        box_dir_exists = self._box_dir.exists()
+        # TODO check that all variable/year nc files exist.
+        # var_year_files = [f for f in self._box_dir.glob('*.nc')]
+        files_downloaded = box_dir_exists
+        if not files_downloaded or CONFIG.force_override:
+            self._box_dir.mkdir()
+            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+
+    def load(self):
+        return xr.open_mfdataset(self._box_dir.glob('*.nc'))
+        # TODO: add pre-processing to convert to dataframe.
+
+    def _r_download(self):
+        if len(self.variables) == 0:
+            params = '"ALL"'
+        else:
+            param_list = ",".join([f"'{p}'" for p in self.variables])
+            params = f"c({param_list})"
+        box = self.box
+        print(box)
+        return f"""\
+        library(daymetr)
+        daymetr::download_daymet_ncss(
+            location = c({box[0]},{box[1]},{box[2]},{box[3]}),
+            start = {self.years[0]},
+            end =  {self.years[1]},
+            param = {params},
+            path = "{self._box_dir}")
+        """
+
+    @property
+    def _box_dir(self):
+        """Directory in which download_daymet_ncss writes nc file for each variable/year combination."""
+        box = f"{self.box[0]}_{self.box[1]}_{self.box[2]}_{self.box[3]}"
+        return CONFIG.data_dir / f"daymet_bounding_box_{box}"
+
+    @validator("years")
+    def _valid_years(cls, years):
+        assert years[0] >= 1980, "No data before 1980"
+        assert years[1] > years[0], "Start year must be smaller than end year"
+        assert years[1] < datetime.now().year - 1, "Recent data not available"
+        return years

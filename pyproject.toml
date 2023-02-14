@@ -51,6 +51,7 @@ dependencies = [
   "isort",
   "rpy2",
   "geopandas",
+  "dask",  # needed for xarray.open_mfdataset()
 ]
 dynamic = ["version"]
 

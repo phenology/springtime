@@ -50,7 +50,8 @@ class Workflow(BaseModel):
         self.create_session()
         # self.autocomplete()
         self.download_data()
-        df = self.load_data()
+        df, datacubes = self.load_data()
+        # TODO do something with datacubes
         self.run_experiments(df)
 
     def create_session(self):
@@ -70,16 +71,20 @@ class Workflow(BaseModel):
 
     def load_data(self):
         """Load and merge input datasets."""
-        data = []
+        dataframes = []
+        datacubes = []
         for dataset_name, dataset in self.datasets.items():
-            df = dataset.load()
-            logger.warn(f'Dataset {dataset_name} loaded with {len(df)} rows')
-            data.append(df)
-
-        df = pd.concat(data)
+            ds = dataset.load()
+            logger.warn(f'Dataset {dataset_name} loaded with {len(ds)} rows')
+            if issubclass(pd.DataFrame, ds):
+                dataframes.append(ds)
+            else:
+                datacubes.append(ds)
+       
+        df = pd.concat(dataframes)
         df.to_csv(self.session.output_dir / "data.csv")
 
-        return df
+        return df, datacubes
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""

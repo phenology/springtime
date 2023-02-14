@@ -32,7 +32,7 @@ import datetime
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Iterable, Literal, Tuple, Union
+from typing import Iterable, Literal, Sequence, Tuple, Union
 
 import pyproj
 import rpy2.robjects as ro
@@ -154,21 +154,28 @@ class DaymetSinglePoint(BaseModel):
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
     point: tuple[float, float]
     variables: Iterable[DaymetVariables] = tuple()
-    years: Iterable[int]
+    years: Sequence[int]
+# daymet_single_point_-84.2625_36.0133_1980_2010.csv
+
+    @property
+    def _path(self):
+        location_name = f"{self.point[0]}_{self.point[1]}"
+        time_stamp = f"{min(self.years)}_{max(self.years)}"
+        return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
 
     def download(self):
-        subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+        if not self._path.exists() or CONFIG.force_override:
+            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
     def _r_download(self):
-        years = list(self.years)
         return f"""\
         library(daymetr)
         daymetr::download_daymet(
             site = "daymet_single_point_{self.point[0]}_{self.point[1]}",
             lat = {self.point[1]},
             lon = {self.point[0]},
-            start = {min(years)},
-            end =  {max(years)},
+            start = {min(self.years)},
+            end =  {max(self.years)},
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """

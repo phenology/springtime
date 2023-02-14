@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 from springtime.datasets.PEP725Phenor import PEP725Phenor
 
 from springtime.datasets.pyphenology import PyPhenologyDataset
+from springtime.datasets.daymet import DaymetSinglePoint
 
 
 class Dummy(PyPhenologyDataset):
@@ -13,4 +14,4 @@ class Dummy(PyPhenologyDataset):
     dataset: Literal["dummy"] = "dummy"
 
 
-Datasets = Annotated[Union[PyPhenologyDataset, PEP725Phenor, Dummy], Field(discriminator="dataset")]
+Datasets = Annotated[Union[PyPhenologyDataset, PEP725Phenor, Dummy, DaymetSinglePoint], Field(discriminator="dataset")]

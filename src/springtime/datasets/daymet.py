@@ -29,22 +29,19 @@ pyproj
 """
 
 import datetime
-import tempfile
 import subprocess
-from rpy2.robjects.packages import importr
-import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri
-
-from typing import Iterable, Tuple, Literal, Union
+import tempfile
 from pathlib import Path
-from typing import Iterable, Tuple, Literal
+from typing import Iterable, Literal, Tuple, Union
 
 import pyproj
+import rpy2.robjects as ro
 import xarray as xr
+from pydantic import BaseModel, validator
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.packages import importr
 
 from springtime import CONFIG
-from pydantic import validator, BaseModel
-
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
@@ -57,7 +54,7 @@ class NamedArea(BaseModel):
     name: str
     bbox: Tuple[float, float, float, float]
 
-    @validator('bbox')
+    @validator("bbox")
     def _parse_bbox(cls, values):
         xmin, ymin, xmax, ymax = values
         assert xmax > xmin, "xmax should be larger than xmin"
@@ -92,39 +89,46 @@ class DaymetThredds(BaseModel):
         return f"{base_url}/daymet_v4_daily_{region}_{variable}_{year}.nc"
 
     def _local_file(self, variable, year):
-        base_url = CONFIG.datadir / f"daymet_v4_daily_{self.area.name}_{variable}_{year}.nc"
+        base_url = (
+            CONFIG.datadir / f"daymet_v4_daily_{self.area.name}_{variable}_{year}.nc"
+        )
 
     # TODO: perhaps a single location property doesn't make sense after all
     @property
     def location(self) -> Path:
         """Show filename(s) that this dataset would have on disk."""
         # TODO one variable per file, or only allow all?
-        return [_local_file(variable, year)
+        return [
+            _local_file(variable, year)
             for variable in self.variables
-            for year in range(self.years[0], self.years[1])]
+            for year in range(self.years[0], self.years[1])
+        ]
 
     def download(self):
         for variable in self.variables:
             for year in range(self.years[0], self.years[1]):
-                if not self.local_file(variable, year).exists() or CONFIG.force_override:
+                if (
+                    not self.local_file(variable, year).exists()
+                    or CONFIG.force_override
+                ):
                     remote_url = self._remote_url(self.region, variable, year)
                     remote_data = xr.open_dataset(
                         xr.backends.PydapDataStore.open(remote_url, timeout=500),
-                        decode_coords="all"
+                        decode_coords="all",
                     )
                     data_array = _clip_dataset(self.area, remote_data)
                     data_array.to_netcdf(file)
 
     def load(self):
         # TODO: add pre-processing to convert to dataframe.
-        return xr.merge([xr.open_dataset(file) for file in self.location], compat='override')
+        return xr.merge(
+            [xr.open_dataset(file) for file in self.location], compat="override"
+        )
 
 
-def _clip_dataset(
-        area: NamedArea, data:xr.DataArray
-        ) -> xr.DataArray:
+def _clip_dataset(area: NamedArea, data: xr.DataArray) -> xr.DataArray:
     """Clip a data array using coordinates."""
-    lon_range = [area.bbox[0], area.bbox[2]],
+    lon_range = ([area.bbox[0], area.bbox[2]],)
     lat_range = [area.bbox[1], area.bbox[3]]
 
     daymet_proj = pyproj.Proj(
@@ -145,34 +149,26 @@ class DaymetSinglePoint(BaseModel):
     devtools::install_github("bluegreen-labs/daymetr@v1.4")
     ```
 
-    ."""
+    """
 
-    dataset: Literal["daymet_thredds"] = "daymet_thredds"
-    area: NamedArea  # TODO also verify that region and namedArea consistent
-    coordinates: Union[tuple(float, float), Iterable[tuple(float, float)]]
-    variables: Iterable[DaymetVariables]
+    dataset: Literal["daymet_single_point"] = "daymet_single_point"
+    point: tuple[float, float]
+    variables: Iterable[DaymetVariables] = tuple()
     years: Iterable[int]
 
-    def _concat_args(self):
-        # TODO use self.area to create file names
-        lines = [f"Variables:{','.join(self.variables)}\n",
-        f"years:{', '.join(self.years)}\n"
-        ]
-        lines.extend(','.join(coords) for coords in self.coordinates)
-        return lines
-
-    # TODO fix it
     def download(self):
         subprocess.run(["R", "--no-save"], input=self._r_download().encode())
-        def _r_download(self):
-            return f"""\
-            library(daymetr)
-            species_id <- phenor::check_pep725_species(species = "{self.species}")
-            daymetr::download_daymet(
-                site = "Oak Ridge National Laboratories",
-                lat = 36.0133,
-                lon = -84.2625,
-                start = 1980,
-                end = 2010,
-                internal = TRUE)
-            """
+
+    def _r_download(self):
+        years = list(self.years)
+        return f"""\
+        library(daymetr)
+        daymetr::download_daymet(
+            site = "daymet_single_point_{self.point[0]}_{self.point[1]}",
+            lat = {self.point[1]},
+            lon = {self.point[0]},
+            start = {min(years)},
+            end =  {max(years)},
+            path="{CONFIG.data_dir}",
+            internal = FALSE)
+        """

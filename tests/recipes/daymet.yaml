@@ -1,0 +1,5 @@
+datasets:
+  daymet_single_point:
+    dataset: daymet_single_point
+    point: [-84.2625, 36.0133]
+    years: [1980, 2010]

@@ -29,7 +29,6 @@ pyproj
 """
 
 import datetime
-<<<<<<< HEAD
 import tempfile
 import subprocess
 from rpy2.robjects.packages import importr
@@ -37,10 +36,8 @@ import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 
 from typing import Iterable, Tuple, Literal, Union
-=======
 from pathlib import Path
 from typing import Iterable, Tuple, Literal
->>>>>>> origin/main
 
 import pyproj
 import xarray as xr

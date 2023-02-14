@@ -30,19 +30,18 @@ pyproj
 
 import datetime
 import subprocess
-import pandas as pd
 from pathlib import Path
-from typing import Iterable, Literal, Sequence, Tuple
+from typing import Iterable, Literal, Tuple
 
+import pandas as pd
 import pyproj
 import xarray as xr
 from pydantic import BaseModel, validator
+from shapely.geometry import Polygon
 
 from springtime import CONFIG
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
-
-from shapely.geometry import Polygon
 
 
 class NamedArea(BaseModel):
@@ -149,16 +148,16 @@ class DaymetSinglePoint(BaseModel):
     """
 
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
-    point: tuple[float, float]
-    variables: Iterable[DaymetVariables] = tuple()
-    years: tuple[int, int]
+    point: Tuple[float, float]
+    """Point as longitude, latitude in WGS84 projection."""
+    years: Tuple[int, int]
     """ years is passed as range for example years=[2000, 2002] downloads data
     for three years."""
 
     @property
     def _path(self):
         location_name = f"{self.point[0]}_{self.point[1]}"
-        time_stamp = f"{min(self.years)}_{max(self.years)}"
+        time_stamp = f"{self.years[0]}_{self.years[0]}"
         return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
 
     def download(self):
@@ -167,12 +166,10 @@ class DaymetSinglePoint(BaseModel):
 
     def load(self):
         with open(self._path) as file:
-            headers = [file.readline() for _ in range(7)]
+            nr_of_metadata_lines = 7
+            headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
             df.attrs["headers"] = "\n".join(headers)
-        # TODO df cols contain units that should be moved somewhere else
-        # TODO filter columns on self.variables
-
         return df
 
     def _r_download(self):
@@ -182,8 +179,8 @@ class DaymetSinglePoint(BaseModel):
             site = "daymet_single_point_{self.point[0]}_{self.point[1]}",
             lat = {self.point[1]},
             lon = {self.point[0]},
-            start = {min(self.years)},
-            end =  {max(self.years)},
+            start = {self.years[0]},
+            end =  {self.years[1]},
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """

@@ -1,0 +1,11 @@
+Package: springtime
+Title: Dependencies for the springtime Python package
+Description: See title.
+Version: 0.0.1
+License: Apache-2.0
+Depends:
+    R (>= 4.2)
+Imports:
+    daymetr (>= 1.7)
+Remotes:
+    github::bluegreen-labs/phenor@v1.3.1

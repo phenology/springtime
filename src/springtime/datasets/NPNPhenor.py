@@ -43,6 +43,9 @@ class NPNPhenor(BaseModel):
     pr_dl_npn(species=36, phenophase=483, start="2010-01-01", end="2011-01-01", extent=NULL)  # common lilac: leaves
     ```
 
+    Could use https://data.usanpn.org/observations/get-started to figure out
+    which species/phenophases combis are available.
+
     """
     dataset: Literal["NPNPhenor"] = "NPNPhenor"
 
@@ -53,18 +56,35 @@ class NPNPhenor(BaseModel):
 
     @property
     def directory(self):
-        return CONFIG.data_dir / "PEP725"
+        return CONFIG.data_dir / "NPN"
 
     def _filename(self, year):
-        """Path where files will be downloaded to and loaded from."""
-        return self.directory / f"{self.species}_{self.phenophase}_{year}.csv"
+        """Path where files will be downloaded to and loaded from.
+
+        In phenor you can only specify dir, filename is chosen for you.
+
+        Otherwise, this would suffice:
+        # self.directory / f"{self.species}_{self.phenophase}_{year}.csv"
+        """
+        phenor_filename = (
+            f"phenor_npn_data_{self.species}_{self.phenophase}"
+            f"_{year}-01-01_{year}-12-31.rds"
+        )
+        return self.directory / phenor_filename
 
     def download(self):
         """Download the data."""
         self.directory.mkdir(parents=True, exist_ok=True)
+
         for year in range(*self.years):
-            if not self._filename(year).exists():
+            filename = self._filename(year)
+
+            if filename.exists():
+                print(f"{filename} already exists, skipping")
+            else:
+                print(f"downloading {filename}")
                 self._r_download(year)
+
 
     def load(self):
         """Load the dataset from disk into memory."""
@@ -83,13 +103,13 @@ class NPNPhenor(BaseModel):
         phenor.pr_dl_npn(
             species=self.species,
             phenophase=self.phenophase,
-            start=f"{self.years[0]}-01-01",
-            end=f"{self.years[1]}-12-31",
+            start=f"{year}-01-01",
+            end=f"{year}-12-31",
             extent=extent,
             internal=False,
-            path=self._filename(year),
+            path=str(self.directory),
         )
 
 
-# dataset = NPNPhenor(species=36, phenophase=371, years=[2010, 2011])
-# dataset.download()
+dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
+dataset.download()

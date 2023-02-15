@@ -102,4 +102,5 @@ exclude_lines = [
 features = ["docs"]
 
 [tool.hatch.envs.docs.scripts]
+build = "mkdocs build --clean --strict"
 serve = "mkdocs serve --dev-addr localhost:8000"

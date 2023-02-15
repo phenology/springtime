@@ -45,3 +45,11 @@ install.packages("daymetr")
 ```
 
 To complete installation you might need to install some OS dependencies.
+
+The installation of the dependences of the R dependencies can be annoying. To simplify installation of the dependencies of the R depencencies you can create a Anaconda environment using
+ [Mamba forge](https://github.com/conda-forge/miniforge#mambaforge) with:
+
+```shell
+mamba env create --file environment.yml
+conda activate springtime
+```

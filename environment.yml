@@ -1,0 +1,53 @@
+name: springtime
+dependencies:
+  - pip!=21.3
+  - python==3.10
+  - hatch
+  # R dependencies
+  - r-base >=4.2
+  # - r-BayesianTools   # not in any anconda channel
+  - r-ape
+  - r-changepoint
+  - r-class
+  - r-devtools
+  - r-doparallel
+  - r-expm
+  - r-filelock
+  - r-foreach
+  - r-gap
+  - r-GenSA
+  - r-getpass 
+  - r-ggplot2
+  - r-gmm
+  - r-httr
+  - r-idpmisc
+  - r-jsonlite
+  - r-keyring
+  - r-kernsmooth 
+  - r-lme4
+  - r-lmtest
+  - r-magrittr
+  - r-minqa
+  - r-msm
+  - r-ncdf4
+  - r-nloptr
+  - r-proxy
+  - r-qgam
+  - r-raster
+  - r-rcppeigen
+  # - r-rgenoud # is in r channel
+  - r-rvest
+  - r-sf
+  - r-snow
+  - r-sp
+  - r-sodium
+  - r-survival
+  - r-terra
+  - r-tibble
+  - r-tidyr
+  - r-tmvtnorm
+  - r-units
+  - r-wk
+  - r-xml2
+  - r-uuid
+  - r-zoo

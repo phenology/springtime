@@ -39,6 +39,7 @@ theme:
 plugins:
 - mkdocs-jupyter:
       include_source: True
+- include-markdown
 - search
 - mkdocstrings:
     handlers:

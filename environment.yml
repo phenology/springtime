@@ -1,4 +1,6 @@
 name: springtime
+channels:
+  - conda-forge
 dependencies:
   - pip!=21.3
   - python==3.10

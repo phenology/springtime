@@ -51,3 +51,5 @@ dependencies:
   - r-xml2
   - r-uuid
   - r-zoo
+# TODO make list smaller by only listing most direct dependencies
+# this will make it easier to maintain the list

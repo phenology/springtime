@@ -55,6 +55,15 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+docs = [
+  "mkdocs",
+  "mkdocs-material",
+  "mkdocs-jupyter",
+  "mkdocstrings[python]",
+  "mkdocs-gen-files",
+]
+
 [project.scripts]
 springtime = "springtime.main:cli"
 
@@ -88,3 +97,9 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+serve = "mkdocs serve --dev-addr localhost:8000"

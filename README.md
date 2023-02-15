@@ -41,6 +41,7 @@ The R dependencies can be installed from R shell with
 ```R
 if(!require(devtools)){install.packages(devtools)}
 devtools::install_github("bluegreen-labs/phenor@v1.3.1")
+install.packages("daymetr")
 ```
 
 To complete installation you might need to install some OS dependencies.

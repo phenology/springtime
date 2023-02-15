@@ -1,0 +1,22 @@
+# genus = c("Quercus", "Pinus"), termID='obo:PPO_0002313',
+# limit=10
+datasets:
+  ppo_pinus:
+    dataset: rppo
+    genus: Quercus Pinus
+    termID: obo:PPO_0002313
+    limit: 10
+  ppo_pinus_years:
+    dataset: rppo
+    genus: Quercus Pinus
+    termID: obo:PPO_0002313
+    limit: 10
+    years: [2019, 2020]
+  ppo_pinus_area:
+    dataset: rppo
+    genus: Quercus virginiana
+    termID: obo:PPO_0002014
+    limit: 10
+    area:
+      name: somewhere
+      bbox: [-83, 27,-82, 28]

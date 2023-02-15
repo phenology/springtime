@@ -1,80 +1,81 @@
-from ast import Tuple
-from typing import Literal, Optional
+import subprocess
+from typing import Literal, Optional, Tuple
 from pydantic import BaseModel
 from pydantic.types import PositiveInt
-import requests
+import pandas as pd
+from springtime.config import CONFIG
 from springtime.datasets.daymet import NamedArea
 
-class PyPPO(BaseModel):
-    dataset: Literal["pyppo"] = "pyppo"
+
+class RPPO(BaseModel):
+    dataset: Literal["rppo"] = "rppo"
     genus: str
-    termID: str ="obo:PPO_0002313",
+    termID: str = "obo:PPO_0002313"
     """true leaves present == obo:PPO_0002313"""
     source: Optional[str]
     """For example: PEP725"""
-    year: Optional[Tuple[int, int]]
+    years: Optional[Tuple[int, int]]
     """For example (2000,2021)
 
     First tuple entry is the start year.
     Second tuple entry is the end year.
     """
     area: Optional[NamedArea]
-    limit: PositiveInt = 1000,
+    limit: PositiveInt = (100000,)
     """Maximum number of records to retreive"""
-    timeout: float = 3.05
+    timeLimit: PositiveInt = 60
     """Number of seconds to wait for the server to respond"""
-    # load options
-    explode=False,
-    """If True, each termID will get its own row."""
+
+    @property
+    def path(self):
+        fn = self._build_filename()
+        return CONFIG.data_dir / fn
 
     def download(self):
-        url = self._build_url()
+        if self.path.exists():
+            print("File already exists:", self.path)
+        else:
+            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
-        response = requests.get(url, timeout=self.timeout)
-        response.raise_for_status()
-        filename = self._build_filename()
-        with open(filename, 'wb') as fd:
-            for chunk in response.iter_content(chunk_size=4096):
-                fd.write(chunk)
+    def _r_download(self):
+        genus = ", ".join([f'"{p}"' for p in self.genus.split(" ")])
+        if self.area is None:
+            box = ""
+        else:
+            abox = self.area.bbox
+            box = f"bbox='{abox[1]},{abox[0]},{abox[3]},{abox[2]}',"
+        if self.years is None:
+            years = ""
+        else:
+            years = f"fromYear={self.years[0]}, toYear={self.years[1]},"
+        return f"""\
+        library(rppo)
+        library(readr)
+        response <- ppo_data(genus = c({genus}), termID='{self.termID}',
+            {box}
+            {years}
+            limit={self.limit}, timeLimit = {self.timeLimit})
+        write.csv(response$data, "{self.path}")
+        write_file(response$readme, "{self.path.with_suffix('.readme')}")
+        write_file(response$citation, "{self.path.with_suffix('.citation')}")
+        """
 
     def load(self):
-        ...
-
-    def _build_url(self):
-        """Parse options to build query string."""
-        base_url = f"https://biscicol.org/api/v3/download/_search?limit={self.limit}"
-
-        options = {
-            'genus': self.genus,
-            'termID': self.termID
-        }
-        if self.source is not None:
-            options['source'] = self.source
-        if self.year is not None:
-            options['year'] = f'[{self.year[0]} TO {self.year[1]}]'
-        if self.area is not None:
-            options['latitude'] = f'[{self.area.bbox[1]} TO {self.area.bbox[3]}]'
-            options['longitude'] = f'[{self.area.bbox[0]} TO {self.area.bbox[2]}]'
-
-        query = "&q=" + "+AND+".join([f"{k}:{v}" for k, v in options.items()])
-
-        return base_url + query
+        
 
     def _build_filename(self):
-        parts = [
-            self.genus,
-            self.termID
-        ]
+        parts = ['ppo', self.genus.replace(' ', '_'), self.termID]
         if self.source is not None:
             parts.append(self.source)
         else:
-            parts.append('na')
-        if self.year is not None:
-            parts.append(f'{self.year[0]}-{self.year[1]}')
+            parts.append("na")
+        if self.years is not None:
+            parts.append(f"{self.years[0]}-{self.years[1]}")
         else:
-            parts.append('na')
+            parts.append("na")
         if self.area is not None:
             parts.append(self.area.name)
         else:
-            parts.append('na')
-        return '.'.join(parts)
+            parts.append("na")
+        parts.append('csv')
+        return ".".join(parts)

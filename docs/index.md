@@ -1,4 +1,4 @@
-# Springtime
+#
 
 Spatiotemporal phenology research with interpretable models.
 

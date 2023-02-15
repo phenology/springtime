@@ -49,11 +49,14 @@ dependencies = [
   "click",
   "black",
   "isort",
+  "rpy2",
+  "geopandas",
+  "dask",  # needed for xarray.open_mfdataset()
 ]
 dynamic = ["version"]
 
 [project.scripts]
-springtime = "springtime.main:main"
+springtime = "springtime.main:cli"
 
 [project.urls]
 Documentation = "https://github.com/phenology/springtime#readme"

@@ -1,6 +1,7 @@
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict, List, Optional
+import logging
 
 import click
 import pandas as pd
@@ -9,6 +10,8 @@ from pydantic import BaseModel, validator
 
 from springtime import CONFIG
 from springtime.datasets import Datasets
+
+logger = logging.getLogger(__name__)
 
 
 class Session(BaseModel):
@@ -47,7 +50,8 @@ class Workflow(BaseModel):
         self.create_session()
         # self.autocomplete()
         self.download_data()
-        df = self.load_data()
+        df, datacubes = self.load_data()
+        # TODO do something with datacubes
         self.run_experiments(df)
 
     def create_session(self):
@@ -62,20 +66,25 @@ class Workflow(BaseModel):
     def download_data(self):
         """Download the data."""
         for name, dataset in self.datasets.items():
-            if not dataset.exists_locally() or CONFIG.force_override:
-                print("Downloading dataset: ", name)
-                dataset.download()
+            print("Downloading dataset: ", name)
+            dataset.download()
 
     def load_data(self):
         """Load and merge input datasets."""
-        data = []
-        for dataset in self.datasets.values():
-            data.append(dataset.load())
+        dataframes = []
+        datacubes = []
+        for dataset_name, dataset in self.datasets.items():
+            ds = dataset.load()
+            logger.warn(f'Dataset {dataset_name} loaded with {len(ds)} rows')
+            if issubclass(ds.__class__, pd.DataFrame):
+                dataframes.append(ds)
+            else:
+                datacubes.append(ds)
 
-        df = pd.concat(data, axis=1)
+        df = pd.concat(dataframes)
         df.to_csv(self.session.output_dir / "data.csv")
 
-        return df
+        return df, datacubes
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""

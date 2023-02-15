@@ -53,7 +53,7 @@ The installation of the dependencies of the R dependencies can be cumbersome (ta
 mamba env create --file environment.yml
 conda activate springtime
 
-# Install 
+# Install R dependencies as list above
 
 # Install Python code with
 hatch env create

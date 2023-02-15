@@ -17,19 +17,12 @@ class Dataset(Protocol):
     TODO: checkout https://github.com/pydantic/pydantic/issues/503
     """
 
-    @property
-    def location(self) -> Union[Path, List[Path]]:
-        """Show filename(s) that this dataset would have on disk.
-
-        Should use a generic data reference sytax combined with a local
-        filesystem configuration.
-        """
-
-    def exists_locally(self) -> bool:
-        """Tell if the data is already present on disk."""
-
     def download(self):
-        """Download the data."""
+        """Download the data.
+
+        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        is TRUE.
+        """
 
     def load(self):
         """Load the dataset from disk into memory.

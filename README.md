@@ -145,6 +145,7 @@ R
 # Install springtime dependencies inside the R shell
 if(!require(devtools)){install.packages(devtools)}
 devtools::install_github("bluegreen-labs/phenor@v1.3.1")
+install.packages("daymetr")
 ```
 
 

@@ -19,7 +19,7 @@ class PEP725Phenor(BaseModel):
     Example:
 
         ```python
-        from springtime.datasets.PEP725 import PhenorPEP725
+        from springtime.datasets.PEP725Phenor import PEP725Phenor
         dataset = PEP725Phenor(species='Syringa vulgaris')
         dataset.download()
         df = dataset.load()
@@ -59,8 +59,12 @@ class PEP725Phenor(BaseModel):
 
     def download(self):
         """Download the data."""
-        self.location.mkdir(parents=True)
-        subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+        if self.location.exists():
+            print("File already exists:", self.location)
+        else:
+            self.location.mkdir(parents=True)
+            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+
 
     def load(self):
         """Load the dataset from disk into memory."""

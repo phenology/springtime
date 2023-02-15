@@ -271,7 +271,8 @@ class DaymetBoundingBox(BaseModel):
 
     def _missing_files(self):
         n_years = self.years[1] - self.years[0] + 1
-        return len(self._box_dir.glob('*.nc')) != n_years * len(self.variables)
+        n_files = len(list(self._box_dir.glob('*.nc')))
+        return n_files != n_years * len(self.variables)
 
     @property
     def _box_dir(self):

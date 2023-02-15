@@ -34,3 +34,24 @@ datasets:
       - [-86, 39.6]
       - [-85, 40]
     years: [1980, 2010]
+
+  daymet_single_point_in_hawaii:
+    dataset: daymet_single_point
+    point: [-155.243537, 19.354621]
+    years: [1980, 2010]
+
+  daymet_multi_point_in_hawaii_and_na:
+    dataset: daymet_multiple_points
+    points: 
+      - [-86, 39.6]
+      - [-155.243537, 19.354621]
+    years: [1980, 2010]
+
+  daymet_bounding_box_tmin_in_hawaii:
+    dataset: daymet_bounding_box
+    box: [19.3, -156.2, 19.2, -155.1]
+    years: [2019, 2020]
+    variables:
+      - tmin
+    mosaic: hi
+  

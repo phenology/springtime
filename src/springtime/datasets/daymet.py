@@ -29,13 +29,10 @@ pyproj
 """
 
 from datetime import datetime
-import itertools
 import subprocess
-from pathlib import Path
-from typing import Iterable, Literal, Sequence, Tuple, Union
+from typing import Literal, Sequence, Tuple
 
 import pandas as pd
-import pyproj
 import geopandas
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
@@ -249,6 +246,7 @@ class DaymetBoundingBox(BaseModel):
             start = {self.years[0]},
             end =  {self.years[1]},
             param = {params},
+            mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
 

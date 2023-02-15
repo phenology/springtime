@@ -90,7 +90,7 @@ class NPNPhenor(BaseModel):
 
         extent = ro.NULL
         if self.area is not None:
-            extent = self.area.bbox
+            extent = list(self.area.bbox)
 
         phenor.pr_dl_npn(
             species=self.species,
@@ -111,4 +111,18 @@ class NPNPhenor(BaseModel):
         return df
 
 
-# TODO: add methods to list species and phenophases
+def list_species():
+    return _r_list_species()
+
+def list_phenophases():
+    return _r_list_phenophases()
+
+def _r_list_species():
+    phenor = importr("phenor")
+    phenor.check_npn_species(list=True)
+    # TODO: forward log messages
+
+def _r_list_phenophases():
+    phenor = importr("phenor")
+    phenor.check_npn_phenophases()
+    # TODO: forward log messages

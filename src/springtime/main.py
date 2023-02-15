@@ -76,11 +76,11 @@ class Workflow(BaseModel):
         for dataset_name, dataset in self.datasets.items():
             ds = dataset.load()
             logger.warn(f'Dataset {dataset_name} loaded with {len(ds)} rows')
-            if issubclass(pd.DataFrame, ds):
+            if issubclass(ds.__class__, pd.DataFrame):
                 dataframes.append(ds)
             else:
                 datacubes.append(ds)
-       
+
         df = pd.concat(dataframes)
         df.to_csv(self.session.output_dir / "data.csv")
 

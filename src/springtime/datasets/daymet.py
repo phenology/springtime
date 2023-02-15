@@ -29,6 +29,7 @@ pyproj
 """
 
 from datetime import datetime
+import itertools
 import subprocess
 from pathlib import Path
 from typing import Iterable, Literal, Sequence, Tuple, Union
@@ -36,7 +37,7 @@ from typing import Iterable, Literal, Sequence, Tuple, Union
 import pandas as pd
 import pyproj
 import xarray as xr
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, root_validator, validator
 from shapely.geometry import Polygon
 
 from springtime import CONFIG
@@ -144,7 +145,7 @@ class DaymetSinglePoint(BaseModel):
 
     Requires daymetr. Install with
     ```R
-    devtools::install_github("bluegreen-labs/daymetr@v1.4")
+    install.packages("daymetr")
     ```
 
     """
@@ -220,9 +221,9 @@ class DaymetBoundingBox(BaseModel):
     mosaic: Literal["na", "hi", "pr"] = "na"
     """tile mosaic to use, defaults to “na” for North America (use “pr” for Puerto Rico and “hi” for Hawaii)."""
     variables: Sequence[DaymetVariables] = tuple()
-    """climate variable you want to download vapour pressure (vp), 
-    minimum and maximum temperature (tmin,tmax), snow water equivalent (swe), 
-    solar radiation (srad), precipitation (prcp) , day length (dayl). 
+    """climate variable you want to download vapour pressure (vp),
+    minimum and maximum temperature (tmin,tmax), snow water equivalent (swe),
+    solar radiation (srad), precipitation (prcp) , day length (dayl).
     When empty will download all the previously mentioned climate variables.
     """
     frequency: Literal["daily", "monthly", "annual"] = "daily"
@@ -234,10 +235,7 @@ class DaymetBoundingBox(BaseModel):
         is TRUE.
         """
         box_dir_exists = self._box_dir.exists()
-        # TODO check that all variable/year nc files exist.
-        # var_year_files = [f for f in self._box_dir.glob('*.nc')]
-        files_downloaded = box_dir_exists
-        if not files_downloaded or CONFIG.force_override:
+        if not box_dir_exists or CONFIG.force_override or self._missing_files():
             self._box_dir.mkdir()
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
@@ -245,12 +243,20 @@ class DaymetBoundingBox(BaseModel):
         return xr.open_mfdataset(self._box_dir.glob('*.nc'))
         # TODO: add pre-processing to convert to dataframe.
 
+    @root_validator()
+    def _expand_variables(cls, values):
+        v = values["variables"]
+        if len(v) == 0:
+            if values.get("frequency", "daily") == "daily":
+                v = ("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp")
+            else:
+                v = ("prcp", "tmax", "tmin", "vp")
+        values["variables"] = v
+        return values
+
     def _r_download(self):
-        if len(self.variables) == 0:
-            params = '"ALL"'
-        else:
-            param_list = ",".join([f"'{p}'" for p in self.variables])
-            params = f"c({param_list})"
+        param_list = ",".join([f"'{p}'" for p in self.variables])
+        params = f"c({param_list})"
         box = self.box
         print(box)
         return f"""\
@@ -262,6 +268,10 @@ class DaymetBoundingBox(BaseModel):
             param = {params},
             path = "{self._box_dir}")
         """
+
+    def _missing_files(self):
+        n_years = self.years[1] - self.years[0] + 1
+        return len(self._box_dir.glob('*.nc')) != n_years * len(self.variables)
 
     @property
     def _box_dir(self):

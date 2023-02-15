@@ -36,6 +36,7 @@ from typing import Iterable, Literal, Sequence, Tuple, Union
 
 import pandas as pd
 import pyproj
+import geopandas
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
 from shapely.geometry import Polygon
@@ -64,8 +65,9 @@ class NamedArea(BaseModel):
     def polygon(self):
         return Polygon.from_bounds(*self.bbox)
 
+
 class DaymetSinglePoint(BaseModel):
-    """Daymet data for single pixel using daymetr.
+    """Daymet data for single point using daymetr.
 
     Fetches data from https://daymet.ornl.gov/.
 
@@ -85,8 +87,9 @@ class DaymetSinglePoint(BaseModel):
 
     @property
     def _path(self):
+        """Path to downloaded file."""
         location_name = f"{self.point[0]}_{self.point[1]}"
-        time_stamp = f"{self.years[0]}_{self.years[0]}"
+        time_stamp = f"{self.years[0]}_{self.years[1]}"
         return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
 
     def download(self):
@@ -123,6 +126,60 @@ class DaymetSinglePoint(BaseModel):
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """
+
+
+class DaymetMultiplePoints(BaseModel):
+    """Daymet data for multiple points using daymetr.
+
+    Fetches data from https://daymet.ornl.gov/.
+
+    Requires daymetr. Install with
+    ```R
+    install.packages("daymetr")
+    ```
+
+    """
+
+    dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
+    points: Sequence[Tuple[float, float]]
+    """Points as longitude, latitude in WGS84 projection."""
+    years: Tuple[int, int]
+    """ years is passed as range for example years=[2000, 2002] downloads data
+    for three years."""
+
+    @property
+    def _handlers(self):
+        return [DaymetSinglePoint(years=self.years, point=point) for point in self.points]
+
+    def download(self):
+        """Download the data.
+
+        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        is TRUE.
+        """
+        for handler in self._handlers:
+            handler.download()
+
+    def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
+        dataframes = []
+        headers = {}
+        for point, handler in zip(self.points, self._handlers):
+            df = handler.load()
+            df["x"] = point[0]
+            df["y"] = point[1]
+            geo_df = geopandas.GeoDataFrame(
+                df, geometry=geopandas.points_from_xy(df.x, df.y)
+            )
+            dataframes.append(geo_df)
+            headers[f'headers_{point[0]}_{point[1]}'] = df.attrs["headers"]
+        all = pd.concat(dataframes)
+        all.attrs = headers
+        return all
 
 
 class DaymetBoundingBox(BaseModel):
@@ -166,7 +223,7 @@ class DaymetBoundingBox(BaseModel):
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
     def load(self):
-        return xr.open_mfdataset(self._box_dir.glob('*.nc'))
+        return xr.open_mfdataset(self._box_dir.glob("*.nc"))
         # TODO: add pre-processing to convert to dataframe.
 
     @root_validator()
@@ -197,7 +254,7 @@ class DaymetBoundingBox(BaseModel):
 
     def _missing_files(self):
         n_years = self.years[1] - self.years[0] + 1
-        n_files = len(list(self._box_dir.glob('*.nc')))
+        n_files = len(list(self._box_dir.glob("*.nc")))
         return n_files != n_years * len(self.variables)
 
     @property

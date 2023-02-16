@@ -3,7 +3,7 @@ repo_url: https://github.com/phenology/springtime
 repo_name: Springtime
 
 nav:
-  - Springtime: index.md
+  - Home: index.md
   - Getting started: setup.md
   - Contributing guide: contributing.md
 

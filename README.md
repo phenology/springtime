@@ -1,5 +1,6 @@
 [![Documentation Status](https://readthedocs.org/projects/springtime/badge/?version=latest)](https://springtime.readthedocs.io/en/latest/?badge=latest)
 
+<!--intro-start-->
 # Springtime
 
 Spatiotemporal phenology research with interpretable models.
@@ -16,7 +17,9 @@ and code organization can quickly get messy. That's why we focus heavily on
 streamlining our workflows, such that you can always execute them with a single
 command. We use standardized locations for storing raw and intermediate data,
 and a standardized "recipe" format to define the steps in our workflows.
+<!--intro-end-->
 
+<!--installation-start-->
 ## Installation
 
 To install springtime in your current environment, type
@@ -36,14 +39,18 @@ devtools::install_github("bluegreen-labs/phenor@v1.3.1")
 ```
 
 To complete installation you might need to install some OS dependencies.
+<!--installation-end-->
 
-## Example task:
+<!--illustration-start-->
+## Example task
 
 Predict the day of first bloom of the common lilac given indirect observations
 (e.g. satellite data) and/or other indicators (e.g. sunshine and temperature).
 
-![illustration_example_use_case](illustration.png)
+![illustration_example_use_case](docs/illustration.png)
+<!--illustration-end-->
 
+<!--recipe-start-->
 ## Scientific recipes (workflows)
 
 Workflows can be written in a nice and readable format, e.g.
@@ -69,7 +76,9 @@ Such a recipe can then be executed with a single command line call:
 ```bash
 springtime run recipe_syringa.yaml
 ```
+<!--recipe-end-->
 
+<!--api-start-->
 ## Python API
 
 Springtime is written in Python (with parts in R) and can also be used in an
@@ -81,6 +90,7 @@ dataset = PEP725Phenor(species='Syringa vulgaris')
 dataset.download()
 df = dataset.load()
 ```
+<!--api-end-->
 
 ## Documentation
 

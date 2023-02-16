@@ -1,4 +1,4 @@
-## Developers
+#
 
 This package is built with [hatch](https://hatch.pypa.io/latest/).
 
@@ -24,6 +24,7 @@ hatch run isort src tests
 hatch run black src tests
 
 # Building docs
-# docs is serving on http://localhost:8000/
+hatch run docs:build
+# preview docs on http://localhost:8000/
 hatch run docs:serve
 ```

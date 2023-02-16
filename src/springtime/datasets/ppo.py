@@ -5,9 +5,28 @@ from pydantic.types import PositiveInt
 import pandas as pd
 from springtime.config import CONFIG
 from springtime.datasets.daymet import NamedArea
+import rpy2.robjects as ro
+import geopandas as gpd
 
 
 class RPPO(BaseModel):
+    """Data from the Plant Phenology Ontology data portal.
+
+    Uses rppo (https://docs.ropensci.org/rppo/) to get data from
+    http://plantphenology.org/
+
+
+    Example:
+
+    ```python
+    dataset = RPPO(genus="Quercus Pinus", termID="obo:PPO_0002313", limit=10, years=[2019, 2020])
+    dataset = RPPO(genus="Quercus virginiana", termID="obo:PPO_0002014", limit=10, area=dict(name="somewhere", bbox=[-83, 27,-82, 28]))
+    dataset.download()
+    gdf = dataset.load()
+    ```
+    """
+
+
     dataset: Literal["rppo"] = "rppo"
     genus: str
     termID: str = "obo:PPO_0002313"
@@ -52,21 +71,30 @@ class RPPO(BaseModel):
             years = f"fromYear={self.years[0]}, toYear={self.years[1]},"
         return f"""\
         library(rppo)
-        library(readr)
         response <- ppo_data(genus = c({genus}), termID='{self.termID}',
             {box}
             {years}
             limit={self.limit}, timeLimit = {self.timeLimit})
-        write.csv(response$data, "{self.path}")
-        write_file(response$readme, "{self.path.with_suffix('.readme')}")
-        write_file(response$citation, "{self.path.with_suffix('.citation')}")
+        saveRDS(response, file="{self.path}")
         """
 
     def load(self):
-        
+        """Load data from disk."""
+        readRDS = ro.r['readRDS']
+        rdata = readRDS(str(self.path))
+
+        data = dict(zip(rdata.names, list(rdata)))
+        df = ro.pandas2ri.rpy2py_dataframe(data['data'])
+        df.attrs['readme'] = data['readme'][0]
+        df.attrs['citation'] = data['citation'][0]
+
+        geometry = gpd.points_from_xy(df.pop('longitude'), df.pop('latitude'))
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        return gdf
+
 
     def _build_filename(self):
-        parts = ['ppo', self.genus.replace(' ', '_'), self.termID]
+        parts = [self.genus.replace(' ', '_'), self.termID]
         if self.source is not None:
             parts.append(self.source)
         else:
@@ -79,5 +107,5 @@ class RPPO(BaseModel):
             parts.append(self.area.name)
         else:
             parts.append("na")
-        parts.append('csv')
+        parts.append('rds')
         return ".".join(parts)

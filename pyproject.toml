@@ -58,14 +58,18 @@ path = "src/springtime/__init__.py"
 [tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
 docs = ["docs/requirements.txt"]
 
-[tool.hatch.envs.default]
-features = ["docs"]
+[tool.hatch.envs.dev]
+detached = true
 dependencies = [
   "black",
   "mypy",
   "pytest",
   "ruff",
 ]
+
+[tool.hatch.envs.default]
+features = ["docs"]
+template = "dev"
 
 [tool.hatch.envs.default.scripts]
 quality-checks = [

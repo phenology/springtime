@@ -44,7 +44,7 @@ hatch run mypy --ignore-missing-imports src tests
 
 ## Testing
 
-Pytest is used for running tests.
+[Pytest](https://docs.pytest.org/en/7.2.x/) is used for running tests.
 
 ```bash
 # Run all tests in tests/

@@ -11,7 +11,7 @@ nav:
       - Conda installation: conda.md
       - CRIB installation: crib.md
   - Example notebooks: notebooks/pk_wishful_workflows.ipynb
-  - Contributing guide: contributing.md
+  - Developer Guide: develop.md
 
 theme:
   name: material

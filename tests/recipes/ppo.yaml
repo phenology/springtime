@@ -1,5 +1,3 @@
-# genus = c("Quercus", "Pinus"), termID='obo:PPO_0002313',
-# limit=10
 datasets:
   ppo_pinus:
     dataset: rppo

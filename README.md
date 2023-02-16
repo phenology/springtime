@@ -19,6 +19,8 @@ command. We use standardized locations for storing raw and intermediate data,
 and a standardized "recipe" format to define the steps in our workflows.
 <!--intro-end-->
 
+[Documentation](https://springtime.readthedocs.io/)
+
 <!--installation-start-->
 ## Installation
 
@@ -33,9 +35,12 @@ pip install git+https://github.com/phenology/springtime.git
 Some datasets use [R](https://www.r-project.org/) libraries.
 
 The R dependencies can be installed from R shell with
+
 ```R
 if(!require(devtools)){install.packages(devtools)}
 devtools::install_github("bluegreen-labs/phenor@v1.3.1")
+install.packages("daymetr")
+devtools::install_github("ropensci/rppo")
 ```
 
 To complete installation you might need to install some OS dependencies.
@@ -76,6 +81,7 @@ Such a recipe can then be executed with a single command line call:
 ```bash
 springtime run recipe_syringa.yaml
 ```
+
 <!--recipe-end-->
 
 <!--api-start-->
@@ -91,7 +97,3 @@ dataset.download()
 df = dataset.load()
 ```
 <!--api-end-->
-
-## Documentation
-
-[https://springtime.readthedocs.io/](https://springtime.readthedocs.io/)

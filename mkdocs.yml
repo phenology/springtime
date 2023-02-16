@@ -3,8 +3,13 @@ repo_url: https://github.com/phenology/springtime
 repo_name: Springtime
 
 nav:
-  - Home: index.md
-  - Getting started: setup.md
+  - Home:
+      - About: index.md
+      - Getting started: setup.md
+  - User Guide:
+      - Getting started: setup.md
+      - Conda installation: conda.md
+      - CRIB installation: crib.md
   - Example notebooks: notebooks/pk_wishful_workflows.ipynb
   - Contributing guide: contributing.md
 

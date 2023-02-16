@@ -65,7 +65,6 @@ class PEP725Phenor(BaseModel):
             self.location.mkdir(parents=True)
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
-
     def load(self):
         """Load the dataset from disk into memory."""
         phenor = importr("phenor")

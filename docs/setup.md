@@ -1,4 +1,4 @@
-#
+# Getting started
 {%
    include-markdown "../README.md"
    start="<!--installation-start-->"

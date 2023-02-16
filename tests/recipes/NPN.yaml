@@ -1,0 +1,14 @@
+datasets:
+  lilac_leaves:
+    dataset: NPNPhenor
+    species: 36  # Syringa vulgaris / common lilac
+    phenophase: 483  # Leaves
+    years: [2010, 2011]
+  maple_buds:
+    dataset: NPNPhenor
+    species: 3  # Acer Rubrum / Red Maple
+    phenophase: 371  # Breaking leave buds
+    years: [2010, 2011]
+    area:
+      name: somewhere
+      bbox: [4, 45, 8, 50]

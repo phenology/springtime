@@ -146,6 +146,7 @@ R
 if(!require(devtools)){install.packages(devtools)}
 devtools::install_github("bluegreen-labs/phenor@v1.3.1")
 install.packages("daymetr")
+devtools::install_github("ropensci/rppo")
 ```
 
 
@@ -157,6 +158,7 @@ mamba create -c conda-forge -n springtime python=3.9 r-base r-devtools  # TODO: 
 
 # Install r-deps from command line (how to make this simpler?)
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
+Rscript -e 'devtools::install_github("ropensci/rppo")'
 
 # Install python package and verify installation
 pip install git+https://github.com/phenology/springtime.git

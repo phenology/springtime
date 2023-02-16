@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -47,7 +47,7 @@ class NPNPhenor(BaseModel):
 
     species: int
     phenophase: int
-    years: tuple[int, int]
+    years: Tuple[int, int]
     area: Optional[NamedArea] = None
 
     @property

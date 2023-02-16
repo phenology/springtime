@@ -29,12 +29,14 @@ class RPPO(BaseModel):
     @property
     def path(self):
         fn = self._build_filename()
-        return CONFIG.data_dir / fn
+        return CONFIG.data_dir / 'PPO' / fn
 
     def download(self):
+
         if self.path.exists():
             print("File already exists:", self.path)
         else:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
             subprocess.run(["R", "--no-save"], input=self._r_download().encode())
 
     def _r_download(self):

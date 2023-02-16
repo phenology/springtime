@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
 
 [project]
@@ -41,7 +41,10 @@ dependencies = [
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
 ]
-dynamic = ["version"]
+dynamic = ["version", "optional-dependencies"]
+
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+docs = ["docs/requirements.txt"]
 
 [project.scripts]
 springtime = "springtime.main:cli"
@@ -78,3 +81,10 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build --clean --strict"
+serve = "mkdocs serve --dev-addr localhost:8000"

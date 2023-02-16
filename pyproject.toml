@@ -29,26 +29,14 @@ classifiers = [
   "Intended Audience :: Science/Research",
 ]
 dependencies = [
-  "jupyterlab",
-  "matplotlib",
-  "pip",
-  "seaborn",
-  "Sphinx",
   "xarray",
-  "pydap",  # for pydaymet see issue 26
-  "sphinxawesome-theme",
-  "pyproj",
-  "requests",
   "pyphenology",
   "scipy",  # unspecified dependency of pyphenology
   "joblib",  # unspecified dependency of pyphenology
-  "shapely",
   "pyyaml",
   "pandas",
   "pydantic",
   "click",
-  "black",
-  "isort",
   "rpy2",
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
@@ -68,6 +56,8 @@ path = "src/springtime/__init__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
+  "black",
+  "isort",
   "pytest",
   "pytest-cov",
 ]

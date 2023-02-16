@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
 
 [project]
@@ -29,31 +29,22 @@ classifiers = [
   "Intended Audience :: Science/Research",
 ]
 dependencies = [
-  "jupyterlab",
-  "matplotlib",
-  "pip",
-  "seaborn",
-  "Sphinx",
   "xarray",
-  "pydap",  # for pydaymet see issue 26
-  "sphinxawesome-theme",
-  "pyproj",
-  "requests",
   "pyphenology",
   "scipy",  # unspecified dependency of pyphenology
   "joblib",  # unspecified dependency of pyphenology
-  "shapely",
   "pyyaml",
   "pandas",
   "pydantic",
   "click",
-  "black",
-  "isort",
   "rpy2",
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
 ]
-dynamic = ["version"]
+dynamic = ["version", "optional-dependencies"]
+
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+docs = ["docs/requirements.txt"]
 
 [project.scripts]
 springtime = "springtime.main:cli"
@@ -68,6 +59,8 @@ path = "src/springtime/__init__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
+  "black",
+  "isort",
   "pytest",
   "pytest-cov",
 ]
@@ -88,3 +81,10 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.hatch.envs.docs]
+features = ["docs"]
+
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build --clean --strict"
+serve = "mkdocs serve --dev-addr localhost:8000"

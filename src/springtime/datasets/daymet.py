@@ -28,12 +28,12 @@ xarray + pydap
 pyproj
 """
 
-from datetime import datetime
 import subprocess
+from datetime import datetime
 from typing import Literal, Sequence, Tuple
 
-import pandas as pd
 import geopandas
+import pandas as pd
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
 from shapely.geometry import Polygon
@@ -146,7 +146,9 @@ class DaymetMultiplePoints(BaseModel):
 
     @property
     def _handlers(self):
-        return [DaymetSinglePoint(years=self.years, point=point) for point in self.points]
+        return [
+            DaymetSinglePoint(years=self.years, point=point) for point in self.points
+        ]
 
     def download(self):
         """Download the data.
@@ -173,7 +175,7 @@ class DaymetMultiplePoints(BaseModel):
                 df, geometry=geopandas.points_from_xy(df.x, df.y)
             )
             dataframes.append(geo_df)
-            headers[f'headers_{point[0]}_{point[1]}'] = df.attrs["headers"]
+            headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
         all = pd.concat(dataframes)
         all.attrs = headers
         return all

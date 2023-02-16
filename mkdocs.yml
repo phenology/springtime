@@ -1,0 +1,49 @@
+site_name: Springtime documentation
+repo_url: https://github.com/phenology/springtime
+repo_name: Springtime
+
+nav:
+  - Home:
+      - About: index.md
+      - Getting started: setup.md
+  - User Guide:
+      - Getting started: setup.md
+      - CRIB installation: crib.md
+  - Example notebooks: notebooks/pk_wishful_workflows.ipynb
+  - Contributing guide: contributing.md
+
+theme:
+  name: material
+  logo: lilac_cc0.jpg
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+  icon:
+    repo: fontawesome/brands/github-alt
+
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+      primary: deep purple
+      accent: deep purple
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+      primary: deep purple
+      accent: deep purple
+
+plugins:
+- mkdocs-jupyter:
+      include_source: True
+      include: ["pk_wishful_workflows.ipynb"]
+- include-markdown
+- search
+extra:
+  generator: false

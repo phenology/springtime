@@ -1,12 +1,14 @@
 import subprocess
 from typing import Literal, Optional, Tuple
+
+import geopandas as gpd
+import pandas as pd
+import rpy2.robjects as ro
 from pydantic import BaseModel
 from pydantic.types import PositiveInt
-import pandas as pd
+
 from springtime.config import CONFIG
 from springtime.datasets.daymet import NamedArea
-import rpy2.robjects as ro
-import geopandas as gpd
 
 
 class RPPO(BaseModel):
@@ -25,7 +27,6 @@ class RPPO(BaseModel):
     gdf = dataset.load()
     ```
     """
-
 
     dataset: Literal["rppo"] = "rppo"
     genus: str
@@ -48,10 +49,9 @@ class RPPO(BaseModel):
     @property
     def path(self):
         fn = self._build_filename()
-        return CONFIG.data_dir / 'PPO' / fn
+        return CONFIG.data_dir / "PPO" / fn
 
     def download(self):
-
         if self.path.exists():
             print("File already exists:", self.path)
         else:
@@ -80,21 +80,20 @@ class RPPO(BaseModel):
 
     def load(self):
         """Load data from disk."""
-        readRDS = ro.r['readRDS']
+        readRDS = ro.r["readRDS"]
         rdata = readRDS(str(self.path))
 
         data = dict(zip(rdata.names, list(rdata)))
-        df = ro.pandas2ri.rpy2py_dataframe(data['data'])
-        df.attrs['readme'] = data['readme'][0]
-        df.attrs['citation'] = data['citation'][0]
+        df = ro.pandas2ri.rpy2py_dataframe(data["data"])
+        df.attrs["readme"] = data["readme"][0]
+        df.attrs["citation"] = data["citation"][0]
 
-        geometry = gpd.points_from_xy(df.pop('longitude'), df.pop('latitude'))
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
-
     def _build_filename(self):
-        parts = [self.genus.replace(' ', '_'), self.termID]
+        parts = [self.genus.replace(" ", "_"), self.termID]
         if self.source is not None:
             parts.append(self.source)
         else:
@@ -107,5 +106,5 @@ class RPPO(BaseModel):
             parts.append(self.area.name)
         else:
             parts.append("na")
-        parts.append('rds')
+        parts.append("rds")
         return ".".join(parts)

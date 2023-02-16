@@ -1,7 +1,7 @@
+import logging
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict, List, Optional
-import logging
 
 import click
 import pandas as pd
@@ -75,7 +75,7 @@ class Workflow(BaseModel):
         datacubes = []
         for dataset_name, dataset in self.datasets.items():
             ds = dataset.load()
-            logger.warn(f'Dataset {dataset_name} loaded with {len(ds)} rows')
+            logger.warn(f"Dataset {dataset_name} loaded with {len(ds)} rows")
             if issubclass(ds.__class__, pd.DataFrame):
                 dataframes.append(ds)
             else:

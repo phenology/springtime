@@ -1,7 +1,4 @@
-from pathlib import Path
-from typing import List, Literal, Protocol, Tuple, Union
-
-from shapely import Point, Polygon
+from typing import Literal, Protocol
 
 
 class Dataset(Protocol):

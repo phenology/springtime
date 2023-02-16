@@ -6,7 +6,6 @@ nav:
   - Springtime: index.md
   - Getting started: setup.md
   - Contributing guide: contributing.md
-  - API reference: reference.md
 
 theme:
   name: material
@@ -40,16 +39,5 @@ plugins:
       include_source: True
 - include-markdown
 - search
-- mkdocstrings:
-    handlers:
-      python:
-        options:
-          docstring_style: google
-          docstring_options:
-            ignore_init_summary: no
-          merge_init_into_class: yes
-          show_submodules: no
-          show_signature_annotations: true
-          show_root_heading: true
 extra:
   generator: false

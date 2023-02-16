@@ -10,7 +10,6 @@ nav:
 
 theme:
   name: material
-  custom_dir: docs/overrides
   logo: lilac_cc0.jpg
   features:
     - navigation.instant

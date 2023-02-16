@@ -2,7 +2,6 @@ import subprocess
 from typing import Literal, Optional, Tuple
 
 import geopandas as gpd
-import pandas as pd
 import rpy2.robjects as ro
 from pydantic import BaseModel
 from pydantic.types import PositiveInt
@@ -32,8 +31,6 @@ class RPPO(BaseModel):
     genus: str
     termID: str = "obo:PPO_0002313"
     """true leaves present == obo:PPO_0002313"""
-    source: Optional[str]
-    """For example: PEP725"""
     years: Optional[Tuple[int, int]]
     """For example (2000,2021)
 

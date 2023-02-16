@@ -5,8 +5,10 @@
 import subprocess
 from typing import Literal, Tuple
 import pandas as pd
+import rpy2.robjects as ro
 from pydantic import BaseModel, conset
 from springtime.config import CONFIG
+from rpy2.robjects.packages import importr
 
 class Extent(BaseModel):
     horizontal: float = 0.0
@@ -88,3 +90,27 @@ class ModisSinglePoint(BaseModel):
                 internal = FALSE,
                 progress = FALSE)
         """
+
+def modis_products():
+    """List all available products.
+    """
+    modistools = importr("MODISTools")
+    rdata =  modistools.mt_products()
+    return ro.pandas2ri.rpy2py_dataframe(rdata)
+
+
+def modis_bands(product: str):
+    """List all available bands for a given product.
+    """
+    modistools = importr("MODISTools")
+    rdata = modistools.mt_bands(product)
+    return ro.pandas2ri.rpy2py_dataframe(rdata)
+
+
+def modis_dates(product: str, lat: float, lon: float):
+    """List all available dates (temporal coverage) for a given product and
+    location.
+    """
+    modistools = importr("MODISTools")
+    rdata = modistools.mt_dates(product, lat, lon)
+    return ro.pandas2ri.rpy2py_dataframe(rdata)

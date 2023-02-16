@@ -5,6 +5,7 @@ repo_name: Springtime
 nav:
   - Home: index.md
   - Getting started: setup.md
+  - Example notebooks: notebooks/pk_wishful_workflows.ipynb
   - Contributing guide: contributing.md
 
 theme:
@@ -37,6 +38,7 @@ theme:
 plugins:
 - mkdocs-jupyter:
       include_source: True
+      include: ["pk_wishful_workflows.ipynb"]
 - include-markdown
 - search
 extra:

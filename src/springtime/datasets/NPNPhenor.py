@@ -21,7 +21,13 @@ class NPNPhenor(BaseModel):
     Example:
 
         ```python
-        from springtime.datasets.NPNPhenor import NPNPhenor
+        from springtime.datasets.NPNPhenor import NPNPhenor, npn_species, npn_phenophases
+
+        # List IDs and names for available species, phenophases
+        species = npn_species()
+        phenophases = npn_phenophases()
+
+        # Load dataset
         dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
         dataset.download()
         gdf = dataset.load()
@@ -111,18 +117,12 @@ class NPNPhenor(BaseModel):
         return df
 
 
-def list_species():
-    return _r_list_species()
-
-def list_phenophases():
-    return _r_list_phenophases()
-
-def _r_list_species():
+def npn_species(species=ro.NULL, list=True):
     phenor = importr("phenor")
-    phenor.check_npn_species(list=True)
-    # TODO: forward log messages
+    return phenor.check_npn_species(species=species, list=list)
 
-def _r_list_phenophases():
+
+def npn_phenophases(phenophase=ro.NULL, list=True):
     phenor = importr("phenor")
-    phenor.check_npn_phenophases()
-    # TODO: forward log messages
+    return phenor.check_npn_phenophases(phenophase=phenophase, list=list)
+

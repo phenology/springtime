@@ -19,7 +19,7 @@ jobs:
     - name: Install additional R dependencies
       run: |
         echo $HOME
-        mkdir ~/.R/R_libs
+        mkdir -p ~/.R/R_libs
         echo 'R_LIBS="~/.R/R_libs"' > .Renviron
         Rscript -e '.libPaths()'
         Rscript -e 'install.packages("devtools")'

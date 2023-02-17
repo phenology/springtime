@@ -5,17 +5,20 @@ Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
 
 import subprocess
 from typing import Literal, Sequence, Tuple
+
+import geopandas
 import pandas as pd
 import rpy2.robjects as ro
 from pydantic import BaseModel, conset
-from springtime.config import CONFIG
-from rpy2.robjects.packages import importr
-import geopandas
 from rpy2.robjects import pandas2ri
+from rpy2.robjects.packages import importr
+
+from springtime.config import CONFIG
 
 
 class Extent(BaseModel):
     """Extent to sample."""
+
     horizontal: float = 0.0
     """Left right extent to sample in kilometers."""
     vertical: float = 0.0

@@ -65,6 +65,7 @@ dependencies = [
   "mypy",
   "pytest",
   "ruff",
+  "types-pyyaml", # https://github.com/python/mypy/issues/10632
 ]
 
 [tool.hatch.envs.default]

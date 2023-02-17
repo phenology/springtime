@@ -43,7 +43,7 @@ class RPPO(BaseModel):
     Second tuple entry is the end year.
     """
     area: Optional[NamedArea]
-    limit: PositiveInt = (100000,)
+    limit: PositiveInt = 100000
     """Maximum number of records to retreive"""
     timeLimit: PositiveInt = 60
     """Number of seconds to wait for the server to respond"""

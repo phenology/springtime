@@ -44,7 +44,7 @@ class ModisSinglePoint(BaseModel):
     for three years."""
     product: str
     """a MODIS product."""
-    bands: conset(str, min_items=1)
+    bands: conset(str, min_items=1)  # type: ignore
     """MODIS product bands"""
     extent: Extent = Extent()
     """By default a single pixel returned.
@@ -132,7 +132,7 @@ class ModisMultiplePoints(BaseModel):
     """
     product: str
     """a MODIS product. Use `modis_products()` to get list of available products."""
-    bands: conset(str, min_items=1)
+    bands: conset(str, min_items=1)  # type: ignore
     """MODIS product bands.
 
     Use `modis_bands(product)` to get list of available bands for a product.

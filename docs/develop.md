@@ -56,6 +56,7 @@ hatch run ruff check src tests
 hatch run ruff check src tests --fix
 
 # Run static type checking
+hatch run mypy --install-types  # say yes
 hatch run mypy --ignore-missing-imports src tests
 ```
 

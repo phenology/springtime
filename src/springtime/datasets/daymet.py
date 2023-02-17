@@ -38,7 +38,7 @@ import xarray as xr
 from pydantic import BaseModel, root_validator, validator
 from shapely.geometry import Polygon
 
-from springtime import CONFIG
+from springtime.config import CONFIG
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 

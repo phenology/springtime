@@ -1,10 +1,10 @@
-from typing import Literal, Protocol
+from typing import Protocol
 
 
 class Dataset(Protocol):
     """Interface for working with phenology datasets."""
 
-    dataset: Literal
+    dataset: str
     """The name of the dataset.
 
     Used for type inference when using nested pydantic models:

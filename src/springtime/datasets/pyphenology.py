@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from pyPhenology.models.utils.misc import temperature_only_data_prep
 from pyPhenology.utils import load_test_data
 
-from springtime import CONFIG
+from springtime.config import CONFIG
 
 
 class PyPhenologyDataset(BaseModel):

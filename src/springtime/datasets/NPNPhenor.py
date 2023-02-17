@@ -21,7 +21,11 @@ class NPNPhenor(BaseModel):
     Example:
 
         ```python
-        from springtime.datasets.NPNPhenor import NPNPhenor, npn_species, npn_phenophases
+        from springtime.datasets.NPNPhenor import (
+            NPNPhenor,
+            npn_species,
+            npn_phenophases
+        )
 
         # List IDs and names for available species, phenophases
         species = npn_species()
@@ -33,7 +37,12 @@ class NPNPhenor(BaseModel):
         gdf = dataset.load()
 
         # or with area bounds
-        dataset = NPNPhenor(species=3, phenophase=371, years=[2010, 2011], area={'name':'some', 'bbox':(4, 45, 8, 50)})
+        dataset = NPNPhenor(
+            species = 3,
+            phenophase = 371,
+            years = [2010, 2011],
+            area = {'name':'some', 'bbox':(4, 45, 8, 50)}
+        )
         ```
 
     Requires phenor R package. Install with

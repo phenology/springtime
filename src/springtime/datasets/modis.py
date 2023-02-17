@@ -125,12 +125,18 @@ class ModisMultiplePoints(BaseModel):
     points: Sequence[Tuple[float, float]]
     """Points as longitude, latitude in WGS84 projection."""
     years: Tuple[int, int]
-    """years is passed as range for example years=[2000, 2002] downloads data
-    for three years. Use `modis_dates(product, lon, lat)` to get list of available dates."""
+    """years is passed as range.
+
+    For example years=[2000, 2002] downloads data for three years. Use
+    `modis_dates(product, lon, lat)` to get list of available dates.
+    """
     product: str
     """a MODIS product. Use `modis_products()` to get list of available products."""
     bands: conset(str, min_items=1)
-    """MODIS product bands. Use `modis_bands(product)` to get list of available bands for a product."""
+    """MODIS product bands.
+
+    Use `modis_bands(product)` to get list of available bands for a product.
+    """
     # TODO when no bands are given return all bands of product
 
     @property

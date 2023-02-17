@@ -20,8 +20,13 @@ class RPPO(BaseModel):
     Example:
 
     ```python
-    dataset = RPPO(genus="Quercus Pinus", termID="obo:PPO_0002313", limit=10, years=[2019, 2020])
-    dataset = RPPO(genus="Quercus virginiana", termID="obo:PPO_0002014", limit=10, area=dict(name="somewhere", bbox=[-83, 27,-82, 28]))
+    dataset = RPPO(
+        genus="Quercus Pinus",
+        termID="obo:PPO_0002313",
+        limit=10,
+        years=[2019, 2020]
+        # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
+    )
     dataset.download()
     gdf = dataset.load()
     ```

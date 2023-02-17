@@ -109,7 +109,6 @@ class EOBS(BaseModel):
             self._path(variable, period)
             for variable, period in product(self.variables, self._periods)
         ]
-        print(paths)
         ds = open_mfdataset(paths)
         if self.product_type == "elevation":
             return ds.to_dataframe()

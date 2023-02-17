@@ -1,5 +1,6 @@
-"""
+"""Datasets for downloading MODIS land products subsets.
 
+Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
 """
 
 import subprocess

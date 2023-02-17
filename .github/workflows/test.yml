@@ -18,7 +18,10 @@ jobs:
 
     - name: Install additional R dependencies
       run: |
-        Rscript -e 'user_lib <- Sys.getenv("R_LIBS_USER"); install.packages("devtools", lib = user_lib)'
+        echo $HOME
+        mkdir .rpackages
+        echo "R_LIBS=~/.rpackages" > .Renviron
+        Rscript -e 'install.packages("devtools")'
         Rscript -e '.libPaths()'
         Rscript -e 'install.packages("daymetr")'
         Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'

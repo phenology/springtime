@@ -75,6 +75,9 @@ template = "dev"
 quality-checks = [
   "black src tests",
   "ruff check src tests --fix",
-  "mypy --ignore-missing-imports src tests",
+  "mypy src tests",
   "pytest",
 ]
+
+[tool.mypy]
+ignore_missing_imports = true

@@ -26,10 +26,13 @@ Variable = Literal[
 class EOBS(BaseModel):
     """E-OBS dataset.
 
-    Fetches complete grid from https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+    Fetches complete grid from
+    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
     """
 
-    dataset: Literal["E-OBS"] = "E-OBS"
+    dataset: Literal[
+        "E-OBS", "EOBSSinglePoint", "EOBSMultiplePoints", "EOBSBoundingBox"
+    ] = "E-OBS"
     product_type: Literal[
         "ensemble_mean", "ensemble_spread", "elevation"
     ] = "ensemble_mean"
@@ -45,11 +48,8 @@ class EOBS(BaseModel):
     # https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe?tab=form
 
     def _url(self, variable: Variable, period: str):
-        # https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_0.1deg_reg_ensemble/elev_ens_0.1deg_reg_v26.0e.nc
-        # https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_0.1deg_reg_ensemble/tg_ens_mean_0.1deg_reg_1950-1964_v26.0e.nc
-        # https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_0.1deg_reg_ensemble/tg_ens_spread_0.1deg_reg_1950-1964_v26.0e.nc
-        # https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_0.1deg_reg_ensemble/tg_ens_mean_0.1deg_reg_v26.0e.nc
-        base = f"https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/Grid_{self.grid_resolution}_reg_ensemble/"
+        root = "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/"
+        base = f"{root}Grid_{self.grid_resolution}_reg_ensemble/"
         return base + self._filename(variable, period)
 
     @property
@@ -81,9 +81,11 @@ class EOBS(BaseModel):
         }
         short_var = short_vars[variable]
         if self.product_type == "ensemble_mean":
-            return f"{short_var}_ens_mean_{self.grid_resolution}_reg_{period}_v{self.version}.nc"
+            rpv = f"{self.grid_resolution}_reg_{period}_v{self.version}"
+            return f"{short_var}_ens_mean_{rpv}.nc"
         elif self.product_type == "ensemble_spread":
-            return f"{short_var}_ens_spread_{self.grid_resolution}_reg_{period}_v{self.version}.nc"
+            rpv = f"{self.grid_resolution}_reg_{period}_v{self.version}"
+            return f"{short_var}_ens_spread_{rpv}.nc"
         return f"elev_ens_{self.grid_resolution}_reg_v{self.version}.nc"
 
     @property
@@ -99,9 +101,9 @@ class EOBS(BaseModel):
             url = self._url(variable, period)
             path = self._path(variable, period)
             if not path.exists() or CONFIG.force_override:
-                logger.warning(
-                    f"Downloading E-OBS variable {variable} for {period} period from {url} to {path}"
-                )
+                msg = f"Downloading E-OBS variable {variable} "
+                msg = msg + f"for {period} period from {url} to {path}"
+                logger.warning(msg)
                 urlretrieve(url, path)
 
     def load(self):
@@ -118,13 +120,16 @@ class EOBS(BaseModel):
 class EOBSSinglePoint(EOBS):
     """E-OBS dataset for a single point.
 
-    Fetches complete grid from https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+    Fetches complete grid from
+    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
 
     Example:
 
     ```python
     from springtime.datasets.e_obs import EOBSPoint
-    datasource = EOBSPoint(point=[5, 50], product_type='ensemble_mean', years=[2000,2002])
+    datasource = EOBSPoint(point=[5, 50],
+                           product_type='ensemble_mean',
+                           years=[2000,2002])
     datasource.download()
     ds = datasource.load()
     ```
@@ -145,7 +150,8 @@ class EOBSSinglePoint(EOBS):
 class EOBSMultiplePoints(EOBS):
     """E-OBS dataset for a multiple points.
 
-    Fetches complete grid from https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+    Fetches complete grid from
+    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
 
     """
 
@@ -165,13 +171,16 @@ class EOBSMultiplePoints(EOBS):
 class EOBSBoundingBox(EOBS):
     """E-OBS dataset for a multiple points.
 
-    Fetches complete grid from https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+    Fetches complete grid from
+    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
 
     """
 
     dataset: Literal["EOBSBoundingBox"] = "EOBSBoundingBox"
     box: Tuple[float, float, float, float]
-    """Bounding box as top left / bottom right pair (lat,lon,lat,lon) aka north,west,south,east in WGS84 projection."""
+    """Bounding box as top left / bottom right pair (lat,lon,lat,lon) 
+    aka north,west,south,east in WGS84 projection.
+    """
 
     def load(self):
         ds = super().load()

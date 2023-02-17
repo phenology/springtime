@@ -1,13 +1,10 @@
-from pathlib import Path
-from typing import List, Literal, Protocol, Tuple, Union
-
-from shapely import Point, Polygon
+from typing import Protocol
 
 
 class Dataset(Protocol):
     """Interface for working with phenology datasets."""
 
-    dataset: Literal
+    dataset: str
     """The name of the dataset.
 
     Used for type inference when using nested pydantic models:

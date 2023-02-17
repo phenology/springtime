@@ -8,7 +8,6 @@ nav:
       - Getting started: setup.md
   - User Guide:
       - Getting started: setup.md
-      - Conda installation: conda.md
       - CRIB installation: crib.md
   - Example notebooks: notebooks/pk_wishful_workflows.ipynb
   - Contributing guide: contributing.md

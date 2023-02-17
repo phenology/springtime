@@ -74,6 +74,8 @@ class ModisSinglePoint(BaseModel):
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
         dataframes = [pd.read_csv(path) for path in self._paths]
+        # TODO make geopandas dataframe
+        # TODO replace band+value column with columns named after band
         return pd.concat(dataframes)
 
     def _r_download(self):
@@ -120,6 +122,7 @@ class ModisMultiplePoints(BaseModel):
     """a MODIS product. Use `modis_products()` to get list of available products."""
     bands: conset(str, min_items=1)
     """MODIS product bands. Use `modis_bands(product)` to get list of available bands for a product."""
+    # TODO when no bands are given return all bands of product
 
     @property
     def _handlers(self):

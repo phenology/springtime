@@ -18,7 +18,9 @@ jobs:
 
     - name: Install additional R dependencies
       run: |
-        Rscript -e 'install.packages("daymetr", "devtools")'
+        Rscript -e '.libPaths()'
+        Rscript -e 'install.packages("devtools")'
+        Rscript -e 'install.packages("daymetr")'
         Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
         Rscript -e 'devtools::install_github("ropensci/rppo")'
 

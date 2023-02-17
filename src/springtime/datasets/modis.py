@@ -15,8 +15,11 @@ from rpy2.robjects import pandas2ri
 
 
 class Extent(BaseModel):
+    """Extent to sample."""
     horizontal: float = 0.0
+    """Left right extent to sample in kilometers."""
     vertical: float = 0.0
+    """Above below extent to sample in kilometers."""
 
 
 class ModisSinglePoint(BaseModel):
@@ -40,8 +43,10 @@ class ModisSinglePoint(BaseModel):
     """a MODIS product."""
     bands: conset(str, min_items=1)
     """MODIS product bands"""
-
     extent: Extent = Extent()
+    """By default a single pixel returned.
+    Give custom extend to get more pixels around point.
+    """
 
     @property
     def _paths(self):

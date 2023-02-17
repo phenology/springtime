@@ -9,6 +9,7 @@ import rpy2.robjects as ro
 from pydantic import BaseModel, conset
 from springtime.config import CONFIG
 from rpy2.robjects.packages import importr
+from rpy2.robjects import pandas2ri
 
 class Extent(BaseModel):
     horizontal: float = 0.0
@@ -96,7 +97,8 @@ def modis_products():
     """
     modistools = importr("MODISTools")
     rdata =  modistools.mt_products()
-    return ro.pandas2ri.rpy2py_dataframe(rdata)
+    with ro.default_converter + pandas2ri.converter:
+      return ro.conversion.get_conversion().rpy2py(rdata)
 
 
 def modis_bands(product: str):
@@ -104,7 +106,8 @@ def modis_bands(product: str):
     """
     modistools = importr("MODISTools")
     rdata = modistools.mt_bands(product)
-    return ro.pandas2ri.rpy2py_dataframe(rdata)
+    with ro.default_converter + pandas2ri.converter:
+      return ro.conversion.get_conversion().rpy2py(rdata)
 
 
 def modis_dates(product: str, lat: float, lon: float):
@@ -113,4 +116,5 @@ def modis_dates(product: str, lat: float, lon: float):
     """
     modistools = importr("MODISTools")
     rdata = modistools.mt_dates(product, lat, lon)
-    return ro.pandas2ri.rpy2py_dataframe(rdata)
+    with ro.default_converter + pandas2ri.converter:
+      return ro.conversion.get_conversion().rpy2py(rdata)

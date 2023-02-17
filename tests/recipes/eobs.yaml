@@ -1,13 +1,23 @@
 datasets:
-  # single_period_default_var:
-  #   dataset: E-OBS
-  #   product_type: ensemble_mean
-  #   years: [2000, 2002]
-  # single_point_period_default_var:
-  #   dataset: EOBSSinglePoint
-  #   product_type: ensemble_mean
-  #   years: [2000, 2002]
-  #   point: [5, 50]
+  single_period_default_var:
+    dataset: E-OBS
+    product_type: ensemble_mean
+    years: [2000, 2002]
+  single_period_default_var_spread:
+    dataset: E-OBS
+    product_type: ensemble_spread
+    grid_resolution: 0.25deg
+    years: [2000, 2002]
+  single_period_elevation:
+    dataset: E-OBS
+    product_type: elevation
+    years: [2000, 2002]  
+    variables: [land_surface_elevation]
+  single_point_period_default_var:
+    dataset: EOBSSinglePoint
+    product_type: ensemble_mean
+    years: [2000, 2002]
+    point: [5, 50]
   single_point_2periods_2vars_coarseres:
     dataset: EOBSSinglePoint
     product_type: ensemble_mean
@@ -17,3 +27,17 @@ datasets:
     variables:
       - relative_humidity
       - sea_level_pressure
+  2points_1periods_1var_coarseres:
+    dataset: EOBSMultiplePoints
+    product_type: ensemble_mean
+    years: [2000, 2002]
+    points: 
+      - [5, 50]
+      - [5, 55]
+    grid_resolution: 0.25deg
+  bbox_1periods_1var_coarseres:
+    dataset: EOBSBoundingBox
+    product_type: ensemble_mean
+    years: [2000, 2002]
+    box: [55, 4, 50, 5]
+    grid_resolution: 0.25deg

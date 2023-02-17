@@ -91,10 +91,6 @@ class RPPO(BaseModel):
 
     def _build_filename(self):
         parts = [self.genus.replace(" ", "_"), self.termID]
-        if self.source is not None:
-            parts.append(self.source)
-        else:
-            parts.append("na")
         if self.years is not None:
             parts.append(f"{self.years[0]}-{self.years[1]}")
         else:

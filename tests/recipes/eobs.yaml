@@ -1,0 +1,6 @@
+datasets:
+  single_period_default_var:
+    dataset: E-OBS
+    product_type: ensemble_mean
+    years: [2000, 2002]
+    

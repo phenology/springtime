@@ -8,7 +8,7 @@ from springtime.datasets.daymet import (
     DaymetMultiplePoints,
     DaymetSinglePoint,
 )
-from springtime.datasets.e_obs import EOBS
+from springtime.datasets.e_obs import EOBS, EOBSSinglePoint
 from springtime.datasets.modis import ModisMultiplePoints, ModisSinglePoint
 from springtime.datasets.NPNPhenor import NPNPhenor
 from springtime.datasets.PEP725Phenor import PEP725Phenor
@@ -27,6 +27,7 @@ Datasets = Annotated[
         ModisSinglePoint,
         ModisMultiplePoints,
         EOBS,
+        EOBSSinglePoint,
     ],
     Field(discriminator="dataset"),
 ]

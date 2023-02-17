@@ -1,6 +1,19 @@
 datasets:
-  single_period_default_var:
-    dataset: E-OBS
+  # single_period_default_var:
+  #   dataset: E-OBS
+  #   product_type: ensemble_mean
+  #   years: [2000, 2002]
+  # single_point_period_default_var:
+  #   dataset: EOBSSinglePoint
+  #   product_type: ensemble_mean
+  #   years: [2000, 2002]
+  #   point: [5, 50]
+  single_point_2periods_2vars_coarseres:
+    dataset: EOBSSinglePoint
     product_type: ensemble_mean
-    years: [2000, 2002]
-    
+    years: [1990, 2002]
+    point: [5, 50]
+    grid_resolution: 0.25deg
+    variables:
+      - relative_humidity
+      - sea_level_pressure

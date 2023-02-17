@@ -99,16 +99,33 @@ class EOBS(BaseModel):
                 urlretrieve(url, path)
 
     def load(self):
-        paths = [self._path(variable, period) for variable, period in product(self.variables, self._periods)]
+        paths = [
+            self._path(variable, period)
+            for variable, period in product(self.variables, self._periods)
+        ]
         ds = open_mfdataset(paths)
         return ds.sel(time=slice(f"{self.years[0]}-01-01", f"{self.years[1]}-12-31"))
 
 
-class EOBSPoint(EOBS):
+class EOBSSinglePoint(EOBS):
+    """
+
+    Example:
+
+    ```python
+    from springtime.datasets.e_obs import EOBSPoint
+    datasource = EOBSPoint(point=[5, 50], product_type='ensemble_mean', years=[2000,2002])
+    datasource.download()
+    ds = datasource.load()
+    ```
+
+    """
+    dataset: Literal["EOBSSinglePoint"] = "EOBSSinglePoint"
     point: Tuple[float, float]
     """Point as longitude, latitude in WGS84 projection."""
 
-    def load():
+    def load(self):
         ds = super().load()
-        # TODO spatial select
-        return ds
+        return ds.sel(
+            longitude=self.point[0], latitude=self.point[1], method="nearest"
+        ).to_dataframe()

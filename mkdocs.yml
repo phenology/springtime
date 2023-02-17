@@ -9,6 +9,7 @@ nav:
   - User Guide:
       - Getting started: setup.md
       - CRIB installation: crib.md
+  - Datasets: datasets.md
   - Example notebooks: notebooks/pk_wishful_workflows.ipynb
   - Developer Guide: develop.md
 
@@ -47,3 +48,10 @@ plugins:
 - search
 extra:
   generator: false
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

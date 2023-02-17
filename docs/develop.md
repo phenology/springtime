@@ -1,12 +1,29 @@
+## Requirements
+
+This project requires Python and R. To simplify installation of the (indirect) R
+depencencies we recommend creating a conda environment using [Mamba
+forge](https://github.com/conda-forge/miniforge#mambaforge) with:
+
+```shell
+# Clone the repo
+git clone git@github.com:phenology/springtime
+cd springtime
+
+# Create and activate environment
+mamba env create --file environment.yml
+conda activate springtime
+
+# Install R requirements
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
+Rscript -e 'devtools::install_github("ropensci/rppo")'
+Rscript -e 'install.packages("daymetr")'
+```
+
 ## Development setup
 
 This package is built with [hatch](https://hatch.pypa.io/latest/).
 
 ```bash
-# Clone the repo
-git clone git@github.com:phenology/springtime
-cd springtime
-
 # Create development environment for springtime
 hatch env create
 

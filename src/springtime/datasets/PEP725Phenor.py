@@ -25,7 +25,11 @@ class PEP725Phenor(BaseModel):
         df = dataset.load()
 
         # or with filters
-        dataset = PEP725Phenor(species='Syringa vulgaris', years=[2000], area={'name':'some', 'bbox':(4, 45, 8, 50)})
+        dataset = PEP725Phenor(
+            species='Syringa vulgaris',
+            years=[2000],
+            area={'name':'some', 'bbox':(4, 45, 8, 50)}
+        )
         ```
 
     Requires phenor R package. Install with

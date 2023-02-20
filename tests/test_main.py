@@ -8,7 +8,6 @@ from springtime.main import Workflow, cli, main
 def test_workflow():
     w = Workflow(
         datasets={
-            "test1": dict(dataset="dummy", name="aspen", phenophase="budburst"),
             "testds2": dict(dataset="pyphenology", name="aspen", phenophase="budburst"),
         }
     )

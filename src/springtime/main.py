@@ -8,7 +8,6 @@ import pandas as pd
 import yaml
 from pydantic import BaseModel, validator
 
-from springtime import CONFIG
 from springtime.datasets import Datasets
 
 logger = logging.getLogger(__name__)
@@ -90,7 +89,7 @@ class Workflow(BaseModel):
         """Train and evaluate ML models."""
         scores = {}
         for model in self.models:
-            with self.cross_validation as cv:
+            with self.cross_validation:
                 model.fit(df)
                 score = model.score()
                 scores[model] = score

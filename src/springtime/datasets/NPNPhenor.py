@@ -21,7 +21,11 @@ class NPNPhenor(BaseModel):
     Example:
 
         ```python
-        from springtime.datasets.NPNPhenor import NPNPhenor, npn_species, npn_phenophases
+        from springtime.datasets.NPNPhenor import (
+            NPNPhenor,
+            npn_species,
+            npn_phenophases
+        )
 
         # List IDs and names for available species, phenophases
         species = npn_species()
@@ -33,7 +37,12 @@ class NPNPhenor(BaseModel):
         gdf = dataset.load()
 
         # or with area bounds
-        dataset = NPNPhenor(species=3, phenophase=371, years=[2010, 2011], area={'name':'some', 'bbox':(4, 45, 8, 50)})
+        dataset = NPNPhenor(
+            species = 3,
+            phenophase = 371,
+            years = [2010, 2011],
+            area = {'name':'some', 'bbox':(4, 45, 8, 50)}
+        )
         ```
 
     Requires phenor R package. Install with
@@ -43,6 +52,7 @@ class NPNPhenor(BaseModel):
     ```
 
     """
+
     dataset: Literal["NPNPhenor"] = "NPNPhenor"
 
     species: int
@@ -79,11 +89,10 @@ class NPNPhenor(BaseModel):
                 print(f"downloading {filename}")
                 self._r_download(year)
 
-
     def load(self):
         """Load the dataset into memory."""
         df = pd.concat([self._r_load(year) for year in range(*self.years)])
-        geometry = gpd.points_from_xy(df.pop('longitude'), df.pop('latitude'))
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
@@ -111,7 +120,7 @@ class NPNPhenor(BaseModel):
     def _r_load(self, year) -> pd.DataFrame:
         """Read data with r and return as (python) pandas dataframe."""
         filename = str(self._filename(year))
-        readRDS = ro.r['readRDS']
+        readRDS = ro.r["readRDS"]
         data = readRDS(filename)
         df = ro.pandas2ri.rpy2py_dataframe(data)
         return df
@@ -125,4 +134,3 @@ def npn_species(species=ro.NULL, list=True):
 def npn_phenophases(phenophase=ro.NULL, list=True):
     phenor = importr("phenor")
     return phenor.check_npn_phenophases(phenophase=phenophase, list=list)
-

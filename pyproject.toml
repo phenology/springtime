@@ -14,6 +14,7 @@ keywords = [
 authors = [
   { name = "Peter Kalverla", email = "peter.kalverla@gmx.com" },
 ]
+
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -40,51 +41,45 @@ dependencies = [
   "rpy2",
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
+  "netCDF4",
 ]
 dynamic = ["version", "optional-dependencies"]
-
-[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
-docs = ["docs/requirements.txt"]
-
-[project.scripts]
-springtime = "springtime.main:cli"
 
 [project.urls]
 Documentation = "https://github.com/phenology/springtime#readme"
 Issues = "https://github.com/phenology/springtime/issues"
 Source = "https://github.com/phenology/springtime"
 
+[project.scripts]
+springtime = "springtime.main:cli"
+
 [tool.hatch.version]
 path = "src/springtime/__init__.py"
 
-[tool.hatch.envs.default]
+[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
+docs = ["docs/requirements.txt"]
+
+[tool.hatch.envs.dev]
+detached = true
 dependencies = [
   "black",
-  "isort",
+  "mypy",
   "pytest",
-  "pytest-cov",
-]
-[tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/springtime --cov=tests {args}"
-no-cov = "cov --no-cov {args}"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310", "311"]
-
-[tool.coverage.run]
-branch = true
-parallel = true
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
+  "ruff",
+  "types-pyyaml", # https://github.com/python/mypy/issues/10632
 ]
 
-[tool.hatch.envs.docs]
+[tool.hatch.envs.default]
 features = ["docs"]
+template = "dev"
 
-[tool.hatch.envs.docs.scripts]
-build = "mkdocs build --clean --strict"
-serve = "mkdocs serve --dev-addr localhost:8000"
+[tool.hatch.envs.default.scripts]
+quality-checks = [
+  "black src tests",
+  "ruff check src tests --fix",
+  "mypy src tests",
+  "pytest",
+]
+
+[tool.mypy]
+ignore_missing_imports = true

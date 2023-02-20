@@ -38,7 +38,7 @@ import xarray as xr
 from pydantic import BaseModel, root_validator, validator
 from shapely.geometry import Polygon
 
-from springtime import CONFIG
+from springtime.config import CONFIG
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
@@ -196,12 +196,17 @@ class DaymetBoundingBox(BaseModel):
 
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
     box: Tuple[float, float, float, float]
-    """Bounding box as top left / bottom right pair (lat,lon,lat,lon) aka north,west,south,east in WGS84 projection."""
+    """Bounding box as top left / bottom right pair (lat,lon,lat,lon).
+
+    Aka north,west,south,east in WGS84 projection."""
     years: Tuple[int, int]
     """ years is passed as range for example years=[2000, 2002] downloads data
     for three years."""
     mosaic: Literal["na", "hi", "pr"] = "na"
-    """tile mosaic to use, defaults to “na” for North America (use “pr” for Puerto Rico and “hi” for Hawaii)."""
+    """tile mosaic to use.
+
+    Defaults to “na” for North America (use “pr” for Puerto Rico and “hi” for Hawaii).
+    """
     variables: Sequence[DaymetVariables] = tuple()
     """climate variable you want to download vapour pressure (vp),
     minimum and maximum temperature (tmin,tmax), snow water equivalent (swe),
@@ -259,7 +264,9 @@ class DaymetBoundingBox(BaseModel):
 
     @property
     def _box_dir(self):
-        """Directory in which download_daymet_ncss writes nc file for each variable/year combination."""
+        """Directory in which download_daymet_ncss writes nc file.
+
+        For each variable/year combination."""
         box = f"{self.box[0]}_{self.box[1]}_{self.box[2]}_{self.box[3]}"
         return CONFIG.data_dir / f"daymet_bounding_box_{box}"
 

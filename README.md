@@ -50,7 +50,7 @@ can be installed with
 ```bash
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
 Rscript -e 'devtools::install_github("ropensci/rppo")'
-Rscript -e 'install.packages("daymetr")'
+Rscript -e 'install.packages(c("daymetr", "MODISTools"))'
 ```
 
 

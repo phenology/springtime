@@ -26,9 +26,10 @@ and a standardized "recipe" format to define the steps in our workflows.
 
 This project requires python and R. To simplify installation of the (indirect) R
 depencencies you can create a Anaconda environment using [Mamba
-forge](https://github.com/conda-forge/miniforge#mambaforge) with:
+forge](https://github.com/conda-forge/miniforge#mambaforge) from our environment file:
 
 ```shell
+curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/main/environment.yml
 mamba env create --file environment.yml
 conda activate springtime
 ```

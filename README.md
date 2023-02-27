@@ -58,7 +58,7 @@ Rscript -e 'install.packages(c("daymetr", "MODISTools"))'
 ## Verify installation
 
 ```bash
-python -m r2py.situation
+python -m rpy2.situation
 > ...
 > Calling `R RHOME`: /home/peter/miniconda3/envs/springtime/lib/R
 > Environment variable R_LIBS_USER: None

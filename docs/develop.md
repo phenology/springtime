@@ -14,9 +14,15 @@ mamba env create --file environment.yml
 conda activate springtime
 
 # Install R requirements
-Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
-Rscript -e 'devtools::install_github("ropensci/rppo")'
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
+Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages("daymetr")'
+```
+
+If you already have a conda environment you can update the springtime dependencies with
+
+```shell
+mamba env update --file environment.yml --name <name of conda environment>
 ```
 
 ## Development setup

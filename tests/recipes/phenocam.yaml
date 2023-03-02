@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+datasets:
+  phenocam_all_rois:
+    dataset: phenocam
+    site: harvard
+    veg_type: "DB"
+    frequency: "3"
+  # phenocam_one_roi:
+  #   dataset: phenocam
+  #   site: harvard
+  #   rois:
+  #     - 1
+  #   veg_type: "DB"
+  #   frequency: "3"
+  # phenocam_timed:
+  #   dataset: phenocam
+  #   site: harvard
+  #   veg_type: "DB"
+  #   frequency: "3"
+  #   years: [2019, 2020]
+  # phenocam_area:
+  #   dataset: phenocambbox
+  #   bbox: [-83, 27,-82, 28]
+  # phenocam_area_timed:
+  #   dataset: phenocambbox
+  #   bbox: [-83, 27,-82, 28]
+  #   years: [2019, 2020]

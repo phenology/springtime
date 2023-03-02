@@ -69,6 +69,7 @@ dependencies = [
   "black",
   "mypy",
   "pytest",
+  "reuse",
   "ruff",
   "types-pyyaml", # https://github.com/python/mypy/issues/10632
 ]
@@ -79,6 +80,7 @@ template = "dev"
 
 [tool.hatch.envs.default.scripts]
 quality-checks = [
+  "reuse lint",
   "black src tests",
   "ruff check src tests --fix",
   "mypy src tests",

@@ -27,3 +27,4 @@ jobs:
       run: |
         hatch run dev:ruff check src
         hatch run dev:mypy src tests
+        hatch run dev:reuse lint

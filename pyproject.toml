@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
 [build-system]
 requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
@@ -42,12 +38,31 @@ dependencies = [
   "pandas",
   "pydantic",
   "click",
-  "rpy2",
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
 ]
-dynamic = ["version", "optional-dependencies"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+r = [
+  "rpy2",
+]
+dev = [
+  "black",
+  "mypy",
+  "pytest",
+  "reuse",
+  "ruff",
+  "types-pyyaml", # https://github.com/python/mypy/issues/10632
+]
+docs = [
+  "mkdocs>=1.4.2",
+  "mkdocs-material>=8.0.0,<9.0.0",
+  "mkdocs-jupyter>=0.22.0",
+  "mkdocs-gen-files",
+  "mkdocs-include-markdown-plugin",
+]
 
 [project.urls]
 Documentation = "https://github.com/phenology/springtime#readme"
@@ -60,23 +75,8 @@ springtime = "springtime.main:cli"
 [tool.hatch.version]
 path = "src/springtime/__init__.py"
 
-[tool.hatch.metadata.hooks.requirements_txt.optional-dependencies]
-docs = ["docs/requirements.txt"]
-
-[tool.hatch.envs.dev]
-detached = true
-dependencies = [
-  "black",
-  "mypy",
-  "pytest",
-  "reuse",
-  "ruff",
-  "types-pyyaml", # https://github.com/python/mypy/issues/10632
-]
-
 [tool.hatch.envs.default]
-features = ["docs"]
-template = "dev"
+features = ["r", "dev", "docs"]
 
 [tool.hatch.envs.default.scripts]
 quality-checks = [

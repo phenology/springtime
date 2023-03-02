@@ -1,9 +1,0 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
-mkdocs>=1.4.2
-mkdocs-material>=8.0.0,<9.0.0
-mkdocs-jupyter>=0.22.0
-mkdocs-gen-files
-mkdocs-include-markdown-plugin

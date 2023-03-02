@@ -9,8 +9,11 @@ dependencies:
   - r-base >=4.2
   # - r-BayesianTools   # not in any anconda channel
   - r-ape
+  - r-bit
+  - r-bit64
   - r-changepoint
   - r-class
+  - r-curl
   - r-devtools
   - r-doparallel
   - r-expm
@@ -36,11 +39,14 @@ dependencies:
   - r-proxy
   - r-qgam
   - r-raster
+  - r-readr
+  - r-reshape2
   - r-rcppeigen
   # - r-rgenoud # is in r channel
   - r-rvest
   - r-sf
   - r-snow
+  - r-s2
   - r-sp
   - r-sodium
   - r-survival
@@ -48,10 +54,13 @@ dependencies:
   - r-tibble
   - r-tidyr
   - r-tmvtnorm
+  - r-tzdb
   - r-units
   - r-wk
   - r-xml2
+  - r-udunits2
   - r-uuid
+  - r-vroom
   - r-zoo
 # TODO make list smaller by only listing most direct dependencies
 # this will make it easier to maintain the list

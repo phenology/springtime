@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 [![Documentation Status](https://readthedocs.org/projects/springtime/badge/?version=latest)](https://springtime.readthedocs.io/en/latest/?badge=latest)
 
 <!--intro-start-->

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 ## Requirements
 
 This project requires Python and R. To simplify installation of the (indirect) R
@@ -64,6 +70,26 @@ hatch run ruff check src tests --fix
 # Run static type checking
 hatch run mypy --install-types  # say yes
 hatch run mypy --ignore-missing-imports src tests
+```
+
+## Licensing
+
+In principle, we like to publish our code under a permissive Apache-2.0 license.
+However, some of our dependencies are released under different licenses.
+Therefore, we use multi-licensing where each file specifies its own licensing
+conditions. We follow the REUSE specification, where every file should have
+license information in its header or, if this is not possible, as a separate
+`file.ext.license` file. Notebooks are by default licensed under AGPL via the
+`.reuse/dep5` file.
+
+When adding new code, you should verify that it is appropriately
+licensed. For more info, see the [REUSE FAQ](https://reuse.software/tutorial/).
+The [reuse](https://reuse.readthedocs.io/en/latest/index.html) tool can be used for
+checking compliance with the REUSE specification.
+
+```
+# Check licenses
+hatch run reuse lint
 ```
 
 ## Testing

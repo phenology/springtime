@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# as some of the dependencies are (A)GPL
+
 name: springtime
 channels:
   - conda-forge
@@ -21,14 +26,14 @@ dependencies:
   - r-foreach
   - r-gap
   - r-GenSA
-  - r-getpass 
+  - r-getpass
   - r-ggplot2
   - r-gmm
   - r-httr
   - r-idpmisc
   - r-jsonlite
   - r-keyring
-  - r-kernsmooth 
+  - r-kernsmooth
   - r-lme4
   - r-lmtest
   - r-magrittr

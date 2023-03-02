@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Install on CRIB or other managed JupyterHub service
 
 If you want to run or develop springtime using JupyterHub on a machine that you

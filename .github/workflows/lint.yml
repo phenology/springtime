@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 name: Lint files and type checking
 
 on:
@@ -32,3 +36,4 @@ jobs:
       run: |
         hatch run dev:ruff check src
         hatch run dev:mypy src tests
+        hatch run dev:reuse lint

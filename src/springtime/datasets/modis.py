@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# due to import of MODISTools
+
+
 """Datasets for downloading MODIS land products subsets.
 
 Fetches data from https://modis.ornl.gov/data/modis_webservice.html.

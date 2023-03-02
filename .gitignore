@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -130,3 +134,7 @@ dmypy.json
 
 # Data files
 /data/
+
+# R
+.RData
+.Rhistory

@@ -34,6 +34,6 @@ jobs:
         python -m pip install hatch
     - name: Run checks
       run: |
-        hatch run dev:ruff check src
-        hatch run dev:mypy src tests
-        hatch run dev:reuse lint
+        hatch run ruff check src
+        hatch run mypy src tests
+        hatch run reuse lint

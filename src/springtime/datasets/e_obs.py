@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 import logging
 from itertools import product
 from typing import Literal, Sequence, Tuple

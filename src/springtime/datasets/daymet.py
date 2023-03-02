@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# due to import of daymetR
+
 """"Daymet data from
 Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1
 https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2129

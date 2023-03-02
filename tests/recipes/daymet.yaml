@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 datasets:
   daymet_single_point:
     dataset: daymet_single_point
@@ -29,7 +33,7 @@ datasets:
 
   daymet_multi_point:
     dataset: daymet_multiple_points
-    points: 
+    points:
       - [-84.2625, 36.0133]
       - [-86, 39.6]
       - [-85, 40]
@@ -42,7 +46,7 @@ datasets:
 
   daymet_multi_point_in_hawaii_and_na:
     dataset: daymet_multiple_points
-    points: 
+    points:
       - [-86, 39.6]
       - [-155.243537, 19.354621]
     years: [1980, 2010]
@@ -54,4 +58,3 @@ datasets:
     variables:
       - tmin
     mosaic: hi
-  

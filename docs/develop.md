@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 ## Requirements
 
 This project requires Python and R. To simplify installation of the (indirect) R

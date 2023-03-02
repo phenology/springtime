@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """Example datasets from pyPhenology package
 
 In the process of "downloading" the data, we also do some

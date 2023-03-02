@@ -10,6 +10,7 @@ dependencies:
   # - r-BayesianTools   # not in any anconda channel
   - r-ape
   - r-bit
+  - r-bit64
   - r-changepoint
   - r-class
   - r-curl
@@ -38,6 +39,8 @@ dependencies:
   - r-proxy
   - r-qgam
   - r-raster
+  - r-readr
+  - r-reshape2
   - r-rcppeigen
   # - r-rgenoud # is in r channel
   - r-rvest
@@ -57,6 +60,7 @@ dependencies:
   - r-xml2
   - r-udunits2
   - r-uuid
+  - r-vroom
   - r-zoo
 # TODO make list smaller by only listing most direct dependencies
 # this will make it easier to maintain the list

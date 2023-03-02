@@ -16,7 +16,7 @@ conda activate springtime
 # Install R requirements
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
-Rscript -e 'install.packages("daymetr")'
+Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'
 ```
 
 If you already have a conda environment you can update the springtime dependencies with

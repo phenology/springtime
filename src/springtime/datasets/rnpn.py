@@ -135,7 +135,9 @@ def npn_species():
     rnpn = importr("rnpn")
     r_subset = ro.r['subset']
     r_as = ro.r['as.data.frame']
-    r_df = r_as(r_subset(rnpn.npn_species(), select='-species_type'))
+    # species_type column has nested df, which can not be converted, so drop it
+    nested_column_index = -19
+    r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
     return ro.pandas2ri.rpy2py_dataframe(r_df)
 
 

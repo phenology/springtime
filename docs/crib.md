@@ -38,12 +38,7 @@ pip install ipykernel
 python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86"
 
 # 6. Install direct R dependencies
-# Enter an interactive R shell
-R
-
-# Install springtime dependencies inside the R shell
-if(!require(devtools)){install.packages(devtools)}
-devtools::install_github("bluegreen-labs/phenor@v1.3.1")
-install.packages(c("daymetr", "MODISTools"))
-devtools::install_github("ropensci/rppo")
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
+Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
+Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'
 ```

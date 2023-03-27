@@ -17,8 +17,9 @@ virtualenv) environment, and adding it to the Jupyter kernelspec list. To this e
 which mamba  # should return a path
 
 # If not install mambaforge and activate it
+# Make sure to append x86_64 to installation location.
 
-# 2. Clone sprintime repo
+# 2. Clone springtime repo
 git clone https://github.com/phenology/springtime.git
 cd springtime
 

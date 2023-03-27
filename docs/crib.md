@@ -38,6 +38,7 @@ pip install ipykernel
 python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86"
 
 # 6. Install direct R dependencies
+unset R_LIBS_USER
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'

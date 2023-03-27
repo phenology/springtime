@@ -35,7 +35,7 @@ pip install -e .
 # 5. Add Jupyter kernel
 # See the instructions here: https://github.com/ESMValGroup/ESMValTool-JupyterLab#using-a-custom-kernel-script
 pip install ipykernel
-python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86"
+python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86" --env R_LIBS_USER ''
 
 # 6. Install direct R dependencies
 unset R_LIBS_USER

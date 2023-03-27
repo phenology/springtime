@@ -6,6 +6,7 @@
 name: springtime
 channels:
   - conda-forge
+  - r
 dependencies:
   - pip!=21.3
   - python==3.10
@@ -47,7 +48,8 @@ dependencies:
   - r-readr
   - r-reshape2
   - r-rcppeigen
-  # - r-rgenoud # is in r channel
+  - r-rgenoud
+  - r-rnpn
   - r-rvest
   - r-sf
   - r-snow

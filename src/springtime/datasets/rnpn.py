@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of rnpn
 
-from typing import Literal, Optional, Tuple
+from pathlib import Path
+from typing import Literal, Optional, Sequence, Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -13,6 +14,9 @@ from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
 from springtime.datasets.daymet import NamedArea
+
+
+request_source = 'Springtime user https://github.com/springtime/springtime'
 
 
 class RNPN(BaseModel):
@@ -37,7 +41,11 @@ class RNPN(BaseModel):
         phenophases = npn_phenophases()
 
         # Load dataset
-        dataset = RNPN(species=36, phenophase=483, years=[2010, 2011])
+        dataset = RNPN(
+            species_ids=[36],  # Syringa vulgaris / common lilac
+            phenophase_ids=[483],  # Leaves
+            years=[2010, 2012],
+        )
         dataset.download()
         gdf = dataset.load()
 
@@ -59,67 +67,79 @@ class RNPN(BaseModel):
     """
 
     dataset: Literal["RNPN"] = "RNPN"
-
-    species: int
-    phenophase: int
     years: Tuple[int, int]
+    species_ids: Optional[Sequence[int]]
+    phenophase_ids: Optional[Sequence[int]]
     area: Optional[NamedArea] = None
 
     @property
     def directory(self):
-        return CONFIG.data_dir / "NPN"
+        return CONFIG.data_dir / "rnpn"
 
-    def _filename(self, year):
+    def _filename(self):
         """Path where files will be downloaded to and loaded from.
 
         In rnpn you can only specify dir, filename is chosen for you. So we
         reproduce the filename that rnpn creates.
         """
-        rnpn_filename = (
-            f"rnpn_npn_data_{self.species}_{self.phenophase}"
-            f"_{year}-01-01_{year}-12-31.rds"
-        )
+        parts = [
+            'rnpn_npn_data',
+            'y',
+            self.years[0],
+            self.years[1],
+        ]
+        if self.species_ids is not None:
+            parts.append('s')
+            parts.extend(self.species_ids)
+        if self.phenophase_ids is not None:
+            parts.append('p')
+            parts.extend(self.phenophase_ids)
+        if self.area is not None:
+            parts.append('a')
+            parts.extend(self.area.bbox)
+        rnpn_filename = '_'.join([str(p) for p in parts]) + '.csv'
         return self.directory / rnpn_filename
 
     def download(self):
         """Download the data."""
         self.directory.mkdir(parents=True, exist_ok=True)
 
-        for year in range(*self.years):
-            filename = self._filename(year)
+        filename = self._filename()
 
-            if filename.exists():
-                print(f"{filename} already exists, skipping")
-            else:
-                print(f"downloading {filename}")
-                self._r_download(year)
+        if filename.exists():
+            print(f"{filename} already exists, skipping")
+        else:
+            print(f"downloading {filename}")
+            self._r_download(filename)
 
     def load(self):
         """Load the dataset into memory."""
-        df = pd.concat([self._r_load(year) for year in range(*self.years)])
+        filename = self._filename()
+        df = pd.read_csv(filename)
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
-    def _r_download(self, year):
+    def _r_download(self, filename: Path):
         """Download data using rnpn's download function.
 
         This executes R code in python using the rpy2 package.
         """
-        rnpn = importr("rnpn")
 
-        extent = ro.NULL
+        opt_args = {}
         if self.area is not None:
-            extent = list(self.area.bbox)
+            opt_args['coords'] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
+        if self.species_ids is not None:
+            opt_args['species_id'] = self.species_ids
+        if self.phenophase_ids is not None:
+            opt_args['phenophase_id'] = self.phenophase_ids
 
-        rnpn.pr_dl_npn(
-            species=self.species,
-            phenophase=self.phenophase,
-            start=f"{year}-01-01",
-            end=f"{year}-12-31",
-            extent=extent,
-            internal=False,
-            path=str(self.directory),
+        rnpn = importr("rnpn")
+        rnpn.npn_download_individual_phenometrics(
+            request_source=request_source,
+            years=list(range(self.years[0], self.years[1]+1)),
+            download_path=str(filename),
+            **opt_args,
         )
 
     def _r_load(self, year) -> pd.DataFrame:
@@ -141,7 +161,34 @@ def npn_species():
     return ro.pandas2ri.rpy2py_dataframe(r_df)
 
 
-def npn_phenophases(phenophase=ro.NULL, list=True):
+def npn_phenophases():
     rnpn = importr("rnpn")
-    r_df = rnpn.check_npn_phenophases(phenophase=phenophase, list=list)
+    r_df = rnpn.npn_phenophases()
     return ro.pandas2ri.rpy2py_dataframe(r_df)
+
+def _npn_phenophases_by_species(species_ids, date:str):
+    # TODO flatten df from r
+    """Get phenophases by species.
+
+    Args:
+        species_ids: List of species_ids.
+        date: Year
+
+    Returns:
+        Dataframe with phenophases.
+
+    Example:
+
+        List phenophases of species 120 and 210 at 2013::
+
+          df = npn_phenophases_by_species([120, 210], '2013')
+
+    """
+    rnpn = importr("rnpn")
+    r_df = rnpn.npn_phenophases_by_species(species_ids, date)
+    dfs = []
+    for species_id in species_ids:
+        df = ro.pandas2ri.rpy2py_dataframe(r_df[r_df.species_id == species_id])#$phenophase
+        df['species_id'] = species_id
+        dfs.append(df)
+    return pd.concat(dfs)

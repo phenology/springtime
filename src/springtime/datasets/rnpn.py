@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
-# SPDX-License-Identifier: AGPL-3.0-or-later
-# due to import of rnpn
+# SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import Literal, Optional, Sequence, Tuple
+from typing import Dict, Literal, Optional, Sequence, Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -16,7 +15,7 @@ from springtime.config import CONFIG
 from springtime.datasets.daymet import NamedArea
 
 
-request_source = 'Springtime user https://github.com/springtime/springtime'
+request_source = "Springtime user https://github.com/springtime/springtime"
 
 
 class RNPN(BaseModel):
@@ -51,10 +50,8 @@ class RNPN(BaseModel):
 
         # or with area bounds
         dataset = RNPN(
-            species = 3,
-            phenophase = 371,
             years = [2010, 2011],
-            area = {'name':'some', 'bbox':(4, 45, 8, 50)}
+            area = {'name':'some', 'bbox':[-112, 30, -108, 35.0]}
         )
         ```
 
@@ -83,21 +80,21 @@ class RNPN(BaseModel):
         reproduce the filename that rnpn creates.
         """
         parts = [
-            'rnpn_npn_data',
-            'y',
+            "rnpn_npn_data",
+            "y",
             self.years[0],
             self.years[1],
         ]
         if self.species_ids is not None:
-            parts.append('s')
+            parts.append("s")
             parts.extend(self.species_ids)
         if self.phenophase_ids is not None:
-            parts.append('p')
+            parts.append("p")
             parts.extend(self.phenophase_ids)
         if self.area is not None:
-            parts.append('a')
+            parts.append("a")
             parts.extend(self.area.bbox)
-        rnpn_filename = '_'.join([str(p) for p in parts]) + '.csv'
+        rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
         return self.directory / rnpn_filename
 
     def download(self):
@@ -126,35 +123,32 @@ class RNPN(BaseModel):
         This executes R code in python using the rpy2 package.
         """
 
-        opt_args = {}
+        opt_args: Dict[str, Sequence] = {}
         if self.area is not None:
-            opt_args['coords'] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
+            opt_args["coords"] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
         if self.species_ids is not None:
-            opt_args['species_id'] = self.species_ids
+            opt_args["species_id"] = self.species_ids
         if self.phenophase_ids is not None:
-            opt_args['phenophase_id'] = self.phenophase_ids
+            opt_args["phenophase_id"] = self.phenophase_ids
 
         rnpn = importr("rnpn")
         rnpn.npn_download_individual_phenometrics(
             request_source=request_source,
-            years=list(range(self.years[0], self.years[1]+1)),
+            years=list(range(self.years[0], self.years[1] + 1)),
             download_path=str(filename),
             **opt_args,
         )
 
-    def _r_load(self, year) -> pd.DataFrame:
-        """Read data with r and return as (python) pandas dataframe."""
-        filename = str(self._filename(year))
-        readRDS = ro.r["readRDS"]
-        data = readRDS(filename)
-        df = ro.pandas2ri.rpy2py_dataframe(data)
-        return df
-
 
 def npn_species():
+    """Get available species on npn.
+
+    Returns:
+        Pandas dataframe with species_id and other species related fields.
+    """
     rnpn = importr("rnpn")
-    r_subset = ro.r['subset']
-    r_as = ro.r['as.data.frame']
+    r_subset = ro.r["subset"]
+    r_as = ro.r["as.data.frame"]
     # species_type column has nested df, which can not be converted, so drop it
     nested_column_index = -19
     r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
@@ -162,33 +156,11 @@ def npn_species():
 
 
 def npn_phenophases():
+    """Get available phenophases on npn.
+
+    Returns:
+        Pandas dataframe with phenophase_id and other phenophase related fields.
+    """
     rnpn = importr("rnpn")
     r_df = rnpn.npn_phenophases()
     return ro.pandas2ri.rpy2py_dataframe(r_df)
-
-def _npn_phenophases_by_species(species_ids, date:str):
-    # TODO flatten df from r
-    """Get phenophases by species.
-
-    Args:
-        species_ids: List of species_ids.
-        date: Year
-
-    Returns:
-        Dataframe with phenophases.
-
-    Example:
-
-        List phenophases of species 120 and 210 at 2013::
-
-          df = npn_phenophases_by_species([120, 210], '2013')
-
-    """
-    rnpn = importr("rnpn")
-    r_df = rnpn.npn_phenophases_by_species(species_ids, date)
-    dfs = []
-    for species_id in species_ids:
-        df = ro.pandas2ri.rpy2py_dataframe(r_df[r_df.species_id == species_id])#$phenophase
-        df['species_id'] = species_id
-        dfs.append(df)
-    return pd.concat(dfs)

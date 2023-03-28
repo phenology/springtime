@@ -25,6 +25,7 @@ from springtime.datasets.PEP725Phenor import PEP725Phenor
 from springtime.datasets.phenocam import PhenocamrBoundingBox, PhenocamrSite
 from springtime.datasets.ppo import RPPO
 from springtime.datasets.pyphenology import PyPhenologyDataset
+from springtime.datasets.rnpn import RNPN
 
 Datasets = Annotated[
     Union[
@@ -41,6 +42,7 @@ Datasets = Annotated[
         EOBSSinglePoint,
         EOBSMultiplePoints,
         EOBSBoundingBox,
+        RNPN,
         PhenocamrSite,
         PhenocamrBoundingBox,
     ],

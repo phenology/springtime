@@ -12,8 +12,7 @@ from pydantic import BaseModel
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.datasets.daymet import NamedArea
-
+from springtime.utils import NamedArea
 
 class NPNPhenor(BaseModel):
     """Download and load data from NPN.

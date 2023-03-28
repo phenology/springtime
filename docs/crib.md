@@ -11,36 +11,36 @@ don't manage, you can add your own environment by making a new (conda or
 virtualenv) environment, and adding it to the Jupyter kernelspec list. To this end:
 
 ```bash
+# 0. Start Intel x86_64 machine
+
 # 1. Make sure you have mamba
 which mamba  # should return a path
 
+# If not install mambaforge and activate it
+# Make sure to append x86_64 to installation location.
+
+# 2. Clone springtime repo
+git clone https://github.com/phenology/springtime.git
+cd springtime
+
 # 2. Create new environment
-mamba create -n springtime python=3.9 ipykernel
+mamba env create --file environment.yml
 
 # 3. Activate the environment
 mamba activate springtime
 
-# 4a. Install default springtime inside the environment
-pip install git+https://github.com/phenology/springtime.git
-
-# 4b. Developer installation
-git clone git@github.com:phenology/springtime
-cd springtime
+# 4. Developer installation
 pip install -e .
 
-# 5. Possibly, use a custom start-kernel.sh script
+# 5. Add Jupyter kernel
 # See the instructions here: https://github.com/ESMValGroup/ESMValTool-JupyterLab#using-a-custom-kernel-script
+pip install ipykernel kernda
+python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86" --env R_LIBS_USER $CONDA_PREFIX/lib/R/library
+kernda -o ~/.local/share/jupyter/kernels/springtime_x86/kernel.json -o
 
-# 6. Possibly, if there is no, or you cannot use the default system R, you can
-#    install it inside the conda environment:
-mamba install r-base
-
-# Enter an interactive R shell
-R
-
-# Install springtime dependencies inside the R shell
-if(!require(devtools)){install.packages(devtools)}
-devtools::install_github("bluegreen-labs/phenor@v1.3.1")
-install.packages(c("daymetr", "MODISTools"))
-devtools::install_github("ropensci/rppo")
+# 6. Install direct R dependencies
+unset R_LIBS_USER
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
+Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
+Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'
 ```

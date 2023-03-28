@@ -25,6 +25,7 @@ flowchart TD
     F5[rppo]
     F6[Phenocam]
     F7[PhenocamR]
+    F8[rnpn]
     end
 
     %% Meteorology
@@ -52,6 +53,7 @@ flowchart TD
     M1 --> M2 & M3 --> M4
     %% M5 ---> M6
     F1 & F2 & F3 --> F4
+    F2 --> F8
     S2 --> S3 --> S4
     F6 --> F7
     F4 ---> F5
@@ -61,6 +63,7 @@ flowchart TD
     %% Springtime
     S1[Springtime]
     S4 & M4 & F7 & F5 & P1 --> S1
+    F8 --> S1
 ```
 
 ## Field observations

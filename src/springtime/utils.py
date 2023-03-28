@@ -1,6 +1,6 @@
 
 
-from typing import Tuple
+from typing import Sequence, Tuple
 from pydantic import BaseModel, validator
 from shapely.geometry import Polygon
 
@@ -25,3 +25,6 @@ class NamedArea(BaseModel):
         return Polygon.from_bounds(*self.bbox)
 
 
+class NamedIdentifiers(BaseModel):
+    name: str
+    items: Sequence[int]

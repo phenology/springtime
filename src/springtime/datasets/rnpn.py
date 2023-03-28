@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea
+from springtime.utils import NamedArea, NamedIdentifiers
 
 request_source = "Springtime user https://github.com/springtime/springtime"
 
@@ -64,8 +64,8 @@ class RNPN(BaseModel):
 
     dataset: Literal["RNPN"] = "RNPN"
     years: Tuple[int, int]
-    species_ids: Optional[Sequence[int]]
-    phenophase_ids: Optional[Sequence[int]]
+    species_ids: Optional[NamedIdentifiers]
+    phenophase_ids: Optional[NamedIdentifiers]
     area: Optional[NamedArea] = None
 
     @property
@@ -85,14 +85,11 @@ class RNPN(BaseModel):
             self.years[1],
         ]
         if self.species_ids is not None:
-            parts.append("s")
-            parts.extend(self.species_ids)
+            parts.append(self.species_ids.name)
         if self.phenophase_ids is not None:
-            parts.append("p")
-            parts.extend(self.phenophase_ids)
+            parts.append(self.phenophase_ids.name)
         if self.area is not None:
-            parts.append("a")
-            parts.extend(self.area.bbox)
+            parts.append(self.area.name)
         rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
         return self.directory / rnpn_filename
 
@@ -126,9 +123,9 @@ class RNPN(BaseModel):
         if self.area is not None:
             opt_args["coords"] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
         if self.species_ids is not None:
-            opt_args["species_id"] = self.species_ids
+            opt_args["species_id"] = self.species_ids.items
         if self.phenophase_ids is not None:
-            opt_args["phenophase_id"] = self.phenophase_ids
+            opt_args["phenophase_id"] = self.phenophase_ids.items
 
         rnpn = importr("rnpn")
         rnpn.npn_download_individual_phenometrics(

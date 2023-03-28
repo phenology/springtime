@@ -34,10 +34,12 @@ pip install -e .
 
 # 5. Add Jupyter kernel
 # See the instructions here: https://github.com/ESMValGroup/ESMValTool-JupyterLab#using-a-custom-kernel-script
-pip install ipykernel
-python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86"
+pip install ipykernel kernda
+python -m ipykernel install --user --name springtime_x86 --display-name="Springtime x86" --env R_LIBS_USER $CONDA_PREFIX/lib/R/library
+kernda -o ~/.local/share/jupyter/kernels/springtime_x86/kernel.json -o
 
 # 6. Install direct R dependencies
+unset R_LIBS_USER
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'

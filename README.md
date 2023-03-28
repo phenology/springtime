@@ -55,8 +55,8 @@ Some datasets use [R](https://www.r-project.org/) libraries. The R dependencies
 can be installed with
 
 ```bash
-Rscript -e 'devtools::install_github("bluegreen-labs/phenor")'
-Rscript -e 'devtools::install_github("ropensci/rppo")'
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
+Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr"), repos = "http://cran.us.r-project.org")'
 ```
 

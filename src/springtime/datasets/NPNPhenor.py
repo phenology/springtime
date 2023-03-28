@@ -133,9 +133,11 @@ class NPNPhenor(BaseModel):
 
 def npn_species(species=ro.NULL, list=True):
     phenor = importr("phenor")
-    return phenor.check_npn_species(species=species, list=list)
+    r_df = phenor.check_npn_species(species=species, list=list)
+    return ro.pandas2ri.rpy2py_dataframe(r_df)
 
 
 def npn_phenophases(phenophase=ro.NULL, list=True):
     phenor = importr("phenor")
-    return phenor.check_npn_phenophases(phenophase=phenophase, list=list)
+    r_df = phenor.check_npn_phenophases(phenophase=phenophase, list=list)
+    return ro.pandas2ri.rpy2py_dataframe(r_df)

@@ -22,6 +22,7 @@ from springtime.datasets.e_obs import (
 from springtime.datasets.modis import ModisMultiplePoints, ModisSinglePoint
 from springtime.datasets.NPNPhenor import NPNPhenor
 from springtime.datasets.PEP725Phenor import PEP725Phenor
+from springtime.datasets.phenocam import PhenocamrBoundingBox, PhenocamrSite
 from springtime.datasets.ppo import RPPO
 from springtime.datasets.pyphenology import PyPhenologyDataset
 
@@ -40,6 +41,8 @@ Datasets = Annotated[
         EOBSSinglePoint,
         EOBSMultiplePoints,
         EOBSBoundingBox,
+        PhenocamrSite,
+        PhenocamrBoundingBox,
     ],
     Field(discriminator="dataset"),
 ]

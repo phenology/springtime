@@ -57,7 +57,7 @@ can be installed with
 ```bash
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
-Rscript -e 'install.packages("daymetr", repos = "http://cran.us.r-project.org")'
+Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr"), repos = "http://cran.us.r-project.org")'
 ```
 
 

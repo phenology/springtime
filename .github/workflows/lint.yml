@@ -37,3 +37,4 @@ jobs:
         hatch run ruff check src
         hatch run mypy src tests
         hatch run reuse lint
+        hatch run pytest

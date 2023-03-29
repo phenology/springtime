@@ -92,6 +92,15 @@ checking compliance with the REUSE specification.
 hatch run reuse lint
 ```
 
+## Hatch run quality-checks
+
+For convenience, we configured hatch to perform all the checks above with a
+single command:
+
+```bash
+hatch run quality-checks
+```
+
 ## Testing
 
 [Pytest](https://docs.pytest.org/en/7.2.x/) is used for running tests.
@@ -105,15 +114,6 @@ hatch run pytest tests/test_main.py
 
 # Run a single test
 hatch run pytest tests/test_main.py::test_cli
-```
-
-## Hatch run quality-checks
-
-For convenience, we configured hatch to perform all the checks above with a
-single command:
-
-```bash
-hatch run quality-checks
 ```
 
 ## Documentation

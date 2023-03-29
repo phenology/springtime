@@ -158,7 +158,8 @@ def npn_species():
             library(rnpn)
             # species_type column has nested df, which can not be converted, so drop it
             df = subset(npn_species(), select=-species_type)
-            write.table(df, file="{species_file}", sep=",", eol="\n", row.names=FALSE, col.names=TRUE)
+            write.table(df, file="{species_file}", sep=",", 
+                        eol="\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)
     return pd.read_csv(species_file)
@@ -175,7 +176,8 @@ def npn_phenophases():
         script = f"""\
             library(rnpn)
             df = npn_phenophases()
-            write.table(df, file="{phenophases_file}", sep=",", eol="\\n", row.names=FALSE, col.names=TRUE)
+            write.table(df, file="{phenophases_file}", sep=",", 
+                        eol="\\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)
     return pd.read_csv(phenophases_file)
@@ -192,7 +194,8 @@ def npn_stations():
         script = f"""\
             library(rnpn)
             df = npn_stations()
-            write.table(df, file="{stations_file}", sep=",", eol="\n", row.names=FALSE, col.names=TRUE)
+            write.table(df, file="{stations_file}", sep=",", 
+                        eol="\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)
     df = pd.read_csv(stations_file)

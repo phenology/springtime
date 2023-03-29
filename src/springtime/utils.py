@@ -106,6 +106,7 @@ class TimeoutError(Exception):
 
     pass
 
+
 def run_r_script(script: str, timeout=30, max_tries=3):
     """Run R script with retries and timeout logic.
 
@@ -115,7 +116,7 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         max_tries: Maximum number of times to execute the function.
     """
     retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
-            ["R", "--vanilla", "--no-echo"],
-            input=script.encode(),
-            stderr=subprocess.PIPE,
-        )
+        ["R", "--vanilla", "--no-echo"],
+        input=script.encode(),
+        stderr=subprocess.PIPE,
+    )

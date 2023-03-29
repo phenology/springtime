@@ -208,3 +208,20 @@ def npn_stations():
     else:
         df = pd.read_csv(stations_file)
     return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
+
+
+def npn_species_ids_by_functional_type(functional_type):
+    species = _lookup(npn_species(), "functional_type", functional_type)
+    return NamedIdentifiers(name=functional_type, items=species.species_id.to_list())
+
+
+def npn_phenophase_ids_by_name(phenophase_name):
+    phenophases = _lookup(npn_phenophases(), "phenophase_name", phenophase_name)
+    return NamedIdentifiers(
+        name=phenophase_name, items=phenophases.phenophase_id.to_list()
+    )
+
+
+def _lookup(df, column, expression):
+    """Return rows where column matches expression."""
+    return df[df[column].str.lower().str.contains(expression.lower())]

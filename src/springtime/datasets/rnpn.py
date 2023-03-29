@@ -3,19 +3,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import Dict, Literal, Optional, Sequence, Tuple
+from typing import Literal, Optional, Tuple
 
 import geopandas as gpd
 import pandas as pd
-import rpy2.robjects as ro
 from pydantic import BaseModel
-from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.datasets.daymet import NamedArea
-
+from springtime.utils import NamedArea, NamedIdentifiers, run_r_script
 
 request_source = "Springtime user https://github.com/springtime/springtime"
+data_dir = CONFIG.data_dir / "rnpn"
+species_file = data_dir / "species.csv"
+phenophases_file = data_dir / "phenophases.csv"
+stations_file = data_dir / "stations.csv"
 
 
 class RNPN(BaseModel):
@@ -65,15 +66,11 @@ class RNPN(BaseModel):
 
     dataset: Literal["RNPN"] = "RNPN"
     years: Tuple[int, int]
-    species_ids: Optional[Sequence[int]]
-    phenophase_ids: Optional[Sequence[int]]
+    species_ids: Optional[NamedIdentifiers]
+    phenophase_ids: Optional[NamedIdentifiers]
     area: Optional[NamedArea] = None
 
-    @property
-    def directory(self):
-        return CONFIG.data_dir / "rnpn"
-
-    def _filename(self):
+    def _filename(self, year):
         """Path where files will be downloaded to and loaded from.
 
         In rnpn you can only specify dir, filename is chosen for you. So we
@@ -82,62 +79,71 @@ class RNPN(BaseModel):
         parts = [
             "rnpn_npn_data",
             "y",
-            self.years[0],
-            self.years[1],
+            year,
         ]
         if self.species_ids is not None:
-            parts.append("s")
-            parts.extend(self.species_ids)
+            parts.append(self.species_ids.name)
         if self.phenophase_ids is not None:
-            parts.append("p")
-            parts.extend(self.phenophase_ids)
+            parts.append(self.phenophase_ids.name)
         if self.area is not None:
-            parts.append("a")
-            parts.extend(self.area.bbox)
+            parts.append(self.area.name)
         rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
-        return self.directory / rnpn_filename
-
-    def download(self):
-        """Download the data."""
-        self.directory.mkdir(parents=True, exist_ok=True)
-
-        filename = self._filename()
-
-        if filename.exists():
-            print(f"{filename} already exists, skipping")
-        else:
-            print(f"downloading {filename}")
-            self._r_download(filename)
+        return data_dir / rnpn_filename
 
     def load(self):
         """Load the dataset into memory."""
-        filename = self._filename()
-        df = pd.read_csv(filename)
+        df = pd.concat(
+            [
+                pd.read_csv(self._filename(year))
+                for year in range(self.years[0], self.years[1] + 1)
+            ]
+        )
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
-    def _r_download(self, filename: Path):
-        """Download data using rnpn's download function.
+    def download(self, timeout=30):
+        """Download the data.
 
-        This executes R code in python using the rpy2 package.
+        Args:
+            timeout: time in seconds to wait for a response of the npn server.
+
+        Raises:
+            TimeoutError: If requests still fails after 3 attempts.
+
         """
+        data_dir.mkdir(parents=True, exist_ok=True)
 
-        opt_args: Dict[str, Sequence] = {}
+        for year in range(self.years[0], self.years[1] + 1):
+            filename = self._filename(year)
+
+            if filename.exists() and not CONFIG.force_override:
+                print(f"{filename} already exists, skipping")
+            else:
+                print(f"downloading {filename}")
+                run_r_script(self._r_download(filename, year))
+
+    def _r_download(self, filename: Path, year):
+        opt_args = []
         if self.area is not None:
-            opt_args["coords"] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
+            coords = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]
+            opt_args.append(f"coords = c({','.join(coords)})")
         if self.species_ids is not None:
-            opt_args["species_id"] = self.species_ids
+            species_ids = map(str, self.species_ids.items)
+            opt_args.append(f"species_id = c({','.join(species_ids)})")
         if self.phenophase_ids is not None:
-            opt_args["phenophase_id"] = self.phenophase_ids
+            phenophase_ids = map(str, self.phenophase_ids.items)
+            opt_args.append(f"phenophase_id = c({','.join(phenophase_ids)})")
 
-        rnpn = importr("rnpn")
-        rnpn.npn_download_individual_phenometrics(
-            request_source=request_source,
-            years=list(range(self.years[0], self.years[1] + 1)),
-            download_path=str(filename),
-            **opt_args,
-        )
+        return f"""\
+            library(rnpn)
+            npn_download_individual_phenometrics(
+                request_source = "{request_source}",
+                years = c({year}),
+                download_path = "{str(filename)}",
+                {','.join(opt_args)}
+            )
+        """
 
 
 def npn_species():
@@ -146,13 +152,17 @@ def npn_species():
     Returns:
         Pandas dataframe with species_id and other species related fields.
     """
-    rnpn = importr("rnpn")
-    r_subset = ro.r["subset"]
-    r_as = ro.r["as.data.frame"]
-    # species_type column has nested df, which can not be converted, so drop it
-    nested_column_index = -19
-    r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
-    return ro.pandas2ri.rpy2py_dataframe(r_df)
+    if not species_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        script = f"""\
+            library(rnpn)
+            # species_type column has nested df, which can not be converted, so drop it
+            df = subset(npn_species(), select=-species_type)
+            write.table(df, file="{species_file}", sep=",", 
+                        eol="\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
+    return pd.read_csv(species_file)
 
 
 def npn_phenophases():
@@ -161,6 +171,49 @@ def npn_phenophases():
     Returns:
         Pandas dataframe with phenophase_id and other phenophase related fields.
     """
-    rnpn = importr("rnpn")
-    r_df = rnpn.npn_phenophases()
-    return ro.pandas2ri.rpy2py_dataframe(r_df)
+    if not phenophases_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        script = f"""\
+            library(rnpn)
+            df = npn_phenophases()
+            write.table(df, file="{phenophases_file}", sep=",", 
+                        eol="\\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
+    return pd.read_csv(phenophases_file)
+
+
+def npn_stations():
+    """Get available stations on npn.
+
+    Returns:
+        Pandas dataframe with station_id and other station related fields.
+    """
+    if not stations_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        script = f"""\
+            library(rnpn)
+            df = npn_stations()
+            write.table(df, file="{stations_file}", sep=",", 
+                        eol="\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
+    df = pd.read_csv(stations_file)
+    return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
+
+
+def npn_species_ids_by_functional_type(functional_type):
+    species = _lookup(npn_species(), "functional_type", functional_type)
+    return NamedIdentifiers(name=functional_type, items=species.species_id.to_list())
+
+
+def npn_phenophase_ids_by_name(phenophase_name):
+    phenophases = _lookup(npn_phenophases(), "phenophase_name", phenophase_name)
+    return NamedIdentifiers(
+        name=phenophase_name, items=phenophases.phenophase_id.to_list()
+    )
+
+
+def _lookup(df, column, expression):
+    """Return rows where column matches expression."""
+    return df[df[column].str.lower().str.contains(expression.lower())]

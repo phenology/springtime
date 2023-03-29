@@ -84,11 +84,11 @@ features = ["r", "dev", "docs"]
 
 [tool.hatch.envs.default.scripts]
 quality-checks = [
-  "reuse lint",
   "black src tests",
   "ruff check src tests --fix",
   "mypy src tests",
   "pytest",
+  "reuse lint",
 ]
 
 [tool.mypy]

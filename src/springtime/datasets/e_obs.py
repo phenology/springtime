@@ -166,9 +166,9 @@ class EOBSMultiplePoints(EOBS):
 
     def load(self):
         ds = super().load()
-        #pointwise selection
-        lons = xr.DataArray([p[0] for p in self.points], dims='points')
-        lats = xr.DataArray([p[1] for p in self.points], dims='points')
+        # pointwise selection
+        lons = xr.DataArray([p[0] for p in self.points], dims="points")
+        lats = xr.DataArray([p[1] for p in self.points], dims="points")
         return ds.sel(
             longitude=lons,
             latitude=lats,

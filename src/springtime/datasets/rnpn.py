@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, NamedIdentifiers
+from springtime.utils import NamedArea, NamedIdentifiers, retry
 
 request_source = "Springtime user https://github.com/springtime/springtime"
 data_dir = CONFIG.data_dir / "rnpn"
@@ -95,7 +95,12 @@ class RNPN(BaseModel):
         return data_dir / rnpn_filename
 
     def download(self):
-        """Download the data."""
+        """Download the data.
+
+        Each request to the npn server is attempted for 3 times
+        with each time a timeout of 10 seconds.
+        If it still fails then will raise a TimeoutError exception.
+        """
         data_dir.mkdir(parents=True, exist_ok=True)
 
         for year in range(self.years[0], self.years[1] + 1):
@@ -105,7 +110,7 @@ class RNPN(BaseModel):
                 print(f"{filename} already exists, skipping")
             else:
                 print(f"downloading {filename}")
-                self._r_download(filename)
+                self._r_download(filename, year)
 
     def load(self):
         """Load the dataset into memory."""
@@ -119,7 +124,10 @@ class RNPN(BaseModel):
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
-    def _r_download(self, filename: Path):
+    # TODO speed of response depends on size of request and server load
+    # should base timeout on request size
+    @retry()
+    def _r_download(self, filename: Path, year):
         """Download data using rnpn's download function.
 
         This executes R code in python using the rpy2 package.
@@ -138,12 +146,13 @@ class RNPN(BaseModel):
         with redirect_stderr(StringIO()):
             rnpn.npn_download_individual_phenometrics(
                 request_source=request_source,
-                years=list(range(self.years[0], self.years[1] + 1)),
+                years=[year],
                 download_path=str(filename),
                 **opt_args,
             )
 
 
+@retry()
 def npn_species():
     """Get available species on npn.
 
@@ -163,6 +172,7 @@ def npn_species():
     return pd.read_csv(species_file)
 
 
+@retry()
 def npn_phenophases():
     """Get available phenophases on npn.
 
@@ -178,6 +188,7 @@ def npn_phenophases():
     return pd.read_csv(phenophases_file)
 
 
+@retry()
 def npn_stations():
     """Get available stations on npn.
 

@@ -15,6 +15,7 @@ from rpy2.robjects.packages import importr
 from springtime.config import CONFIG
 from springtime.utils import NamedArea
 
+
 class PEP725Phenor(BaseModel):
     """Download and load data from https://pep725.eu .
 

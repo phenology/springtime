@@ -14,6 +14,7 @@ from pydantic.types import PositiveInt
 from springtime.config import CONFIG
 from springtime.utils import NamedArea
 
+
 class RPPO(BaseModel):
     """Data from the Plant Phenology Ontology data portal.
 

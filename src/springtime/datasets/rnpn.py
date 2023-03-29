@@ -2,11 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from contextlib import redirect_stderr
-from io import StringIO
 from pathlib import Path
 import subprocess
-from typing import Dict, Literal, Optional, Sequence, Tuple
+from typing import Literal, Optional, Tuple
 
 import geopandas as gpd
 import pandas as pd
@@ -107,12 +105,15 @@ class RNPN(BaseModel):
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
 
-    def download(self):
+    def download(self, timeout=30):
         """Download the data.
 
-        Each request to the npn server is attempted for 3 times
-        with each time a timeout of 10 seconds.
-        If it still fails then will raise a TimeoutError exception.
+        Args:
+            timeout: time in seconds to wait for a response of the npn server.
+
+        Raises:
+            TimeoutError: If requests still fails after 3 attempts.
+
         """
         data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -123,11 +124,8 @@ class RNPN(BaseModel):
                 print(f"{filename} already exists, skipping")
             else:
                 print(f"downloading {filename}")
-                self._download_year(filename, year)
+                retry(timeout=timeout)(self._download_year)(filename, year)
 
-    # TODO speed of response depends on size of request and server load
-    # should base timeout on request size
-    @retry()
     def _download_year(self, filename: Path, year):
         subprocess.run(
             ["R", "--vanilla", "--no-echo"],

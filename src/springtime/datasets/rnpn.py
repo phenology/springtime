@@ -15,7 +15,7 @@ from springtime.config import CONFIG
 from springtime.utils import NamedArea, NamedIdentifiers
 
 request_source = "Springtime user https://github.com/springtime/springtime"
-
+data_dir = CONFIG.data_dir / "rnpn"
 
 class RNPN(BaseModel):
     """Download and load data from NPN.
@@ -68,10 +68,6 @@ class RNPN(BaseModel):
     phenophase_ids: Optional[NamedIdentifiers]
     area: Optional[NamedArea] = None
 
-    @property
-    def directory(self):
-        return CONFIG.data_dir / "rnpn"
-
     def _filename(self):
         """Path where files will be downloaded to and loaded from.
 
@@ -91,15 +87,15 @@ class RNPN(BaseModel):
         if self.area is not None:
             parts.append(self.area.name)
         rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
-        return self.directory / rnpn_filename
+        return data_dir / rnpn_filename
 
     def download(self):
         """Download the data."""
-        self.directory.mkdir(parents=True, exist_ok=True)
+        data_dir.mkdir(parents=True, exist_ok=True)
 
         filename = self._filename()
 
-        if filename.exists():
+        if filename.exists() and not CONFIG.force_override:
             print(f"{filename} already exists, skipping")
         else:
             print(f"downloading {filename}")
@@ -136,20 +132,26 @@ class RNPN(BaseModel):
         )
 
 
+species_file = data_dir / 'species.csv'
+
 def npn_species():
     """Get available species on npn.
 
     Returns:
         Pandas dataframe with species_id and other species related fields.
     """
-    rnpn = importr("rnpn")
-    r_subset = ro.r["subset"]
-    r_as = ro.r["as.data.frame"]
-    # species_type column has nested df, which can not be converted, so drop it
-    nested_column_index = -19
-    r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
-    return ro.pandas2ri.rpy2py_dataframe(r_df)
+    if not species_file.exists() or CONFIG.force_override:
+        rnpn = importr("rnpn")
+        r_subset = ro.r["subset"]
+        r_as = ro.r["as.data.frame"]
+        # species_type column has nested df, which can not be converted, so drop it
+        nested_column_index = -19
+        r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
+        df = ro.pandas2ri.rpy2py_dataframe(r_df)
+        df.to_csv(species_file, index=False)
+    return pd.read_csv(species_file)
 
+phenophases_file = data_dir / 'phenophases.csv'
 
 def npn_phenophases():
     """Get available phenophases on npn.
@@ -157,6 +159,27 @@ def npn_phenophases():
     Returns:
         Pandas dataframe with phenophase_id and other phenophase related fields.
     """
-    rnpn = importr("rnpn")
-    r_df = rnpn.npn_phenophases()
-    return ro.pandas2ri.rpy2py_dataframe(r_df)
+    if not phenophases_file.exists() or CONFIG.force_override:
+        rnpn = importr("rnpn")
+        r_df = rnpn.npn_phenophases()
+        df = ro.pandas2ri.rpy2py_dataframe(r_df)
+        df.to_csv(phenophases_file, index=False)
+    return pd.read_csv(phenophases_file)
+
+stations_file = data_dir / 'stations.csv'
+
+def npn_stations():
+    """Get available stations on npn.
+
+    Returns:
+        Pandas dataframe with station_id and other station related fields.
+    """
+    if not stations_file.exists() or CONFIG.force_override:
+        rnpn = importr("rnpn")
+        r_df = rnpn.npn_stations()
+        df = ro.pandas2ri.rpy2py_dataframe(r_df)
+        df.to_csv(stations_file, index=False)
+    else:
+        df = pd.read_csv(stations_file)
+    return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
+    

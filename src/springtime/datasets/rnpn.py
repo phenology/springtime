@@ -132,7 +132,6 @@ class RNPN(BaseModel):
 
         This executes R code in python using the rpy2 package.
         """
-
         opt_args: Dict[str, Sequence] = {}
         if self.area is not None:
             opt_args["coords"] = [str(self.area.bbox[i]) for i in [1, 0, 3, 2]]

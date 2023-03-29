@@ -3,17 +3,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-import subprocess
 from typing import Literal, Optional, Tuple
 
 import geopandas as gpd
 import pandas as pd
-import rpy2.robjects as ro
 from pydantic import BaseModel
-from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, NamedIdentifiers, retry
+from springtime.utils import NamedArea, NamedIdentifiers, run_r_script
 
 request_source = "Springtime user https://github.com/springtime/springtime"
 data_dir = CONFIG.data_dir / "rnpn"
@@ -124,14 +121,7 @@ class RNPN(BaseModel):
                 print(f"{filename} already exists, skipping")
             else:
                 print(f"downloading {filename}")
-                retry(timeout=timeout)(self._download_year)(filename, year)
-
-    def _download_year(self, filename: Path, year):
-        subprocess.run(
-            ["R", "--vanilla", "--no-echo"],
-            input=self._r_download(filename, year).encode(),
-            stderr=subprocess.PIPE,
-        )
+                run_r_script(self._r_download(filename, year))
 
     def _r_download(self, filename: Path, year):
         opt_args = []
@@ -153,10 +143,9 @@ class RNPN(BaseModel):
                 download_path = "{str(filename)}",
                 {','.join(opt_args)}
             )
-            """
+        """
 
 
-@retry()
 def npn_species():
     """Get available species on npn.
 
@@ -165,18 +154,16 @@ def npn_species():
     """
     if not species_file.exists() or CONFIG.force_override:
         data_dir.mkdir(parents=True, exist_ok=True)
-        rnpn = importr("rnpn")
-        r_subset = ro.r["subset"]
-        r_as = ro.r["as.data.frame"]
-        # species_type column has nested df, which can not be converted, so drop it
-        nested_column_index = -19
-        r_df = r_as(r_subset(rnpn.npn_species(), select=nested_column_index))
-        df = ro.pandas2ri.rpy2py_dataframe(r_df)
-        df.to_csv(species_file, index=False)
+        script = f"""\
+            library(rnpn)
+            # species_type column has nested df, which can not be converted, so drop it
+            df = subset(npn_species(), select=-species_type)
+            write.table(df, file="{species_file}", sep=",", eol="\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
     return pd.read_csv(species_file)
 
 
-@retry()
 def npn_phenophases():
     """Get available phenophases on npn.
 
@@ -185,14 +172,15 @@ def npn_phenophases():
     """
     if not phenophases_file.exists() or CONFIG.force_override:
         data_dir.mkdir(parents=True, exist_ok=True)
-        rnpn = importr("rnpn")
-        r_df = rnpn.npn_phenophases()
-        df = ro.pandas2ri.rpy2py_dataframe(r_df)
-        df.to_csv(phenophases_file, index=False)
+        script = f"""\
+            library(rnpn)
+            df = npn_phenophases()
+            write.table(df, file="{phenophases_file}", sep=",", eol="\\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
     return pd.read_csv(phenophases_file)
 
 
-@retry()
 def npn_stations():
     """Get available stations on npn.
 
@@ -201,12 +189,13 @@ def npn_stations():
     """
     if not stations_file.exists() or CONFIG.force_override:
         data_dir.mkdir(parents=True, exist_ok=True)
-        rnpn = importr("rnpn")
-        r_df = rnpn.npn_stations()
-        df = ro.pandas2ri.rpy2py_dataframe(r_df)
-        df.to_csv(stations_file, index=False)
-    else:
-        df = pd.read_csv(stations_file)
+        script = f"""\
+            library(rnpn)
+            df = npn_stations()
+            write.table(df, file="{stations_file}", sep=",", eol="\n", row.names=FALSE, col.names=TRUE)
+        """
+        run_r_script(script)
+    df = pd.read_csv(stations_file)
     return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
 
 

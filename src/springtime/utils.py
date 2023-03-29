@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from logging import getLogger
+import subprocess
 import time
 import signal
 from functools import wraps
@@ -47,9 +48,13 @@ def retry(timeout=10, max_tries=3, delay=1, backoff=2):
     The decorator will call the function up to max_tries times if it raises
     an exception.
 
+    Note:
+        Decorating function which calls rpy2 does not work. Please use
+        :func:run_r_script method instead.
+
     Args:
-        timeout: _description_. Defaults to 10.
-        max_tries: _description_. Defaults to 3.
+        timeout: Maximum mumber of seconds the function may take.
+        max_tries: Maximum number of times to execute the function.
         delay: Sleep this many seconds * backoff * try number after failure
         backoff: Multiply delay by this factor after each failure
 
@@ -100,3 +105,17 @@ class TimeoutError(Exception):
     """
 
     pass
+
+def run_r_script(script: str, timeout=30, max_tries=3):
+    """Run R script with retries and timeout logic.
+
+    Args:
+        script: The R script to run
+        timeout: Maximum mumber of seconds the function may take.
+        max_tries: Maximum number of times to execute the function.
+    """
+    retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
+            ["R", "--vanilla", "--no-echo"],
+            input=script.encode(),
+            stderr=subprocess.PIPE,
+        )

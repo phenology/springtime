@@ -141,6 +141,7 @@ def npn_species():
         Pandas dataframe with species_id and other species related fields.
     """
     if not species_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
         rnpn = importr("rnpn")
         r_subset = ro.r["subset"]
         r_as = ro.r["as.data.frame"]
@@ -160,6 +161,7 @@ def npn_phenophases():
         Pandas dataframe with phenophase_id and other phenophase related fields.
     """
     if not phenophases_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
         rnpn = importr("rnpn")
         r_df = rnpn.npn_phenophases()
         df = ro.pandas2ri.rpy2py_dataframe(r_df)
@@ -175,6 +177,7 @@ def npn_stations():
         Pandas dataframe with station_id and other station related fields.
     """
     if not stations_file.exists() or CONFIG.force_override:
+        data_dir.mkdir(parents=True, exist_ok=True)
         rnpn = importr("rnpn")
         r_df = rnpn.npn_stations()
         df = ro.pandas2ri.rpy2py_dataframe(r_df)

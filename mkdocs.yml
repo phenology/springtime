@@ -38,6 +38,8 @@ theme:
     - navigation.tabs.sticky
   icon:
     repo: fontawesome/brands/github-alt
+    admonition:
+      example: octicons/beaker-16
 
   palette:
     # Palette toggle for light mode
@@ -74,6 +76,8 @@ extra:
   generator: false
 
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

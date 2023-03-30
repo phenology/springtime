@@ -20,6 +20,7 @@ class BoundingBox(NamedTuple):
     xmax: float
     ymax: float
 
+
 class NamedArea(BaseModel):
     # TODO generalize
     # perhaps use https://github.com/developmentseed/geojson-pydantic

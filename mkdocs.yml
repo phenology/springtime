@@ -13,8 +13,20 @@ nav:
   - User Guide:
       - Getting started: setup.md
       - CRIB installation: crib.md
-  - Datasets: datasets.md
-  - Example notebooks: notebooks/pk_wishful_workflows.ipynb
+      - Example workflow: notebooks/pk_wishful_workflows.ipynb
+      - Available recipes: recipes.md
+  - Datasets:
+      - Data sources and existing tools: datasets.md
+      - Field observations:
+        - National Phenology Network: notebooks/datasets_npn.ipynb
+        - Plant Phenology Ontology: notebooks/datasets_ppo.ipynb
+        - Pan European Phenology: notebooks/datasets_pep725.ipynb
+      - Satellites:
+        - MODIS: notebooks/datasets_modis.ipynb
+      - Meteorology:
+        - Daymet: notebooks/datasets_daymet.ipynb
+        - E-Obs: notebooks/datasets_eobs.ipynb
+  - Example use cases (notebooks): example_usecases.md
   - Developer Guide: develop.md
 
 theme:
@@ -47,7 +59,15 @@ theme:
 plugins:
 - mkdocs-jupyter:
       include_source: True
-      include: ["pk_wishful_workflows.ipynb"]
+      include: [
+        "pk_wishful_workflows.ipynb",
+        "datasets_npn.ipynb",
+        "datasets_ppo.ipynb",
+        "datasets_pep725.ipynb",
+        "datasets_modis.ipynb",
+        "datasets_eobs.ipynb",
+        "datasets_daymet.ipynb",
+        ]
 - include-markdown
 - search
 extra:

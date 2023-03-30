@@ -120,3 +120,38 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         input=script.encode(),
         stderr=subprocess.PIPE,
     )
+
+def transponse_df(df, index=('year', 'geometry'), columns=('doy',)):
+    """Many dataset do not have rows per year and geometry, 
+    but more frequent like daily.
+
+    This method pivots the rows to columns. 
+
+    Args:
+        df: _description_
+        index: _description_. Defaults to ('year', 'geometry').
+        columns: _description_. Defaults to ('doy',).
+
+    Returns:
+        Data frame with year and geometry column and 
+        columns named `<original column name>_<doy>`.
+    """
+    return df.pivot(index=index, columns=columns).reset_index()
+    # TODO flatten row index
+    # TODO flatten + enumerate column index
+
+def rolling_mean(df, over, groupby=('year', 'geometry'), window_sizes=(3,7,15,30,90,365)):
+    """Group by `groupby` columns and calculate rolling mean 
+    for `over` columns with different window sizes.
+
+    Args:
+        df: _description_
+        over: _description_. Defaults to ('measurementx',).
+        groupby: _description_. Defaults to ('year', 'geometry').
+        window_sizes: _description_. Defaults to [3,7,15,30,90,365].
+
+    Returns:
+        _description_
+    """
+    # TODO implement
+    return df

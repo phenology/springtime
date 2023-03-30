@@ -7,18 +7,24 @@ import time
 import signal
 from functools import wraps
 
-from typing import Sequence, Tuple
+from typing import NamedTuple, Sequence
 from pydantic import BaseModel, validator
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
 
 
+class BoundingBox(NamedTuple):
+    xmin: float
+    ymin: float
+    xmax: float
+    ymax: float
+
 class NamedArea(BaseModel):
     # TODO generalize
     # perhaps use https://github.com/developmentseed/geojson-pydantic
     name: str
-    bbox: Tuple[float, float, float, float]
+    bbox: BoundingBox
 
     @validator("bbox")
     def _parse_bbox(cls, values):

@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 Here, we provide several notebooks to show how to use `springtime` package in
 different use cases. Click on each title to download the notebook.
 

@@ -81,9 +81,8 @@ Predict the day of first bloom of the common lilac given indirect observations
 ![illustration_example_use_case](docs/illustration.png)
 <!--illustration-end-->
 
-<!--usage-start-->
 ## Usage
-
+<!--usage-start-->
 You can run `springtime` as a command-line tool in a terminal or use it as a python library e.g. in a Jupyter notebook. Below, we explain both CLI and API.
 <!--usage-end-->
 

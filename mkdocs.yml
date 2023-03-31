@@ -12,7 +12,7 @@ nav:
       - Getting started: setup.md
   - User Guide:
       - Getting started: setup.md
-      - CRIB installation: crib.md
+      - Usage: usage.md
       - Example workflow: notebooks/pk_wishful_workflows.ipynb
   - Datasets:
       - Data sources and existing tools: datasets.md

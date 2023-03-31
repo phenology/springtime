@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import xarray as xr
 from itertools import product
 from typing import Literal, Sequence, Tuple
 from urllib.request import urlretrieve
 
+import xarray as xr
 from pydantic import BaseModel
 from xarray import open_mfdataset
 

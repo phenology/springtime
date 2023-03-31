@@ -33,7 +33,6 @@ xarray + pydap
 pyproj
 """
 
-import subprocess
 from datetime import datetime
 from typing import Literal, Sequence, Tuple
 
@@ -81,7 +80,7 @@ class DaymetSinglePoint(BaseModel):
         is TRUE.
         """
         if not self._path.exists() or CONFIG.force_override:
-            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+            run_r_script(self._r_download())
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -119,6 +118,21 @@ class DaymetMultiplePoints(BaseModel):
     ```R
     install.packages("daymetr")
     ```
+
+    Example:
+
+        To download data for 3 points::
+
+            source = DaymetMultiplePoints(
+                points=[
+                    [-84.2625, 36.0133],
+                    [-86, 39.6],
+                    [-85, 40],
+                ],
+                years=[2000,2002]
+            )
+            source.download()
+            df = source.load()
 
     """
 

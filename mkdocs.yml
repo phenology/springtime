@@ -24,7 +24,7 @@ nav:
         - MODIS: notebooks/datasets_modis.ipynb
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
-        - E-Obs: notebooks/datasets_eobs.ipynb
+        - E-OBS: notebooks/datasets_eobs.ipynb
       - Available dataset recipes: recipes.md
   - Developer Guide: develop.md
 

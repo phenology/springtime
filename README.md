@@ -81,10 +81,20 @@ Predict the day of first bloom of the common lilac given indirect observations
 ![illustration_example_use_case](docs/illustration.png)
 <!--illustration-end-->
 
-<!--recipe-start-->
-## Scientific recipes (workflows)
+<!--usage-start-->
+## Usage
 
-Workflows can be written in a nice and readable format, e.g.
+You can run `springtime` as a command-line tool in a terminal or use it as a python library e.g. in a Jupyter notebook. Below, we explain both CLI and API.
+<!--usage-end-->
+
+<!--recipe-start-->
+### CLI to run recipes
+
+The main component of `springtime` command-line is the recipe (scientific
+workflow). A recipe is a file with `yaml` extension that includes a set of
+instructions to reproduce a certain result. Recipes are written in a nice and
+readable format,
+e.g.
 
 ```yaml
 datasets:
@@ -102,16 +112,20 @@ models:
     options: ...
 ```
 
-Such a recipe can then be executed with a single command line call:
+Such a recipe can then be executed with `springtime` command in a terminal:
 
 ```bash
 springtime run recipe_syringa.yaml
 ```
 
+We provide several "recipes" for downloading data from various sources.
+See "Datasets"
+[documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+
 <!--recipe-end-->
 
 <!--api-start-->
-## Python API
+### Python API
 
 Springtime is written in Python (with parts in R) and can also be used in an
 interactive (IPython/Jupyter) session. For example:
@@ -122,4 +136,9 @@ dataset = PEP725Phenor(species='Syringa vulgaris')
 dataset.download()
 df = dataset.load()
 ```
+
+We provide several notebooks for downloading data from various sources.
+See "Datasets"
+[documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+
 <!--api-end-->

@@ -134,18 +134,35 @@ def run_r_script(script: str, timeout=30, max_tries=3):
 
 
 def transponse_df(df, index=("year", "geometry"), columns=("doy",)):
-    """Many dataset do not have rows per year and geometry,
-    but more frequent like daily.
+    """Ensure features are in columns not in rows
 
-    This method pivots the rows to columns.
+    ML records are characterized by a unique combination of location and year.
+    Predictor variables like (daily/monthly) temperature may have multiple values for the same location and year.
+
+    This function reorganizes the data such that multiple predictor values for the same records occur in separate columns.
+
+    For example:
+
+    ```
+           year                 geometry  doy   temperature
+        0  2000  POINT (1.00000 1.00000)    1             14
+        1  2000  POINT (1.00000 1.00000)    2             15
+    ```
+
+    becomes
+
+    ```
+           year                 geometry  temperature_1  temperature_2
+        0  2000  POINT (1.00000 1.00000)             14             15
+    ```
 
     Args:
-        df: _description_
-        index: _description_. Defaults to ('year', 'geometry').
-        columns: _description_. Defaults to ('doy',).
+        df: The raw data in "long form"
+        index: Columns to use as unique record identifiers.
+        columns: Columns that contain the index for the repeated predictors.
 
     Returns:
-        Data frame with year and geometry column and
+        "Wide form" data frame with year and geometry column and
         columns named `<original column name>_<doy>`.
     """
     pdf = df.pivot(index=index, columns=columns).reset_index()
@@ -164,15 +181,6 @@ def rolling_mean(
 ):
     """Group by `groupby` columns and calculate rolling mean
     for `over` columns with different window sizes.
-
-    Args:
-        df: _description_
-        over: _description_. Defaults to ('measurementx',).
-        groupby: _description_. Defaults to ('year', 'geometry').
-        window_sizes: _description_. Defaults to [3,7,15,30,90,365].
-
-    Returns:
-        _description_
     """
     # TODO implement
-    return df
+    raise NotImplementedError()

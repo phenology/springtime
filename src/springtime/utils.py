@@ -34,9 +34,7 @@ class NamedArea(BaseModel):
         assert xmax > xmin, "xmax should be larger than xmin"
         assert ymax > ymin, "ymax should be larger than ymin"
         assert ymax < 90 and ymin > 0, "Latitudes should be in [0, 90]"
-        assert (
-            xmin > -180 and xmax < 180
-        ), "Longitudes should be in [-180, 180]."
+        assert xmin > -180 and xmax < 180, "Longitudes should be in [-180, 180]."
         return values
 
     @property
@@ -137,9 +135,11 @@ def transponse_df(df, index=("year", "geometry"), columns=("doy",)):
     """Ensure features are in columns not in rows
 
     ML records are characterized by a unique combination of location and year.
-    Predictor variables like (daily/monthly) temperature may have multiple values for the same location and year.
+    Predictor variables like (daily/monthly) temperature may have multiple
+    values for the same location and year.
 
-    This function reorganizes the data such that multiple predictor values for the same records occur in separate columns.
+    This function reorganizes the data such that multiple predictor values for
+    the same records occur in separate columns.
 
     For example:
 
@@ -167,8 +167,7 @@ def transponse_df(df, index=("year", "geometry"), columns=("doy",)):
     """
     pdf = df.pivot(index=index, columns=columns).reset_index()
     pdf.columns = [
-        "_".join(map(str, filter(lambda x: x != "", i)))
-        for i in pdf.columns.values
+        "_".join(map(str, filter(lambda x: x != "", i))) for i in pdf.columns.values
     ]
     return gpd.GeoDataFrame(pdf)
 

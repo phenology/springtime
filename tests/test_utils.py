@@ -36,8 +36,9 @@ def test_join_spatiotemporal_same_geometry():
         {
             "year": [1999, 2000, 2000, 2001, 2001, 2002],
             "geometry": gpd.GeoSeries(
-                # [Point(1.01, 1.01), Point(1.01, 1.01), Point(2.1, 2.1), Point(1.01, 1.01), Point(2.1, 2.1), Point(2.1, 2.1)]
-                # Only do geometry exact match
+                # [Point(1.01, 1.01), Point(1.01, 1.01), Point(2.1, 2.1),
+                # Point(1.01, 1.01), Point(2.1, 2.1), Point(2.1, 2.1)] Only do
+                # geometry exact match
                 [
                     Point(1.0, 1.0),
                     Point(1.0, 1.0),
@@ -46,7 +47,8 @@ def test_join_spatiotemporal_same_geometry():
                     Point(2, 2),
                     Point(2, 2),
                 ]
-                # [Point(1.01, 1.01), Point(1.01, 1.01), Point(2, 2), Point(1.01, 1.01), Point(2, 2), Point(2, 2)]
+                # [Point(1.01, 1.01), Point(1.01, 1.01), Point(2, 2),
+                # Point(1.01, 1.01), Point(2, 2), Point(2, 2)]
             ),
             "spring-onset": [
                 0.5,
@@ -66,13 +68,21 @@ def test_join_spatiotemporal_same_geometry():
     )
 
     expected = gpd.GeoDataFrame(
-       data=[[2000, Point(1,1), 1.0, 2.0, 1.0],
-       [2000, Point(2,2), 3.0, 4.0, 3.0],
-       [2001, Point(1,1), 5.0, 6.0, 4.0],
-       [2001, Point(2,2), 7.0, 8.0, 6.0],
-       [1999, Point(1,1), np.nan, np.nan, 0.5],
-       [2002, Point(2,2), np.nan, np.nan, 7.5]],
-       columns=['year', 'geometry', 'measurementx_1', 'measurementx_2', 'spring-onset']
+        data=[
+            [2000, Point(1, 1), 1.0, 2.0, 1.0],
+            [2000, Point(2, 2), 3.0, 4.0, 3.0],
+            [2001, Point(1, 1), 5.0, 6.0, 4.0],
+            [2001, Point(2, 2), 7.0, 8.0, 6.0],
+            [1999, Point(1, 1), np.nan, np.nan, 0.5],
+            [2002, Point(2, 2), np.nan, np.nan, 7.5],
+        ],
+        columns=[
+            "year",
+            "geometry",
+            "measurementx_1",
+            "measurementx_2",
+            "spring-onset",
+        ],
     )
 
     assert_geodataframe_equal(result, expected)

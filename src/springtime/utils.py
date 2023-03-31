@@ -8,6 +8,7 @@ import signal
 from functools import wraps
 
 from typing import Sequence, Tuple
+import geopandas as gpd
 from pydantic import BaseModel, validator
 from shapely.geometry import Polygon
 
@@ -136,9 +137,13 @@ def transponse_df(df, index=('year', 'geometry'), columns=('doy',)):
         Data frame with year and geometry column and 
         columns named `<original column name>_<doy>`.
     """
-    return df.pivot(index=index, columns=columns).reset_index()
-    # TODO flatten row index
-    # TODO flatten + enumerate column index
+    pdf = df.pivot(index=index, columns=columns).reset_index()
+    pdf.columns = [
+        "_".join(map(str, filter(lambda x: x != "", i)))
+        for i in pdf.columns.values
+    ]
+    return gpd.GeoDataFrame(pdf)
+
 
 def rolling_mean(df, over, groupby=('year', 'geometry'), window_sizes=(3,7,15,30,90,365)):
     """Group by `groupby` columns and calculate rolling mean 

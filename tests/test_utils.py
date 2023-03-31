@@ -131,9 +131,6 @@ def test_transpose_geometry_doy_as_column():
             ],
         }
     )
-    print(input)
-    print(result)
-    print(expected)
     pd.testing.assert_frame_equal(result, expected)
 
 

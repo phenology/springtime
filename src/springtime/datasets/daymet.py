@@ -36,13 +36,14 @@ pyproj
 from datetime import datetime
 from typing import Literal, Sequence, Tuple
 
-import geopandas
+import geopandas as gpd
 import pandas as pd
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
+from shapely import Point
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, run_r_script
+from springtime.utils import NamedArea, run_r_script, transponse_df
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
@@ -83,6 +84,10 @@ class DaymetSinglePoint(BaseModel):
             run_r_script(self._r_download())
 
     def load(self):
+        raw_df = self.load_raw()
+        return transponse_df(raw_df, columns=['yday'])
+
+    def load_raw(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
@@ -92,8 +97,10 @@ class DaymetSinglePoint(BaseModel):
             nr_of_metadata_lines = 7
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
-            df.attrs["headers"] = "\n".join(headers)
-        return df
+
+        df.attrs["headers"] = "\n".join(headers)
+
+        return gpd.GeoDataFrame(df, geometry=[Point(self.point)]*len(df))
 
     def _r_download(self):
         return f"""\
@@ -107,6 +114,18 @@ class DaymetSinglePoint(BaseModel):
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """
+
+
+def resample(raw_df, frequency='month', operator='mean'):
+    date = pd.to_datetime(raw_df.year.astype(str) + raw_df.yday.astype(str), format="%Y%j")
+    if frequency == 'month':
+        timegrouper = date.dt.month
+    elif frequency == 'week':
+        timegrouper = date.dt.week
+    else:
+        raise ValueError("Frequency {frequency} not supported. Choose `week` or `month`.")
+
+    return raw_df.assign({frequency: timegrouper}).groupby(['year', 'geometry', timegrouper]).agg(operator).reset_index()
 
 
 class DaymetMultiplePoints(BaseModel):
@@ -158,7 +177,7 @@ class DaymetMultiplePoints(BaseModel):
         for handler in self._handlers:
             handler.download()
 
-    def load(self):
+    def load_raw(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
@@ -170,8 +189,8 @@ class DaymetMultiplePoints(BaseModel):
             df = handler.load()
             df["x"] = point[0]
             df["y"] = point[1]
-            geo_df = geopandas.GeoDataFrame(
-                df, geometry=geopandas.points_from_xy(df.x, df.y)
+            geo_df = gpd.GeoDataFrame(
+                df, geometry=gpd.points_from_xy(df.pop('x'), df.pop('y'))
             )
             dataframes.append(geo_df)
             headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
@@ -225,7 +244,7 @@ class DaymetBoundingBox(BaseModel):
             # took more than 30s so upped timeout
             run_r_script(self._r_download(), timeout=120)
 
-    def load(self):
+    def load_raw(self):
         files = list(self._box_dir.glob("*.nc"))
         return xr.open_mfdataset(files)
         # TODO skip files not asked for by

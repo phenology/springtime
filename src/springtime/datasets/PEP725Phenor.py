@@ -13,7 +13,7 @@ from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.datasets.daymet import NamedArea
+from springtime.utils import NamedArea
 
 
 class PEP725Phenor(BaseModel):

@@ -41,7 +41,8 @@ datasets:
     grid_resolution: 0.25deg
   bbox_1periods_1var_coarseres:
     dataset: EOBSBoundingBox
-    product_type: ensemble_mean
     years: [2000, 2002]
-    box: [55, 4, 50, 5]
+    area:
+      name: amsterdam
+      bbox: [4, 50, 5, 55]
     grid_resolution: 0.25deg

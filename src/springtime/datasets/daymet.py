@@ -41,31 +41,11 @@ import geopandas
 import pandas as pd
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
-from shapely.geometry import Polygon
 
 from springtime.config import CONFIG
+from springtime.utils import NamedArea, run_r_script
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
-
-
-class NamedArea(BaseModel):
-    # TODO generalize
-    # perhaps use https://github.com/developmentseed/geojson-pydantic
-    name: str
-    bbox: Tuple[float, float, float, float]
-
-    @validator("bbox")
-    def _parse_bbox(cls, values):
-        xmin, ymin, xmax, ymax = values
-        assert xmax > xmin, "xmax should be larger than xmin"
-        assert ymax > ymin, "ymax should be larger than ymin"
-        assert ymax < 90 and ymin > 0, "Latitudes should be in [0, 90]"
-        assert xmin > -180 and xmax < 180, "Longitudes should be in [-180, 180]."
-        return values
-
-    @property
-    def polygon(self):
-        return Polygon.from_bounds(*self.bbox)
 
 
 class DaymetSinglePoint(BaseModel):
@@ -200,10 +180,7 @@ class DaymetBoundingBox(BaseModel):
     """
 
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
-    box: Tuple[float, float, float, float]
-    """Bounding box as top left / bottom right pair (lat,lon,lat,lon).
-
-    Aka north,west,south,east in WGS84 projection."""
+    area: NamedArea
     years: Tuple[int, int]
     """ years is passed as range for example years=[2000, 2002] downloads data
     for three years."""
@@ -219,6 +196,7 @@ class DaymetBoundingBox(BaseModel):
     When empty will download all the previously mentioned climate variables.
     """
     frequency: Literal["daily", "monthly", "annual"] = "daily"
+    # TODO monthly saves as *daily*.nc
 
     def download(self):
         """Download the data.
@@ -228,11 +206,16 @@ class DaymetBoundingBox(BaseModel):
         """
         box_dir_exists = self._box_dir.exists()
         if not box_dir_exists or CONFIG.force_override or self._missing_files():
-            self._box_dir.mkdir()
-            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+            self._box_dir.mkdir(exist_ok=True, parents=True)
+            # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
+            # took more than 30s so upped timeout
+            run_r_script(self._r_download(), timeout=120)
 
     def load(self):
-        return xr.open_mfdataset(self._box_dir.glob("*.nc"))
+        files = list(self._box_dir.glob("*.nc"))
+        return xr.open_mfdataset(files)
+        # TODO skip files not asked for by
+        # self.years + self.variables + self.frequency combinations
         # TODO: add pre-processing to convert to dataframe.
 
     @root_validator()
@@ -249,12 +232,15 @@ class DaymetBoundingBox(BaseModel):
     def _r_download(self):
         param_list = ",".join([f"'{p}'" for p in self.variables])
         params = f"c({param_list})"
-        box = self.box
-        print(box)
+        # daymet wants bbox as top left / bottom right pair (lat,lon,lat,lon).
+        # Aka north,west,south,east in WGS84 projection.
+        # while self.area.bbox is xmin, ymin, xmax, ymax
+        # so do some reshuffling 3,0,1,2
+        box = self.area.bbox
         return f"""\
         library(daymetr)
         daymetr::download_daymet_ncss(
-            location = c({box[0]},{box[1]},{box[2]},{box[3]}),
+            location = c({box[3]},{box[0]},{box[1]},{box[2]}),
             start = {self.years[0]},
             end =  {self.years[1]},
             param = {params},
@@ -265,6 +251,8 @@ class DaymetBoundingBox(BaseModel):
     def _missing_files(self):
         n_years = self.years[1] - self.years[0] + 1
         n_files = len(list(self._box_dir.glob("*.nc")))
+        # TODO make smarter as box_dir can have files
+        # which are not part of this instance
         return n_files != n_years * len(self.variables)
 
     @property
@@ -272,8 +260,9 @@ class DaymetBoundingBox(BaseModel):
         """Directory in which download_daymet_ncss writes nc file.
 
         For each variable/year combination."""
-        box = f"{self.box[0]}_{self.box[1]}_{self.box[2]}_{self.box[3]}"
-        return CONFIG.data_dir / f"daymet_bounding_box_{box}"
+        return (
+            CONFIG.data_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
+        )
 
     @validator("years")
     def _valid_years(cls, years):

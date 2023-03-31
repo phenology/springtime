@@ -18,8 +18,12 @@ datasets:
   #     bbox: [4, 45, 8, 50]
   lilac_leaves:
       dataset: RNPN
-      species_ids: [36]  # Syringa vulgaris / common lilac
-      phenophase_ids: [483]  # Leaves
+      species_ids:
+        name: lilac
+        items: [36]  # Syringa vulgaris / common lilac
+      phenophase_ids:
+        name: leaves
+        items: [483]
       years: [2010, 2012]
   maple_buds:
     dataset: RNPN

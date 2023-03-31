@@ -7,10 +7,12 @@ from itertools import product
 from typing import Literal, Sequence, Tuple
 from urllib.request import urlretrieve
 
+import xarray as xr
 from pydantic import BaseModel
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
+from springtime.utils import NamedArea
 
 logger = logging.getLogger(__name__)
 
@@ -165,9 +167,12 @@ class EOBSMultiplePoints(EOBS):
 
     def load(self):
         ds = super().load()
+        # pointwise selection
+        lons = xr.DataArray([p[0] for p in self.points], dims="points")
+        lats = xr.DataArray([p[1] for p in self.points], dims="points")
         return ds.sel(
-            longitude=[p[0] for p in self.points],
-            latitude=[p[1] for p in self.points],
+            longitude=lons,
+            latitude=lats,
             method="nearest",
         ).to_dataframe()
 
@@ -178,17 +183,32 @@ class EOBSBoundingBox(EOBS):
     Fetches complete grid from
     https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
 
+    Example:
+
+        To load coarse mean temperature around amsterdam from 2002 till 2002::
+
+            from springtime.datasets.e_obs import EOBSBoundingBox
+
+            dataset = EOBSBoundingBox(
+                years=[2000,2002],
+                area={
+                    'name': 'amsterdam',
+                    'bbox': [4, 50, 5, 55]
+                },
+                grid_resolution='0.25deg'
+            )
+            dataset.download()
+            ds = dataset.load()
+
     """
 
     dataset: Literal["EOBSBoundingBox"] = "EOBSBoundingBox"
-    box: Tuple[float, float, float, float]
-    """Bounding box as top left / bottom right pair (lat,lon,lat,lon) 
-    aka north,west,south,east in WGS84 projection.
-    """
+    area: NamedArea
 
     def load(self):
         ds = super().load()
+        box = self.area.bbox
         return ds.sel(
-            longitude=slice(self.box[1], self.box[3]),
-            latitude=slice(self.box[0], self.box[2]),
+            longitude=slice(box[0], box[2]),
+            latitude=slice(box[1], box[3]),
         )

@@ -6,15 +6,17 @@
 import logging
 from pathlib import Path
 from typing import List, Literal, Optional, Tuple
-import pandas as pd
+
 import geopandas
+import pandas as pd
 import rpy2.robjects as ro
 from pydantic import BaseModel, PositiveInt
 from rpy2.robjects import pandas2ri
-from rpy2.robjects.packages import importr
 from rpy2.robjects.conversion import localconverter
+from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
+from springtime.utils import NamedArea
 
 logger = logging.getLogger(__file__)
 
@@ -117,8 +119,7 @@ class PhenocamrBoundingBox(BaseModel):
     """
 
     dataset: Literal["phenocambbox"] = "phenocambbox"
-    box: Tuple[float, float, float, float]
-    """Bounding box as top left / bottom right pair (maxlat,minlon,minlat,maxlon)."""
+    area: NamedArea
     veg_type: Optional[str]
     """Vegetation type (DB, EN). Default is all."""
     frequency: Literal["1", "3", "roistats"] = "3"
@@ -141,10 +142,11 @@ class PhenocamrBoundingBox(BaseModel):
         rois_df = list_rois()
         if self.veg_type is not None:
             rois_df = rois_df.loc[rois_df.veg_type == self.veg_type]
+        box = self.area.bbox
         rois_df = rois_df.cx[
             # xmin:xmax, ymin:ymax
-            self.box[1] : self.box[3],
-            self.box[0] : self.box[2],
+            box[0] : box[2],
+            box[1] : box[3],
         ]
         return rois_df
 

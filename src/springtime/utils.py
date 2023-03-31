@@ -1,13 +1,13 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
-from logging import getLogger
+import signal
 import subprocess
 import time
-import signal
 from functools import wraps
+from logging import getLogger
+from typing import NamedTuple, Sequence
 
-from typing import Sequence, Tuple
 import geopandas as gpd
 from pydantic import BaseModel, validator
 from shapely.geometry import Polygon
@@ -15,11 +15,18 @@ from shapely.geometry import Polygon
 logger = getLogger(__name__)
 
 
+class BoundingBox(NamedTuple):
+    xmin: float
+    ymin: float
+    xmax: float
+    ymax: float
+
+
 class NamedArea(BaseModel):
     # TODO generalize
     # perhaps use https://github.com/developmentseed/geojson-pydantic
     name: str
-    bbox: Tuple[float, float, float, float]
+    bbox: BoundingBox
 
     @validator("bbox")
     def _parse_bbox(cls, values):
@@ -27,7 +34,9 @@ class NamedArea(BaseModel):
         assert xmax > xmin, "xmax should be larger than xmin"
         assert ymax > ymin, "ymax should be larger than ymin"
         assert ymax < 90 and ymin > 0, "Latitudes should be in [0, 90]"
-        assert xmin > -180 and xmax < 180, "Longitudes should be in [-180, 180]."
+        assert (
+            xmin > -180 and xmax < 180
+        ), "Longitudes should be in [-180, 180]."
         return values
 
     @property
@@ -116,17 +125,19 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         timeout: Maximum mumber of seconds the function may take.
         max_tries: Maximum number of times to execute the function.
     """
-    retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
+    result = retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
         ["R", "--vanilla", "--no-echo"],
         input=script.encode(),
         stderr=subprocess.PIPE,
     )
+    result.check_returncode()
 
-def transponse_df(df, index=('year', 'geometry'), columns=('doy',)):
-    """Many dataset do not have rows per year and geometry, 
+
+def transponse_df(df, index=("year", "geometry"), columns=("doy",)):
+    """Many dataset do not have rows per year and geometry,
     but more frequent like daily.
 
-    This method pivots the rows to columns. 
+    This method pivots the rows to columns.
 
     Args:
         df: _description_
@@ -134,7 +145,7 @@ def transponse_df(df, index=('year', 'geometry'), columns=('doy',)):
         columns: _description_. Defaults to ('doy',).
 
     Returns:
-        Data frame with year and geometry column and 
+        Data frame with year and geometry column and
         columns named `<original column name>_<doy>`.
     """
     pdf = df.pivot(index=index, columns=columns).reset_index()
@@ -145,8 +156,13 @@ def transponse_df(df, index=('year', 'geometry'), columns=('doy',)):
     return gpd.GeoDataFrame(pdf)
 
 
-def rolling_mean(df, over, groupby=('year', 'geometry'), window_sizes=(3,7,15,30,90,365)):
-    """Group by `groupby` columns and calculate rolling mean 
+def rolling_mean(
+    df,
+    over,
+    groupby=("year", "geometry"),
+    window_sizes=(3, 7, 15, 30, 90, 365),
+):
+    """Group by `groupby` columns and calculate rolling mean
     for `over` columns with different window sizes.
 
     Args:

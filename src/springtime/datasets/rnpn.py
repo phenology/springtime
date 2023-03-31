@@ -42,8 +42,9 @@ class RNPN(BaseModel):
 
         # Load dataset
         dataset = RNPN(
-            species_ids=[36],  # Syringa vulgaris / common lilac
-            phenophase_ids=[483],  # Leaves
+            # Syringa vulgaris / common lilac
+            species_ids={'name': 'lilac', 'items': [36]},
+            phenophase_ids={'name': 'Leaves', 'items': [483]},
             years=[2010, 2012],
         )
         dataset.download()
@@ -96,6 +97,7 @@ class RNPN(BaseModel):
             [
                 pd.read_csv(self._filename(year))
                 for year in range(self.years[0], self.years[1] + 1)
+                if self._filename(year).exists()
             ]
         )
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))

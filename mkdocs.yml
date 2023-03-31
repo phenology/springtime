@@ -11,8 +11,9 @@ nav:
       - About: index.md
       - Getting started: setup.md
   - User Guide:
-      - Getting started: setup.md
-      - Usage: usage.md
+      - Getting started:
+          - Installation: setup.md
+          - Usage: usage.md
       - Example workflow: notebooks/pk_wishful_workflows.ipynb
   - Datasets:
       - Data sources and existing tools: datasets.md

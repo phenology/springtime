@@ -7,18 +7,25 @@ import time
 import signal
 from functools import wraps
 
-from typing import Sequence, Tuple
+from typing import NamedTuple, Sequence
 from pydantic import BaseModel, validator
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
 
 
+class BoundingBox(NamedTuple):
+    xmin: float
+    ymin: float
+    xmax: float
+    ymax: float
+
+
 class NamedArea(BaseModel):
     # TODO generalize
     # perhaps use https://github.com/developmentseed/geojson-pydantic
     name: str
-    bbox: Tuple[float, float, float, float]
+    bbox: BoundingBox
 
     @validator("bbox")
     def _parse_bbox(cls, values):
@@ -115,8 +122,9 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         timeout: Maximum mumber of seconds the function may take.
         max_tries: Maximum number of times to execute the function.
     """
-    retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
+    result = retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
         ["R", "--vanilla", "--no-echo"],
         input=script.encode(),
         stderr=subprocess.PIPE,
     )
+    result.check_returncode()

@@ -26,7 +26,6 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-Obs: notebooks/datasets_eobs.ipynb
-  - Example use cases (notebooks): example_usecases.md
   - Developer Guide: develop.md
 
 theme:

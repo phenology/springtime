@@ -30,6 +30,7 @@ nav:
 
 theme:
   name: material
+  custom_dir: docs/overrides
   logo: lilac_cc0.jpg
   features:
     - navigation.instant
@@ -59,16 +60,16 @@ theme:
 
 plugins:
 - mkdocs-jupyter:
-      include_source: True
-      include: [
-        "pk_wishful_workflows.ipynb",
-        "datasets_npn.ipynb",
-        "datasets_ppo.ipynb",
-        "datasets_pep725.ipynb",
-        "datasets_modis.ipynb",
-        "datasets_eobs.ipynb",
-        "datasets_daymet.ipynb",
-        ]
+    include_source: True
+    include: [
+      "pk_wishful_workflows.ipynb",
+      "datasets_npn.ipynb",
+      "datasets_ppo.ipynb",
+      "datasets_pep725.ipynb",
+      "datasets_modis.ipynb",
+      "datasets_eobs.ipynb",
+      "datasets_daymet.ipynb",
+      ]
 - include-markdown
 - search
 extra:

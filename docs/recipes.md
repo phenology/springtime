@@ -8,8 +8,6 @@ We provide several "recipes" for downloading data from various sources and
 executing a range of ML methods with it.
 Note that a "recipe" is a file with `yaml` extension.
 
-## Datasets
-
 ??? example "Daymet recipe"
     ```yaml
     {% include "../tests/recipes/daymet.yaml" %}

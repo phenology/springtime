@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import xarray as xr
 from itertools import product
 from typing import Literal, Sequence, Tuple
 from urllib.request import urlretrieve
@@ -166,9 +167,12 @@ class EOBSMultiplePoints(EOBS):
 
     def load(self):
         ds = super().load()
+        # pointwise selection
+        lons = xr.DataArray([p[0] for p in self.points], dims="points")
+        lats = xr.DataArray([p[1] for p in self.points], dims="points")
         return ds.sel(
-            longitude=[p[0] for p in self.points],
-            latitude=[p[1] for p in self.points],
+            longitude=lons,
+            latitude=lats,
             method="nearest",
         ).to_dataframe()
 

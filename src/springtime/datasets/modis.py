@@ -196,5 +196,5 @@ def modis_dates(product: str, lon: float, lat: float):
     rdata = modistools.mt_dates(product, lat, lon)
     with ro.default_converter + pandas2ri.converter:
         df = ro.conversion.get_conversion().rpy2py(rdata)
-    df['calendar_date'] = pd.to_datetime(df['calendar_date'])
+    df["calendar_date"] = pd.to_datetime(df["calendar_date"])
     return df

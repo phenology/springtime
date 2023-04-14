@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 [![Documentation Status](https://readthedocs.org/projects/springtime/badge/?version=latest)](https://springtime.readthedocs.io/en/latest/?badge=latest)
+[![RSD](https://img.shields.io/badge/RSD-springtime-blue)](https://research-software-directory.org/software/springtime)
 
 <!--intro-start-->
 # Springtime

@@ -7,6 +7,7 @@ from itertools import product
 from typing import Literal, Sequence, Tuple
 from urllib.request import urlretrieve
 
+import geopandas as gpd
 import xarray as xr
 from pydantic import BaseModel
 from xarray import open_mfdataset
@@ -148,9 +149,11 @@ class EOBSSinglePoint(EOBS):
 
     def load(self):
         ds = super().load()
-        return ds.sel(
+        df = ds.sel(
             longitude=self.point[0], latitude=self.point[1], method="nearest"
         ).to_dataframe()
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        return gpd.GeoDataFrame(df, geometry=geometry)
 
 
 class EOBSMultiplePoints(EOBS):
@@ -170,11 +173,13 @@ class EOBSMultiplePoints(EOBS):
         # pointwise selection
         lons = xr.DataArray([p[0] for p in self.points], dims="points")
         lats = xr.DataArray([p[1] for p in self.points], dims="points")
-        return ds.sel(
+        df = ds.sel(
             longitude=lons,
             latitude=lats,
             method="nearest",
         ).to_dataframe()
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        return gpd.GeoDataFrame(df, geometry=geometry)
 
 
 class EOBSBoundingBox(EOBS):

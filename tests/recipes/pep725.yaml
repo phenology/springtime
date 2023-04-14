@@ -6,9 +6,7 @@ datasets:
   syringa_all:
     dataset: PEP725Phenor
     species: Syringa vulgaris
-    years:
-      - 1980
-      - 2020
+    years: [1980, 2020]
   syringa_filtered:
     dataset: PEP725Phenor
     species: Syringa vulgaris

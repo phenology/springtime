@@ -77,6 +77,7 @@ class PyPhenologyDataset(Dataset):
         """
         df = pd.read_csv(self.location, index_col=0)
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
+        # TODO add geometry column
         return df
 
 

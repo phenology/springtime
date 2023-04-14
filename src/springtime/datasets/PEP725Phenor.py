@@ -82,7 +82,7 @@ class PEP725Phenor(Dataset):
         df["country"] = df["country"].astype("category")
 
         df = geopandas.GeoDataFrame(
-            df, geometry=geopandas.points_from_xy(df.lon, df.lat)
+            df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
         )
 
         # Filter on years

@@ -10,20 +10,19 @@ SPDX-License-Identifier: Apache-2.0
 <!--intro-start-->
 # Springtime
 
-Spatiotemporal phenology research with interpretable models.
+The Springtime Python package helps to streamline workflows for doing machine
+learning with phenological datasets.
 
-Phenology is a scientific discipline in which we study the lifecycle of plants
-and animals. In the Springtime project, we aim to develop (Machine Learning)
-models for the occurrence of phenological events, such as the blooming of plants.
-Since there is a variety of data sources, a substantial part of this project
-focuses on data retrieval and pre-processing as well.
+Phenology is the scientific discipline in which we study the lifecycle of plants
+and animals. A common objective is to develop (Machine Learning) models that can
+explain or predict the occurrence of phenological events, such as the blooming
+of plants. Since there is a variety of data sources and existing tools to
+retrieve and analyse phenology data, it is easy to get lost and disorganized.
 
-We try to use existing tools as much as possible. At the same time, working with
-many different datasets and a variety of tools to download them, project folders
-and code organization can quickly get messy. That's why we focus heavily on
-streamlining our workflows, such that you can always execute them with a single
-command. We use standardized locations for storing raw and intermediate data,
-and a standardized "recipe" format to define the steps in our workflows.
+With Springtime, we aim to provide a more streamlined workflow for working with
+a variety of datasets and (ML) models. You can run Springtime as a command line
+tool in a terminal or use it as a Python library e.g. in a Jupyter notebook.
+
 <!--intro-end-->
 
 [Documentation](https://springtime.readthedocs.io/)

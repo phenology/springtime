@@ -12,7 +12,12 @@ from springtime.main import Workflow, cli, main
 def test_workflow():
     w = Workflow(
         datasets={
-            "testds2": dict(dataset="pyphenology", name="aspen", phenophase="budburst", years=[2010, 2011]),
+            "testds2": dict(
+                dataset="pyphenology",
+                name="aspen",
+                phenophase="budburst",
+                years=[2010, 2011],
+            ),
         }
     )
     print(str(w))

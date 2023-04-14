@@ -10,7 +10,6 @@ conversions to make it suitable for ML workflows.
 from pathlib import Path
 from typing import Literal
 
-import geopandas as gpd
 import pandas as pd
 from pyPhenology.models.utils.misc import temperature_only_data_prep
 from pyPhenology.utils import load_test_data

@@ -84,7 +84,7 @@ class NPNPhenor(Dataset):
         """Download the data."""
         self.directory.mkdir(parents=True, exist_ok=True)
 
-        for year in range(*self.years):
+        for year in self.years.range:
             filename = self._filename(year)
 
             if filename.exists():
@@ -95,7 +95,7 @@ class NPNPhenor(Dataset):
 
     def load(self):
         """Load the dataset into memory."""
-        df = pd.concat([self._r_load(year) for year in range(*self.years)])
+        df = pd.concat([self._r_load(year) for year in self.years.range])
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf

@@ -65,6 +65,12 @@ class YearRange(NamedTuple):
     end: int
     """The end year is inclusive."""
 
+    @property
+    def range(self) -> range:
+        """Return the range of years."""
+        # +1 as range() is exclusive while YearRange is inclusive
+        return range(self.start, self.end + 1)
+
 
 # Decorators copied from https://wiki.python.org/moin/PythonDecoratorLibrary
 

@@ -93,7 +93,9 @@ class DaymetSinglePoint(BaseModel):
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
             df.attrs["headers"] = "\n".join(headers)
-        return df
+
+        geometry = geopandas.points_from_xy([self.point[0]] * len(df), [self.point[1]] * len(df))
+        return geopandas.GeoDataFrame(df, geometry=geometry)
 
     def _r_download(self):
         return f"""\

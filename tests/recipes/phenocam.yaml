@@ -6,14 +6,17 @@ datasets:
   phenocam_harvard_exact:
     dataset: phenocam
     site: harvard$
+    years: [2019, 2020]
   phenocam_harvard_beginswith:
     dataset: phenocam
     site: harvard
+    years: [2019, 2020]
   phenocam_onlydb:
     dataset: phenocam
     site: harvard$
     veg_type: "DB"
     frequency: "3"
+    years: [2019, 2020]
   phenocam_one_roi:
     dataset: phenocam
     site: harvard
@@ -21,16 +24,8 @@ datasets:
       - 1
     veg_type: "DB"
     frequency: "3"
-  phenocam_timed:
-    dataset: phenocam
-    site: harvard$
     years: [2019, 2020]
   phenocam_area:
-    dataset: phenocambbox
-    area:
-      name: harvard
-      bbox: [-73, 42, -72, 43]
-  phenocam_area_timed:
     dataset: phenocambbox
     area:
       name: harvard

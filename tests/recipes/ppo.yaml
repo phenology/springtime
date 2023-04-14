@@ -8,11 +8,6 @@ datasets:
     genus: Quercus Pinus
     termID: obo:PPO_0002313
     limit: 10
-  ppo_pinus_years:
-    dataset: rppo
-    genus: Quercus Pinus
-    termID: obo:PPO_0002313
-    limit: 10
     years: [2019, 2020]
   ppo_pinus_area:
     dataset: rppo
@@ -21,4 +16,5 @@ datasets:
     limit: 10
     area:
       name: somewhere
-      bbox: [-83, 27,-82, 28]
+      bbox: [-83, 27, -82, 28]
+    years: [2019, 2020]

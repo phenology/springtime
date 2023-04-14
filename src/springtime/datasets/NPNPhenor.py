@@ -3,19 +3,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
 
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional
 
 import geopandas as gpd
 import pandas as pd
 import rpy2.robjects as ro
-from pydantic import BaseModel
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea
 
 
-class NPNPhenor(BaseModel):
+class NPNPhenor(Dataset):
     """Download and load data from NPN.
 
     Uses phenor (https://bluegreen-labs.github.io/phenor/) as client.
@@ -62,7 +62,6 @@ class NPNPhenor(BaseModel):
 
     species: int
     phenophase: int
-    years: Tuple[int, int]
     area: Optional[NamedArea] = None
 
     @property
@@ -85,7 +84,7 @@ class NPNPhenor(BaseModel):
         """Download the data."""
         self.directory.mkdir(parents=True, exist_ok=True)
 
-        for year in range(*self.years):
+        for year in self.years.range:
             filename = self._filename(year)
 
             if filename.exists():
@@ -96,7 +95,7 @@ class NPNPhenor(BaseModel):
 
     def load(self):
         """Load the dataset into memory."""
-        df = pd.concat([self._r_load(year) for year in range(*self.years)])
+        df = pd.concat([self._r_load(year) for year in self.years.range])
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf

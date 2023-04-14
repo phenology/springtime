@@ -5,17 +5,17 @@
 
 import logging
 from pathlib import Path
-from typing import List, Literal, Optional, Tuple
+from typing import List, Literal, Optional
 
 import geopandas
 import pandas as pd
 import rpy2.robjects as ro
-from pydantic import BaseModel, PositiveInt
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea
 
 logger = logging.getLogger(__file__)
@@ -23,7 +23,7 @@ logger = logging.getLogger(__file__)
 phenocam_data_dir = CONFIG.data_dir / "phenocam"
 
 
-class PhenocamrSite(BaseModel):
+class PhenocamrSite(Dataset):
     """PhenoCam time series for site.
 
     Fetch data from https://phenocam.nau.edu/webcam/
@@ -44,9 +44,6 @@ class PhenocamrSite(BaseModel):
     """Frequency of the time series product."""
     rois: Optional[List[int]]
     """The id of the ROI to download. Default is all ROIs at site."""
-    years: Optional[Tuple[PositiveInt, PositiveInt]]
-    """years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
 
     def download(self):
         """Download the data.
@@ -101,12 +98,11 @@ class PhenocamrSite(BaseModel):
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
-        if self.years is not None:
-            df = df.loc[(self.years[0] <= df.year) & (df.year <= self.years[1])]
+        df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
         return df
 
 
-class PhenocamrBoundingBox(BaseModel):
+class PhenocamrBoundingBox(Dataset):
     """PhenoCam time series for sites in a bounding box.
 
     Fetch data from https://phenocam.nau.edu/webcam/
@@ -124,9 +120,6 @@ class PhenocamrBoundingBox(BaseModel):
     """Vegetation type (DB, EN). Default is all."""
     frequency: Literal["1", "3", "roistats"] = "3"
     """Frequency of the time series product."""
-    years: Optional[Tuple[PositiveInt, PositiveInt]]
-    """years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
 
     def _location(self, row: pd.Series) -> Path:
         # TODO dont duplicate code
@@ -177,8 +170,7 @@ class PhenocamrBoundingBox(BaseModel):
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
-        if self.years is not None:
-            df = df.loc[(self.years[0] <= df.year) & (df.year <= self.years[1])]
+        df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
         return df
 
 

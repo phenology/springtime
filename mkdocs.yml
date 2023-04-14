@@ -21,6 +21,7 @@ nav:
         - National Phenology Network: notebooks/datasets_npn.ipynb
         - Plant Phenology Ontology: notebooks/datasets_ppo.ipynb
         - Pan European Phenology: notebooks/datasets_pep725.ipynb
+        - Phenocam: notebooks/datasets_phenocam.ipynb
       - Satellites:
         - MODIS: notebooks/datasets_modis.ipynb
       - Meteorology:

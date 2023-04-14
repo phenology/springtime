@@ -14,6 +14,8 @@ from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
 
+# TODO move the types to types.py
+
 
 class BoundingBox(NamedTuple):
     xmin: float
@@ -45,6 +47,23 @@ class NamedArea(BaseModel):
 class NamedIdentifiers(BaseModel):
     name: str
     items: Sequence[int]
+
+
+# date range of years
+class YearRange(NamedTuple):
+    """Date range in years.
+
+    Example:
+
+        >>> YearRange(2000, 2005)
+        >>> YearRange(start=2000, end=2005)
+        >>> YearRange(2000, 2000)
+
+    """
+
+    start: int
+    end: int
+    """The end year is inclusive."""
 
 
 # Decorators copied from https://wiki.python.org/moin/PythonDecoratorLibrary

@@ -5,34 +5,6 @@
 from typing import Protocol
 
 
-class Dataset(Protocol):
-    """Interface for working with phenology datasets."""
-
-    dataset: str
-    """The name of the dataset.
-
-    Used for type inference when using nested pydantic models:
-    https://docs.pydantic.dev/usage/types/#discriminated-unions-aka-tagged-unions
-
-    Also see: https://stackoverflow.com/q/69322097
-    TODO: checkout https://github.com/pydantic/pydantic/issues/503
-    """
-
-    def download(self):
-        """Download the data.
-
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
-        is TRUE.
-        """
-
-    def load(self):
-        """Load the dataset from disk into memory.
-
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
-
-
 class Model(Protocol):
     """Interface for working with various ML models."""
 

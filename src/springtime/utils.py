@@ -9,7 +9,7 @@ from logging import getLogger
 from typing import NamedTuple, Sequence
 
 import geopandas as gpd
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, PositiveInt, validator
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
@@ -61,8 +61,8 @@ class YearRange(NamedTuple):
 
     """
 
-    start: int
-    end: int
+    start: PositiveInt
+    end: PositiveInt
     """The end year is inclusive."""
 
     @property

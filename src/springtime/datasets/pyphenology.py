@@ -78,9 +78,8 @@ class PyPhenologyDataset(Dataset):
         """
         df = pd.read_csv(self.location, index_col=0)
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return gdf
+        # TODO add geometry column
+        return df
 
 
 def _align_data(obs, pred):

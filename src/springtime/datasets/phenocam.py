@@ -99,7 +99,7 @@ class PhenocamrSite(Dataset):
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return df
+        return _to_geopandas(df)
 
 
 class PhenocamrBoundingBox(Dataset):
@@ -159,7 +159,10 @@ class PhenocamrBoundingBox(Dataset):
             logger.info(f"Phenocam files already downloaded {self._locations()}")
         for site in self._selection().site.unique():
             fetcher = PhenocamrSite(
-                site=f"{site}$", veg_type=self.veg_type, frequency=self.frequency
+                site=f"{site}$",
+                veg_type=self.veg_type,
+                frequency=self.frequency,
+                years=self.years,
             )
             fetcher.download()
 
@@ -171,7 +174,14 @@ class PhenocamrBoundingBox(Dataset):
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return df
+        return _to_geopandas(df)
+
+
+def _to_geopandas(df):
+    sites = list_sites()
+    site_locations = sites[["site", "geometry"]]
+    df = df.merge(site_locations, on="site")
+    return geopandas.GeoDataFrame(df, geometry=df.geometry)
 
 
 def _load_location(location: Path) -> pd.DataFrame:
@@ -202,7 +212,9 @@ def list_sites() -> geopandas.GeoDataFrame:
         logger.warning(f"Downloading phenocam sites to {sites_file}")
         _download_sites()
     df = pd.read_csv(sites_file)
-    return geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.lon, df.lat))
+    return geopandas.GeoDataFrame(
+        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
+    )
 
 
 def _download_sites():
@@ -226,7 +238,9 @@ def list_rois():
         logger.warning(f"Downloading phenocam rois to {rois_file}")
         _download_rois()
     df = pd.read_csv(rois_file)
-    return geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df.lon, df.lat))
+    return geopandas.GeoDataFrame(
+        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
+    )
 
 
 def _download_rois():

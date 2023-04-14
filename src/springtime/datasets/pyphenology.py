@@ -10,6 +10,7 @@ conversions to make it suitable for ML workflows.
 from pathlib import Path
 from typing import Literal
 
+import geopandas as gpd
 import pandas as pd
 from pyPhenology.models.utils.misc import temperature_only_data_prep
 from pyPhenology.utils import load_test_data
@@ -77,7 +78,9 @@ class PyPhenologyDataset(Dataset):
         """
         df = pd.read_csv(self.location, index_col=0)
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return df
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        return gdf
 
 
 def _align_data(obs, pred):

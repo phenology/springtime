@@ -177,10 +177,9 @@ class DaymetMultiplePoints(Daymet):
         headers = {}
         for point, handler in zip(self.points, self._handlers):
             df = handler.load()
-            df["x"] = point[0]
-            df["y"] = point[1]
+            geometry = geopandas.points_from_xy([self.point[0]] * len(df), [self.point[1]] * len(df))
             geo_df = geopandas.GeoDataFrame(
-                df, geometry=geopandas.points_from_xy(df.x, df.y)
+                df, geometry=geometry
             )
             dataframes.append(geo_df)
             headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]

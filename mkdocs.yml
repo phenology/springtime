@@ -71,6 +71,7 @@ plugins:
       "datasets_modis.ipynb",
       "datasets_eobs.ipynb",
       "datasets_daymet.ipynb",
+      "datasets_phenocam.ipynb",
       ]
 - include-markdown
 - search

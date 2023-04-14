@@ -104,7 +104,9 @@ class DaymetSinglePoint(Daymet):
             df = pd.read_csv(file)
             df.attrs["headers"] = "\n".join(headers)
 
-        geometry = geopandas.points_from_xy([self.point[0]] * len(df), [self.point[1]] * len(df))
+        geometry = geopandas.points_from_xy(
+            [self.point[0]] * len(df), [self.point[1]] * len(df)
+        )
         return geopandas.GeoDataFrame(df, geometry=geometry)
 
     def _r_download(self):
@@ -177,10 +179,10 @@ class DaymetMultiplePoints(Daymet):
         headers = {}
         for point, handler in zip(self.points, self._handlers):
             df = handler.load()
-            geometry = geopandas.points_from_xy([self.point[0]] * len(df), [self.point[1]] * len(df))
-            geo_df = geopandas.GeoDataFrame(
-                df, geometry=geometry
+            geometry = geopandas.points_from_xy(
+                [self.point[0]] * len(df), [self.point[1]] * len(df)
             )
+            geo_df = geopandas.GeoDataFrame(df, geometry=geometry)
             dataframes.append(geo_df)
             headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
         all = pd.concat(dataframes)

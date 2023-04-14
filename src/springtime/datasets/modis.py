@@ -91,7 +91,9 @@ class ModisSinglePoint(Dataset):
         dataframes = [pd.read_csv(path) for path in self._paths]
         # TODO replace band+value column with columns named after band
         df = pd.concat(dataframes)
-        geometry = geopandas.points_from_xy([self.point[0]] * len(df), [self.point[1]] * len(df))
+        geometry = geopandas.points_from_xy(
+            [self.point[0]] * len(df), [self.point[1]] * len(df)
+        )
         return geopandas.GeoDataFrame(df, geometry=geometry)
 
     def _r_download(self):

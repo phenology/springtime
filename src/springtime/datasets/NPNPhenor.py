@@ -3,19 +3,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
 
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional
 
 import geopandas as gpd
 import pandas as pd
 import rpy2.robjects as ro
-from pydantic import BaseModel
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea
 
 
-class NPNPhenor(BaseModel):
+class NPNPhenor(Dataset):
     """Download and load data from NPN.
 
     Uses phenor (https://bluegreen-labs.github.io/phenor/) as client.
@@ -62,7 +62,6 @@ class NPNPhenor(BaseModel):
 
     species: int
     phenophase: int
-    years: Tuple[int, int]
     area: Optional[NamedArea] = None
 
     @property

@@ -9,7 +9,6 @@
 Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
 """
 
-import subprocess
 from typing import Literal, Sequence, Tuple
 
 import geopandas
@@ -20,6 +19,8 @@ from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
+from springtime.utils import run_r_script
 
 
 class Extent(BaseModel):
@@ -31,10 +32,12 @@ class Extent(BaseModel):
     """Above below extent to sample in kilometers."""
 
 
-class ModisSinglePoint(BaseModel):
+class ModisSinglePoint(Dataset):
     """MODIS land products subsets for single point using MODISTools.
 
     Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
+
+    Use `modis_dates(product, lon, lat)` to get list of available years.
 
     Requires MODISTools. Install with
     ```R
@@ -45,9 +48,6 @@ class ModisSinglePoint(BaseModel):
     dataset: Literal["modis_single_point"] = "modis_single_point"
     point: Tuple[float, float]
     """Point as longitude, latitude in WGS84 projection."""
-    years: Tuple[int, int]
-    """years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
     product: str
     """a MODIS product."""
     bands: conset(str, min_items=1)  # type: ignore
@@ -61,7 +61,7 @@ class ModisSinglePoint(BaseModel):
     def _paths(self):
         """Path to downloaded file."""
         location_name = f"{self.point[0]}_{self.point[1]}"
-        time_stamp = f"{self.years[0]}-01-01{self.years[1]}-12-31"
+        time_stamp = f"{self.years.start}-01-01{self.years.end}-12-31"
         paths = []
         for band in self.bands:
             product_band = f"{self.product}_{band}"
@@ -80,7 +80,7 @@ class ModisSinglePoint(BaseModel):
         """
         some_paths_missing = any(not p.exists() for p in self._paths)
         if some_paths_missing or CONFIG.force_override:
-            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+            run_r_script(self._r_download(), timeout=300)
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -105,8 +105,8 @@ class ModisSinglePoint(BaseModel):
                 lat = {self.point[1]},
                 lon = {self.point[0]},
                 band = {bands},
-                start = "{self.years[0]}-01-01",
-                end = "{self.years[1]}-12-31",
+                start = "{self.years.start}-01-01",
+                end = "{self.years.end}-12-31",
                 km_lr = {self.extent.horizontal},
                 km_ab = {self.extent.vertical},
                 site_name = "modis_{self.point[0]}_{self.point[1]}",
@@ -116,10 +116,12 @@ class ModisSinglePoint(BaseModel):
         """
 
 
-class ModisMultiplePoints(BaseModel):
+class ModisMultiplePoints(Dataset):
     """MODIS land products subsets for multiple points using MODISTools.
 
     Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
+
+    Use `modis_dates(product, lon, lat)` to get list of available years.
 
     Requires MODISTools. Install with
     ```R
@@ -130,12 +132,6 @@ class ModisMultiplePoints(BaseModel):
     dataset: Literal["modis_multiple_points"] = "modis_multiple_points"
     points: Sequence[Tuple[float, float]]
     """Points as longitude, latitude in WGS84 projection."""
-    years: Tuple[int, int]
-    """years is passed as range.
-
-    For example years=[2000, 2002] downloads data for three years. Use
-    `modis_dates(product, lon, lat)` to get list of available dates.
-    """
     product: str
     """a MODIS product. Use `modis_products()` to get list of available products."""
     bands: conset(str, min_items=1)  # type: ignore
@@ -199,4 +195,6 @@ def modis_dates(product: str, lon: float, lat: float):
     modistools = importr("MODISTools")
     rdata = modistools.mt_dates(product, lat, lon)
     with ro.default_converter + pandas2ri.converter:
-        return ro.conversion.get_conversion().rpy2py(rdata)
+        df = ro.conversion.get_conversion().rpy2py(rdata)
+    df['calendar_date'] = pd.to_datetime(df['calendar_date'])
+    return df

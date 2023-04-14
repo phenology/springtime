@@ -33,3 +33,9 @@ datasets:
     years: [2002, 2002]
     product: MOD15A2H
     bands: [Fpar_500m]
+  modis_single_point_multiyear:
+    dataset: modis_single_point
+    point: [-96.4616, 41.1447]
+    years: [2000, 2002]
+    product: MOD15A2H
+    bands: [Fpar_500m]

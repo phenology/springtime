@@ -51,7 +51,9 @@ DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 class Daymet(Dataset):
     @validator("years")
     def _valid_years(cls, years):
-        assert years.start >= 1980, f"Asked for year {years.start}, but no data before 1980"
+        assert (
+            years.start >= 1980
+        ), f"Asked for year {years.start}, but no data before 1980"
         last_year = datetime.now().year - 1
         msg = f"Asked for year {years.end}, but no data till/after {last_year}"
         assert years.end < last_year, msg

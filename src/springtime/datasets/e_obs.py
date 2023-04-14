@@ -1,4 +1,3 @@
-
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -59,7 +58,9 @@ class EOBS(Dataset):
 
     @validator("years")
     def _valid_years(cls, years):
-        assert years.start >= 1950, f"Asked for year {years.start}, but no data before 1950"
+        assert (
+            years.start >= 1950
+        ), f"Asked for year {years.start}, but no data before 1950"
         assert years.end <= 2022, f"Asked for year {years.end}, but no data after 2022"
         # TODO Max is whatever the chosen version has
         return years
@@ -126,7 +127,9 @@ class EOBS(Dataset):
         ds = open_mfdataset(paths)
         if self.product_type == "elevation":
             return ds.to_dataframe()
-        return ds.sel(time=slice(f"{self.years.start}-01-01", f"{self.years.end}-12-31"))
+        return ds.sel(
+            time=slice(f"{self.years.start}-01-01", f"{self.years.end}-12-31")
+        )
 
 
 class EOBSSinglePoint(EOBS):

@@ -12,9 +12,9 @@ datasets:
     dataset: pyphenology
     name: vaccinium
     phenophase: budburst
-    years: [1990,2020]
+    years: [1990, 2020]
   pyphenology_vaccinium_flowers:
     dataset: pyphenology
     name: vaccinium
     phenophase: flowers
-    years: [1990,2020]
+    years: [1990, 2020]

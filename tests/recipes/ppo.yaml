@@ -16,5 +16,5 @@ datasets:
     limit: 10
     area:
       name: somewhere
-      bbox: [-83, 27,-82, 28]
+      bbox: [-83, 27, -82, 28]
     years: [2019, 2020]

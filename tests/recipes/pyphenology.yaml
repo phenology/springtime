@@ -7,7 +7,7 @@ datasets:
     dataset: pyphenology
     name: aspen
     phenophase: budburst
-    years: [2000,2020]
+    years: [2000, 2020]
   pyphenology_vaccinium_budburst:
     dataset: pyphenology
     name: vaccinium

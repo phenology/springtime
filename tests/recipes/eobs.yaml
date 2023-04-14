@@ -7,6 +7,14 @@ datasets:
     dataset: E-OBS
     product_type: ensemble_mean
     years: [2000, 2002]
+  single_period_default_var_too_early:
+    dataset: E-OBS
+    product_type: ensemble_mean
+    years: [1900, 2002]
+  single_period_default_var_too_late:
+    dataset: E-OBS
+    product_type: ensemble_mean
+    years: [2000, 2100]
   single_period_default_var_spread:
     dataset: E-OBS
     product_type: ensemble_spread
@@ -15,7 +23,7 @@ datasets:
   single_period_elevation:
     dataset: E-OBS
     product_type: elevation
-    years: [2000, 2002]  
+    years: [2000, 2002]
     variables: [land_surface_elevation]
   single_point_period_default_var:
     dataset: EOBSSinglePoint
@@ -35,7 +43,7 @@ datasets:
     dataset: EOBSMultiplePoints
     product_type: ensemble_mean
     years: [2000, 2002]
-    points: 
+    points:
       - [5, 50]
       - [5, 55]
     grid_resolution: 0.25deg

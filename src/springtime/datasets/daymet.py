@@ -119,12 +119,14 @@ class DaymetSinglePoint(Daymet):
         gdf.attrs["units"] = gdf.columns.values
         gdf.columns = [col.split(" (")[0] for col in gdf.columns]
         # Convert year and yday to datetime
-        gdf['datetime'] = pd.to_datetime(gdf['year'], format='%Y') + pd.to_timedelta(gdf['yday'] - 1, unit='D')
+        gdf["datetime"] = pd.to_datetime(gdf["year"], format="%Y") + pd.to_timedelta(
+            gdf["yday"] - 1, unit="D"
+        )
         var_columns = list(gdf.columns[2:-2])
         if self.variables:
             # Drop columns that are not in self.variables
             var_columns = list(self.variables)
-        return gdf[['datetime', 'geometry'] + var_columns]
+        return gdf[["datetime", "geometry"] + var_columns]
 
     def _r_download(self):
         return f"""\

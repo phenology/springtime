@@ -31,3 +31,12 @@ datasets:
     area:
       name: somewhere
       bbox: [-112, 30, -108, 35.0]
+  lilac_leaves_and_buds:
+      dataset: RNPN
+      species_ids:
+        name: lilac
+        items: [36]  # Syringa vulgaris / common lilac
+      phenophase_ids:
+        name: leaves
+        items: [483]
+      years: [2010, 2012]

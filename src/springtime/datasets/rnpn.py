@@ -69,6 +69,8 @@ class RNPN(Dataset):
     species_ids: Optional[NamedIdentifiers]
     phenophase_ids: Optional[NamedIdentifiers]
     area: Optional[NamedArea] = None
+    use_first: bool = True
+    """When true uses first_yes columns as value, otherwise the last_yes columns."""
 
     def _filename(self, year):
         """Path where files will be downloaded to and loaded from.
@@ -102,7 +104,29 @@ class RNPN(Dataset):
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf
-
+        if self.use_first:
+            gdf["datetime"] = pd.to_datetime(
+                {
+                    "year": gdf.first_yes_year,
+                    "month": gdf.first_yes_month,
+                    "day": gdf.first_yes_day,
+                }
+            )
+            var_name = self.phenophase_ids.name + '_doy'
+            gdf.rename(columns={"first_yes_doy": var_name}, inplace=True)
+            return gdf[["datetime", "geometry", var_name]]
+        else:
+            gdf["datetime"] = pd.to_datetime(
+                {
+                    "year": gdf.last_yes_year,
+                    "month": gdf.last_yes_month,
+                    "day": gdf.last_yes_day,
+                }
+            )
+            var_name = self.phenophase_ids.name + '_doy'
+            gdf.rename(columns={"last_yes_doy": var_name}, inplace=True)
+            return gdf[["datetime", "geometry", var_name]]
+        
     def download(self, timeout=30):
         """Download the data.
 

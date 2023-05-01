@@ -40,15 +40,27 @@ import geopandas as gpd
 import pandas as pd
 import xarray as xr
 from pydantic import BaseModel, root_validator, validator
-from shapely import Point
 
 from springtime.config import CONFIG
 from springtime.utils import NamedArea, run_r_script, transponse_df
+from springtime.datasets.abstract import Dataset
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
 
-class DaymetSinglePoint(BaseModel):
+class Daymet(Dataset):
+    @validator("years")
+    def _valid_years(cls, years):
+        assert (
+            years.start >= 1980
+        ), f"Asked for year {years.start}, but no data before 1980"
+        last_year = datetime.now().year - 1
+        msg = f"Asked for year {years.end}, but no data till/after {last_year}"
+        assert years.end < last_year, msg
+        return years
+
+
+class DaymetSinglePoint(Daymet):
     """Daymet data for single point using daymetr.
 
     Fetches data from https://daymet.ornl.gov/.
@@ -63,15 +75,12 @@ class DaymetSinglePoint(BaseModel):
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
     point: Tuple[float, float]
     """Point as longitude, latitude in WGS84 projection."""
-    years: Tuple[int, int]
-    """ years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
 
     @property
     def _path(self):
         """Path to downloaded file."""
         location_name = f"{self.point[0]}_{self.point[1]}"
-        time_stamp = f"{self.years[0]}_{self.years[1]}"
+        time_stamp = f"{self.years.start}_{self.years.end}"
         return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
 
     def download(self):
@@ -98,9 +107,12 @@ class DaymetSinglePoint(BaseModel):
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
 
-        df.attrs["headers"] = "\n".join(headers)
-
-        return gpd.GeoDataFrame(df, geometry=[Point(self.point)]*len(df))
+        geometry = gpd.points_from_xy(
+            [self.point[0]] * len(df), [self.point[1]] * len(df)
+        )
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        gdf.attrs["headers"] = "\n".join(headers)
+        return gdf
 
     def _r_download(self):
         return f"""\
@@ -109,8 +121,8 @@ class DaymetSinglePoint(BaseModel):
             site = "daymet_single_point_{self.point[0]}_{self.point[1]}",
             lat = {self.point[1]},
             lon = {self.point[0]},
-            start = {self.years[0]},
-            end =  {self.years[1]},
+            start = {self.years.start},
+            end =  {self.years.end},
             path="{CONFIG.data_dir}",
             internal = FALSE)
         """
@@ -128,7 +140,7 @@ def resample(raw_df, frequency='month', operator='mean'):
     return raw_df.assign({frequency: timegrouper}).groupby(['year', 'geometry', timegrouper]).agg(operator).reset_index()
 
 
-class DaymetMultiplePoints(BaseModel):
+class DaymetMultiplePoints(Daymet):
     """Daymet data for multiple points using daymetr.
 
     Fetches data from https://daymet.ornl.gov/.
@@ -158,9 +170,6 @@ class DaymetMultiplePoints(BaseModel):
     dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
     points: Sequence[Tuple[float, float]]
     """Points as longitude, latitude in WGS84 projection."""
-    years: Tuple[int, int]
-    """ years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
 
     @property
     def _handlers(self):
@@ -187,11 +196,10 @@ class DaymetMultiplePoints(BaseModel):
         headers = {}
         for point, handler in zip(self.points, self._handlers):
             df = handler.load()
-            df["x"] = point[0]
-            df["y"] = point[1]
-            geo_df = gpd.GeoDataFrame(
-                df, geometry=gpd.points_from_xy(df.pop('x'), df.pop('y'))
+            geometry = gpd.points_from_xy(
+                [point[0]] * len(df), [point[1]] * len(df)
             )
+            geo_df = gpd.GeoDataFrame(df, geometry=geometry)
             dataframes.append(geo_df)
             headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
         all = pd.concat(dataframes)
@@ -199,7 +207,7 @@ class DaymetMultiplePoints(BaseModel):
         return all
 
 
-class DaymetBoundingBox(BaseModel):
+class DaymetBoundingBox(Daymet):
     """Daymet data for a bounding box using daymetr.
 
     Fetches data from https://daymet.ornl.gov/.
@@ -214,9 +222,6 @@ class DaymetBoundingBox(BaseModel):
 
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
     area: NamedArea
-    years: Tuple[int, int]
-    """ years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
     mosaic: Literal["na", "hi", "pr"] = "na"
     """tile mosaic to use.
 
@@ -274,15 +279,15 @@ class DaymetBoundingBox(BaseModel):
         library(daymetr)
         daymetr::download_daymet_ncss(
             location = c({box[3]},{box[0]},{box[1]},{box[2]}),
-            start = {self.years[0]},
-            end =  {self.years[1]},
+            start = {self.years.start},
+            end =  {self.years.end},
             param = {params},
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
 
     def _missing_files(self):
-        n_years = self.years[1] - self.years[0] + 1
+        n_years = self.years.end - self.years.start + 1
         n_files = len(list(self._box_dir.glob("*.nc")))
         # TODO make smarter as box_dir can have files
         # which are not part of this instance
@@ -296,10 +301,3 @@ class DaymetBoundingBox(BaseModel):
         return (
             CONFIG.data_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
         )
-
-    @validator("years")
-    def _valid_years(cls, years):
-        assert years[0] >= 1980, "No data before 1980"
-        assert years[1] > years[0], "Start year must be smaller than end year"
-        assert years[1] < datetime.now().year - 1, "Recent data not available"
-        return years

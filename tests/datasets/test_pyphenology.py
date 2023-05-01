@@ -6,7 +6,7 @@ from springtime.datasets.pyphenology import PyPhenologyDataset
 
 
 def test_api():
-    ds = PyPhenologyDataset(name="aspen", phenophase="budburst")
+    ds = PyPhenologyDataset(name="aspen", phenophase="budburst", years=[2010, 2011])
     ds.location
     ds.download()
     assert ds.exists_locally() is True

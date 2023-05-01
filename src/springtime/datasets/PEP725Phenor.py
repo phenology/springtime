@@ -3,20 +3,19 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
 
-import subprocess
-from typing import Iterable, Literal, Optional
+from typing import Literal, Optional
 
 import geopandas
 import rpy2.robjects as ro
-from pydantic import BaseModel
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea
+from springtime.datasets.abstract import Dataset
+from springtime.utils import NamedArea, run_r_script
 
 
-class PEP725Phenor(BaseModel):
+class PEP725Phenor(Dataset):
     """Download and load data from https://pep725.eu .
 
     Uses phenor (https://bluegreen-labs.github.io/phenor/) as client.
@@ -32,7 +31,7 @@ class PEP725Phenor(BaseModel):
         # or with filters
         dataset = PEP725Phenor(
             species='Syringa vulgaris',
-            years=[2000],
+            years=[2000, 2000],
             area={'name':'some', 'bbox':(4, 45, 8, 50)}
         )
         ```
@@ -49,8 +48,6 @@ class PEP725Phenor(BaseModel):
 
     dataset: Literal["PEP725Phenor"] = "PEP725Phenor"
     species: str
-    years: Iterable[int] = tuple()
-    """Empty list means all years."""
     area: Optional[NamedArea]
     bbch: int = 60
     """60 === Beginning of flowering"""
@@ -72,7 +69,7 @@ class PEP725Phenor(BaseModel):
             print("File already exists:", self.location)
         else:
             self.location.mkdir(parents=True)
-            subprocess.run(["R", "--no-save"], input=self._r_download().encode())
+            run_r_script(self._r_download())
 
     def load(self):
         """Load the dataset from disk into memory."""
@@ -80,16 +77,16 @@ class PEP725Phenor(BaseModel):
         r_df = phenor.pr_merge_pep725(str(self.location))
         with ro.default_converter + pandas2ri.converter:
             df = ro.conversion.get_conversion().rpy2py(r_df)
-        years_set = set(self.years)
+        years_set = set(self.years.range)
         df["species"] = df["species"].astype("category")
         df["country"] = df["country"].astype("category")
 
         df = geopandas.GeoDataFrame(
-            df, geometry=geopandas.points_from_xy(df.lon, df.lat)
+            df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
         )
 
-        if self.years:
-            df = df[(df["year"].isin(years_set))]
+        # Filter on years
+        df = df[(df["year"].isin(years_set))]
 
         df = df[(df["bbch"] == self.bbch)]
         if self.area is None:

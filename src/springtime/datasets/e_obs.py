@@ -6,9 +6,11 @@ import logging
 from itertools import product
 from typing import Literal, Sequence, Tuple
 from urllib.request import urlretrieve
+from springtime.datasets.abstract import Dataset
 
 import xarray as xr
-from pydantic import BaseModel
+import geopandas as gpd
+from pydantic import validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
@@ -29,7 +31,7 @@ Variable = Literal[
 ]
 
 
-class EOBS(BaseModel):
+class EOBS(Dataset):
     """E-OBS dataset.
 
     Fetches complete grid from
@@ -45,9 +47,6 @@ class EOBS(BaseModel):
     variables: Sequence[Variable] = ("mean_temperature",)
     """Some variables are specific for a certain product type."""
     grid_resolution: Literal["0.25deg", "0.1deg"] = "0.1deg"
-    years: Tuple[int, int]
-    """years is passed as range for example years=[2000, 2002] downloads data
-    for three years. Max is whatever the chosen version has."""
     version: Literal["26.0e"] = "26.0e"
 
     # TODO add root validator that use same valid combinations as on
@@ -57,6 +56,15 @@ class EOBS(BaseModel):
         root = "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/"
         base = f"{root}Grid_{self.grid_resolution}_reg_ensemble/"
         return base + self._filename(variable, period)
+
+    @validator("years")
+    def _valid_years(cls, years):
+        assert (
+            years.start >= 1950
+        ), f"Asked for year {years.start}, but no data before 1950"
+        assert years.end <= 2022, f"Asked for year {years.end}, but no data after 2022"
+        # TODO Max is whatever the chosen version has
+        return years
 
     @property
     def _periods(self):
@@ -69,7 +77,7 @@ class EOBS(BaseModel):
         ]
         matched_periods = set()
         for period in periods:
-            if self.years[0] in period or self.years[1] in period:
+            if self.years.start in period or self.years.end in period:
                 matched_periods.add(f"{period.start}-{period.stop}")
         return matched_periods
 
@@ -120,7 +128,9 @@ class EOBS(BaseModel):
         ds = open_mfdataset(paths)
         if self.product_type == "elevation":
             return ds.to_dataframe()
-        return ds.sel(time=slice(f"{self.years[0]}-01-01", f"{self.years[1]}-12-31"))
+        return ds.sel(
+            time=slice(f"{self.years.start}-01-01", f"{self.years.end}-12-31")
+        )
 
 
 class EOBSSinglePoint(EOBS):
@@ -148,9 +158,11 @@ class EOBSSinglePoint(EOBS):
 
     def load(self):
         ds = super().load()
-        return ds.sel(
+        df = ds.sel(
             longitude=self.point[0], latitude=self.point[1], method="nearest"
         ).to_dataframe()
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        return gpd.GeoDataFrame(df, geometry=geometry)
 
 
 class EOBSMultiplePoints(EOBS):
@@ -170,11 +182,13 @@ class EOBSMultiplePoints(EOBS):
         # pointwise selection
         lons = xr.DataArray([p[0] for p in self.points], dims="points")
         lats = xr.DataArray([p[1] for p in self.points], dims="points")
-        return ds.sel(
+        df = ds.sel(
             longitude=lons,
             latitude=lats,
             method="nearest",
         ).to_dataframe()
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        return gpd.GeoDataFrame(df, geometry=geometry)
 
 
 class EOBSBoundingBox(EOBS):

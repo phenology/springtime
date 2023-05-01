@@ -4,8 +4,6 @@ SPDX-FileCopyrightText: 2023 Springtime authors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Datasets
-
 Springtime brings together datasets from various sources. Where possible, we use
 existing tools to retrieve the data. The flowchart below illustrates the various
 sources. Note that there might be multiple ways/tools to get data from the same
@@ -65,21 +63,3 @@ flowchart TD
     S4 & M4 & F7 & F5 & P1 --> S1
     F8 --> S1
 ```
-
-## Field observations
-
-more info later
-
-## Satellites
-
-More info later
-
-## Meteorology
-
-### Daymet
-
-more info later.
-
-### E-Obs
-
-more info later

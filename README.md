@@ -5,24 +5,26 @@ SPDX-License-Identifier: Apache-2.0
 -->
 
 [![Documentation Status](https://readthedocs.org/projects/springtime/badge/?version=latest)](https://springtime.readthedocs.io/en/latest/?badge=latest)
+[![RSD](https://img.shields.io/badge/RSD-springtime-blue)](https://research-software-directory.org/software/springtime)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7835299.svg)](https://doi.org/10.5281/zenodo.7835299)
+
 
 <!--intro-start-->
 # Springtime
 
-Spatiotemporal phenology research with interpretable models.
+The Springtime Python package helps to streamline workflows for doing machine
+learning with phenological datasets.
 
-Phenology is a scientific discipline in which we study the lifecycle of plants
-and animals. In the Springtime project, we aim to develop (Machine Learning)
-models for the occurrence of phenological events, such as the blooming of plants.
-Since there is a variety of data sources, a substantial part of this project
-focuses on data retrieval and pre-processing as well.
+Phenology is the scientific discipline in which we study the lifecycle of plants
+and animals. A common objective is to develop (Machine Learning) models that can
+explain or predict the occurrence of phenological events, such as the blooming
+of plants. Since there is a variety of data sources and existing tools to
+retrieve and analyse phenology data, it is easy to get lost and disorganized.
 
-We try to use existing tools as much as possible. At the same time, working with
-many different datasets and a variety of tools to download them, project folders
-and code organization can quickly get messy. That's why we focus heavily on
-streamlining our workflows, such that you can always execute them with a single
-command. We use standardized locations for storing raw and intermediate data,
-and a standardized "recipe" format to define the steps in our workflows.
+With Springtime, we aim to provide a more streamlined workflow for working with
+a variety of datasets and (ML) models. You can run Springtime as a command line
+tool in a terminal or use it as a Python library e.g. in a Jupyter notebook.
+
 <!--intro-end-->
 
 [Documentation](https://springtime.readthedocs.io/)
@@ -81,10 +83,19 @@ Predict the day of first bloom of the common lilac given indirect observations
 ![illustration_example_use_case](docs/illustration.png)
 <!--illustration-end-->
 
-<!--recipe-start-->
-## Scientific recipes (workflows)
+## Usage
+<!--usage-start-->
+You can run `springtime` as a command-line tool in a terminal or use it as a python library e.g. in a Jupyter notebook. Below, we explain both CLI and API.
+<!--usage-end-->
 
-Workflows can be written in a nice and readable format, e.g.
+<!--recipe-start-->
+### CLI to run recipes
+
+The main component of `springtime` command-line is the recipe (scientific
+workflow). A recipe is a file with `yaml` extension that includes a set of
+instructions to reproduce a certain result. Recipes are written in a nice and
+readable format,
+e.g.
 
 ```yaml
 datasets:
@@ -102,16 +113,20 @@ models:
     options: ...
 ```
 
-Such a recipe can then be executed with a single command line call:
+Such a recipe can then be executed with `springtime` command in a terminal:
 
 ```bash
 springtime run recipe_syringa.yaml
 ```
 
+We provide several "recipes" for downloading data from various sources.
+See "Datasets"
+[documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+
 <!--recipe-end-->
 
 <!--api-start-->
-## Python API
+### Python API
 
 Springtime is written in Python (with parts in R) and can also be used in an
 interactive (IPython/Jupyter) session. For example:
@@ -122,4 +137,9 @@ dataset = PEP725Phenor(species='Syringa vulgaris')
 dataset.download()
 df = dataset.load()
 ```
+
+We provide several notebooks for downloading data from various sources.
+See "Datasets"
+[documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+
 <!--api-end-->

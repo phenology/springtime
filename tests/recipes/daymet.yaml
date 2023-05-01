@@ -7,12 +7,28 @@ datasets:
     dataset: daymet_single_point
     point: [-84.2625, 36.0133]
     years: [1980, 2010]
+  daymet_single_point_single_year:
+    dataset: daymet_single_point
+    point: [-84.2625, 36.0133]
+    years: [2010, 2010]
+  daymet_single_point_invalid_year:
+    dataset: daymet_single_point
+    point: [-84.2625, 36.0133]
+    years: [2020, 2010]
+  daymet_single_point_too_early:
+    dataset: daymet_single_point
+    point: [-84.2625, 36.0133]
+    years: [1900, 2010]
+  daymet_single_point_too_late:
+    dataset: daymet_single_point
+    point: [-84.2625, 36.0133]
+    years: [1980, 2100]
   daymet_bounding_box_tmin:
     dataset: daymet_bounding_box
     area:
       name: indianapolis
       bbox: [-86.5,39.5, -86, 40.1]
-    years: [2019, 2020]
+    years: [2018, 2020]
     variables:
       - tmin
   daymet_bounding_box_tminandtmax:
@@ -46,6 +62,8 @@ datasets:
       - [-86, 39.6]
       - [-85, 40]
     years: [1980, 2010]
+    variables:
+      - tmin
 
   daymet_single_point_in_hawaii:
     dataset: daymet_single_point

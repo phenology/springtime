@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Springtime
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Peter
+    family-names: Kalverla
+    affiliation: Netherlands eScience Center
+    orcid: 'https://orcid.org/0000-0002-5025-7862'
+  - given-names: Fakhereh
+    family-names: Alidoost
+    affiliation: Netherlands eScience Center
+    orcid: 'https://orcid.org/0000-0001-8407-6472'
+  - given-names: Stefan
+    family-names: Verhoeven
+    orcid: 'https://orcid.org/0000-0002-5821-2060'
+    affiliation: Netherlands eScience Center
+  - given-names: Mahdi
+    family-names: Khodadadzadeh
+    orcid: 'https://orcid.org/0000-0001-7899-738X'
+    affiliation: University of Twente
+repository-code: 'https://github.com/phenology/springtime'
+url: 'https://springtime.readthedocs.io/'
+abstract: >-
+  The Springtime Python package helps to streamline
+  workflows for doing machine learning with phenological
+  datasets.
+keywords:
+  - phenology
+  - machine learning
+  - geospatial
+identifiers:
+  - description: Latest version of software
+    type: doi
+    value: "10.5281/zenodo.7835299"

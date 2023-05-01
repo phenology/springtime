@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional
 
 import geopandas as gpd
 import pandas as pd
-from pydantic import BaseModel
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, NamedIdentifiers, run_r_script
 
 request_source = "Springtime user https://github.com/springtime/springtime"
@@ -19,7 +19,7 @@ phenophases_file = data_dir / "phenophases.csv"
 stations_file = data_dir / "stations.csv"
 
 
-class RNPN(BaseModel):
+class RNPN(Dataset):
     """Download and load data from NPN.
 
     Uses rnpn (https://rdrr.io/cran/rnpn/) as client.
@@ -66,7 +66,6 @@ class RNPN(BaseModel):
     """
 
     dataset: Literal["RNPN"] = "RNPN"
-    years: Tuple[int, int]
     species_ids: Optional[NamedIdentifiers]
     phenophase_ids: Optional[NamedIdentifiers]
     area: Optional[NamedArea] = None
@@ -96,7 +95,7 @@ class RNPN(BaseModel):
         df = pd.concat(
             [
                 pd.read_csv(self._filename(year))
-                for year in range(self.years[0], self.years[1] + 1)
+                for year in self.years.range
                 if self._filename(year).exists()
             ]
         )
@@ -116,14 +115,14 @@ class RNPN(BaseModel):
         """
         data_dir.mkdir(parents=True, exist_ok=True)
 
-        for year in range(self.years[0], self.years[1] + 1):
+        for year in self.years.range:
             filename = self._filename(year)
 
             if filename.exists() and not CONFIG.force_override:
                 print(f"{filename} already exists, skipping")
             else:
                 print(f"downloading {filename}")
-                run_r_script(self._r_download(filename, year))
+                run_r_script(self._r_download(filename, year), timeout=timeout)
 
     def _r_download(self, filename: Path, year):
         opt_args = []

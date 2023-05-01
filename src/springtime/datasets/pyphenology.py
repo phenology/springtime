@@ -11,14 +11,14 @@ from pathlib import Path
 from typing import Literal
 
 import pandas as pd
-from pydantic import BaseModel
 from pyPhenology.models.utils.misc import temperature_only_data_prep
 from pyPhenology.utils import load_test_data
 
 from springtime.config import CONFIG
+from springtime.datasets.abstract import Dataset
 
 
-class PyPhenologyDataset(BaseModel):
+class PyPhenologyDataset(Dataset):
     """Example datasets from pyphenology package.
 
     Available combinations:
@@ -75,7 +75,10 @@ class PyPhenologyDataset(BaseModel):
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        return pd.read_csv(self.location, index_col=0)
+        df = pd.read_csv(self.location, index_col=0)
+        df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
+        # TODO add geometry column
+        return df
 
 
 def _align_data(obs, pred):

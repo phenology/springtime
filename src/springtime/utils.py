@@ -9,10 +9,12 @@ from logging import getLogger
 from typing import NamedTuple, Sequence
 
 import geopandas as gpd
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, PositiveInt, validator
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
+
+# TODO move the types to types.py
 
 
 class BoundingBox(NamedTuple):
@@ -45,6 +47,29 @@ class NamedArea(BaseModel):
 class NamedIdentifiers(BaseModel):
     name: str
     items: Sequence[int]
+
+
+# date range of years
+class YearRange(NamedTuple):
+    """Date range in years.
+
+    Example:
+
+        >>> YearRange(2000, 2005)
+        >>> YearRange(start=2000, end=2005)
+        >>> YearRange(2000, 2000)
+
+    """
+
+    start: PositiveInt
+    end: PositiveInt
+    """The end year is inclusive."""
+
+    @property
+    def range(self) -> range:
+        """Return the range of years."""
+        # +1 as range() is exclusive while YearRange is inclusive
+        return range(self.start, self.end + 1)
 
 
 # Decorators copied from https://wiki.python.org/moin/PythonDecoratorLibrary

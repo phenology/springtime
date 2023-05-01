@@ -9,6 +9,7 @@ from logging import getLogger
 from typing import NamedTuple, Sequence
 
 import geopandas as gpd
+import pandas as pd
 from pydantic import BaseModel, PositiveInt, validator
 from shapely.geometry import Polygon
 
@@ -208,3 +209,32 @@ def rolling_mean(
     """
     # TODO implement
     raise NotImplementedError()
+
+
+
+def aggregate(df, key='time', freq=None, operator='mean'):
+    """Aggregate data based on given column and operator.
+
+    Aggregation is performed separately for each unique combination of year and
+    geometry.
+
+    If df[key] is a categorical variable, will group by unique values If df[key]
+    is a datetime variable, will create a timegrouper with given frequency.
+
+    See:
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Grouper.html
+    """
+    grouper = pd.Grouper(key=key, freq=freq)
+
+    if freq is not None:
+        # Make sure to keep the year separately
+        df['year'] = df[key].dt.year
+
+    # Perform groupby & aggregate (can't sort when grouping on geometry)
+    new_df = df.groupby(["year", "geometry", grouper], sort=False).agg(operator).reset_index()
+
+    # TODO: make sure the labels reflect the groups, e.g. monthly --> range(1, 13), Jan 2010 == Jan 2011
+    # if freq is not None:
+    #     new_df[key] = new_df['key'].dt.['freq']   # but this only works with .based lookup, not dict like
+
+    return gpd.GeoDataFrame(new_df)

@@ -112,7 +112,7 @@ class RNPN(Dataset):
                     "day": gdf.first_yes_day,
                 }
             )
-            var_name = self.phenophase_ids.name + '_doy'
+            var_name = self.phenophase_ids.name + "_doy"
             gdf.rename(columns={"first_yes_doy": var_name}, inplace=True)
             return gdf[["datetime", "geometry", var_name]]
         else:
@@ -123,10 +123,10 @@ class RNPN(Dataset):
                     "day": gdf.last_yes_day,
                 }
             )
-            var_name = self.phenophase_ids.name + '_doy'
+            var_name = self.phenophase_ids.name + "_doy"
             gdf.rename(columns={"last_yes_doy": var_name}, inplace=True)
             return gdf[["datetime", "geometry", var_name]]
-        
+
     def download(self, timeout=30):
         """Download the data.
 

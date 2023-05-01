@@ -97,8 +97,9 @@ class ModisSinglePoint(Dataset):
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         gdf["datetime"] = pd.to_datetime(gdf["calendar_date"])
         # Set band as columns
-        return gdf.pivot(index=["datetime", "geometry"], columns="band", values="value").reset_index()
-
+        return gdf.pivot(
+            index=["datetime", "geometry"], columns="band", values="value"
+        ).reset_index()
 
     def _r_download(self):
         if len(self.bands) == 1:

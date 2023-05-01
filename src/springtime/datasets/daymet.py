@@ -39,7 +39,7 @@ from typing import Literal, Sequence, Tuple
 import geopandas as gpd
 import pandas as pd
 import xarray as xr
-from pydantic import BaseModel, root_validator, validator
+from pydantic import root_validator, validator
 
 from springtime.config import CONFIG
 from springtime.utils import NamedArea, run_r_script, transponse_df
@@ -94,7 +94,7 @@ class DaymetSinglePoint(Daymet):
 
     def load(self):
         raw_df = self.load_raw()
-        return transponse_df(raw_df, columns=['yday'])
+        return transponse_df(raw_df, columns=["yday"])
 
     def load_raw(self):
         """Load the dataset from disk into memory.
@@ -128,16 +128,25 @@ class DaymetSinglePoint(Daymet):
         """
 
 
-def resample(raw_df, frequency='month', operator='mean'):
-    date = pd.to_datetime(raw_df.year.astype(str) + raw_df.yday.astype(str), format="%Y%j")
-    if frequency == 'month':
+def resample(raw_df, frequency="month", operator="mean"):
+    date = pd.to_datetime(
+        raw_df.year.astype(str) + raw_df.yday.astype(str), format="%Y%j"
+    )
+    if frequency == "month":
         timegrouper = date.dt.month
-    elif frequency == 'week':
+    elif frequency == "week":
         timegrouper = date.dt.week
     else:
-        raise ValueError("Frequency {frequency} not supported. Choose `week` or `month`.")
+        raise ValueError(
+            "Frequency {frequency} not supported. Choose `week` or `month`."
+        )
 
-    return raw_df.assign({frequency: timegrouper}).groupby(['year', 'geometry', timegrouper]).agg(operator).reset_index()
+    return (
+        raw_df.assign({frequency: timegrouper})
+        .groupby(["year", "geometry", timegrouper])
+        .agg(operator)
+        .reset_index()
+    )
 
 
 class DaymetMultiplePoints(Daymet):
@@ -196,9 +205,7 @@ class DaymetMultiplePoints(Daymet):
         headers = {}
         for point, handler in zip(self.points, self._handlers):
             df = handler.load()
-            geometry = gpd.points_from_xy(
-                [point[0]] * len(df), [point[1]] * len(df)
-            )
+            geometry = gpd.points_from_xy([point[0]] * len(df), [point[1]] * len(df))
             geo_df = gpd.GeoDataFrame(df, geometry=geometry)
             dataframes.append(geo_df)
             headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]

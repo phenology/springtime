@@ -77,8 +77,8 @@ class Workflow(BaseModel):
         dataframes = []
         datacubes = []
         for dataset_name, dataset in self.datasets.items():
-            ds = dataset.raw_load()
-            logger.warn(f"Dataset {dataset_name} loaded with {len(ds)} rows")
+            ds = dataset.load()
+            logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
             if issubclass(ds.__class__, pd.DataFrame):
                 dataframes.append(ds)
             else:

@@ -69,13 +69,19 @@ class PyPhenologyDataset(Dataset):
         # Save to standardized location
         combined_data.to_csv(self.location)
 
+    def _raw_load(self):
+        df = pd.read_csv(self.location, index_col=0)
+        return df
+
     def load(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
+
+        `_raw_load` is used to get the data exactly like it was retrieved from source.
         """
-        df = pd.read_csv(self.location, index_col=0)
+        df = self._raw_load()
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
         # TODO add geometry column
         return df

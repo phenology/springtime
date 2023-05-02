@@ -67,10 +67,11 @@ class RNPN(Dataset):
 
     dataset: Literal["RNPN"] = "RNPN"
     species_ids: Optional[NamedIdentifiers]
-    phenophase_ids: Optional[NamedIdentifiers]
+    phenophase_ids: NamedIdentifiers
     area: Optional[NamedArea] = None
     use_first: bool = True
     """When true uses first_yes columns as value, otherwise the last_yes columns."""
+    aggregation_operator: Literal["min", "max", "mean", "median"] = "min"
 
     def _filename(self, year):
         """Path where files will be downloaded to and loaded from.
@@ -103,29 +104,7 @@ class RNPN(Dataset):
         )
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return gdf
-        if self.use_first:
-            gdf["datetime"] = pd.to_datetime(
-                {
-                    "year": gdf.first_yes_year,
-                    "month": gdf.first_yes_month,
-                    "day": gdf.first_yes_day,
-                }
-            )
-            var_name = self.phenophase_ids.name + "_doy"
-            gdf.rename(columns={"first_yes_doy": var_name}, inplace=True)
-            return gdf[["datetime", "geometry", var_name]]
-        else:
-            gdf["datetime"] = pd.to_datetime(
-                {
-                    "year": gdf.last_yes_year,
-                    "month": gdf.last_yes_month,
-                    "day": gdf.last_yes_day,
-                }
-            )
-            var_name = self.phenophase_ids.name + "_doy"
-            gdf.rename(columns={"last_yes_doy": var_name}, inplace=True)
-            return gdf[["datetime", "geometry", var_name]]
+        return _reformat(self, gdf)
 
     def download(self, timeout=30):
         """Download the data.
@@ -242,3 +221,32 @@ def npn_phenophase_ids_by_name(phenophase_name):
 def _lookup(df, column, expression):
     """Return rows where column matches expression."""
     return df[df[column].str.lower().str.contains(expression.lower())]
+
+
+def _reformat(self: RNPN, df):
+    var_name = self.phenophase_ids.name + "_doy"
+    if self.use_first:
+        df["datetime"] = pd.to_datetime(
+            {
+                "year": df.first_yes_year,
+                "month": df.first_yes_month,
+                "day": df.first_yes_day,
+            }
+        )
+        df.rename(columns={"first_yes_doy": var_name}, inplace=True)
+    else:
+        df["datetime"] = pd.to_datetime(
+            {
+                "year": df.last_yes_year,
+                "month": df.last_yes_month,
+                "day": df.last_yes_day,
+            }
+        )
+        df.rename(columns={"last_yes_doy": var_name}, inplace=True)
+
+    df = (
+        df[["datetime", "geometry", var_name]]
+        .groupby(by=[df.datetime.dt.year, "geometry"], as_index=False, sort=False)
+        .aggregate(self.aggregation_operator)
+    )
+    return gpd.GeoDataFrame(df)

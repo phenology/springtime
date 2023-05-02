@@ -35,7 +35,7 @@ pyproj
 
 from datetime import datetime
 from typing import Literal, Sequence, Tuple, Union
-
+import logging
 import geopandas
 import pandas as pd
 import xarray as xr
@@ -45,6 +45,8 @@ from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import PointsFromOther
 from springtime.utils import NamedArea, run_r_script
+
+logger = logging.getLogger(__name__)
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
@@ -130,6 +132,7 @@ class DaymetSinglePoint(Daymet):
         return gdf[["datetime", "geometry"] + var_columns]
 
     def _r_download(self):
+        logger.info(f"Downloading data to {self._path}")
         return f"""\
         library(daymetr)
         daymetr::download_daymet(

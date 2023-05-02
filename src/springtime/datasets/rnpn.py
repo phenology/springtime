@@ -29,7 +29,7 @@ class SpeciesByFunctionalType(BaseModel):
 
     @property
     def items(self):
-        return npn_species_ids_by_functional_type(self.functional_type)
+        return npn_species_ids_by_functional_type(self.functional_type).items
 
 
 class PhenophasesByName(BaseModel):
@@ -37,7 +37,7 @@ class PhenophasesByName(BaseModel):
 
     @property
     def items(self):
-        return npn_phenophase_ids_by_name(self.name)
+        return npn_phenophase_ids_by_name(self.name).items
 
 
 class RNPN(Dataset):

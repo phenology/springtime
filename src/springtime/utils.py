@@ -9,7 +9,7 @@ from logging import getLogger
 from typing import NamedTuple, Sequence, Tuple
 
 import geopandas as gpd
-from pydantic import BaseModel, PositiveInt, validator
+from pydantic import BaseModel, PositiveInt, validator, PrivateAttr
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
@@ -51,7 +51,7 @@ class NamedIdentifiers(BaseModel):
 
 class PointsFromOther(BaseModel):
     source: str
-    _points: Sequence[Tuple[float, float]] = []
+    _points: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
 
     def get_points(self, other):
         self._points = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
@@ -165,7 +165,11 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         input=script.encode(),
         stderr=subprocess.PIPE,
     )
-    result.check_returncode()
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError:
+        logger.error(result.stderr)
+        raise
 
 
 def transponse_df(df, index=("year", "geometry"), columns=("doy",)):

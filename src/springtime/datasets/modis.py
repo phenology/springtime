@@ -17,10 +17,12 @@ import rpy2.robjects as ro
 from pydantic import BaseModel, conset
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
-
+import logging
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import PointsFromOther, run_r_script
+
+logger = logging.getLogger(__name__)
 
 
 class Extent(BaseModel):
@@ -80,6 +82,7 @@ class ModisSinglePoint(Dataset):
         """
         some_paths_missing = any(not p.exists() for p in self._paths)
         if some_paths_missing or CONFIG.force_override:
+            logger.info(f"Downloading data to {self._paths}")
             run_r_script(self._r_download(), timeout=300)
 
     def load(self):
@@ -151,6 +154,7 @@ class ModisMultiplePoints(Dataset):
 
     @property
     def _handlers(self):
+        # TODO: use batch download endpoint
         return [
             ModisSinglePoint(
                 point=point, years=self.years, product=self.product, bands=self.bands

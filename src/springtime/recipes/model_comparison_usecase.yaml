@@ -7,9 +7,7 @@ datasets:
     dataset: RNPN
     species_ids:
       functional_type: "Deciduous broadleaf" # multiple species
-      # TODO implement from functional type
     phenophase_ids:
-      # TODO call npn_phenophase_ids_by_name to get items
         name: breaking leaf buds
     years: [2015, 2020]
     area:

@@ -32,6 +32,14 @@ class SpeciesByFunctionalType(BaseModel):
         return npn_species_ids_by_functional_type(self.functional_type)
 
 
+class PhenophasesByName(BaseModel):
+    name: str
+
+    @property
+    def items(self):
+        return npn_phenophase_ids_by_name(self.name)
+
+
 class RNPN(Dataset):
     """Download and load data from NPN.
 
@@ -80,7 +88,7 @@ class RNPN(Dataset):
 
     dataset: Literal["RNPN"] = "RNPN"
     species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]]
-    phenophase_ids: NamedIdentifiers
+    phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
     area: Optional[NamedArea] = None
     use_first: bool = True
     """When true uses first_yes columns as value, otherwise the last_yes columns."""

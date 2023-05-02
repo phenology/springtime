@@ -210,7 +210,7 @@ def rolling_mean(
     raise NotImplementedError()
 
 
-def resample(df, freq="month", operator="mean", column="time"):
+def resample(df, freq="month", operator="mean", column="datetime"):
     """Resample data on year, geometry, and given frequency.
 
     Options for freq (properties of df.time.dt):

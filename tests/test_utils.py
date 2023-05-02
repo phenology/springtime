@@ -188,7 +188,7 @@ def sample_df():
     index = pd.date_range("20100101", "20111231", freq="h")
     data = np.random.randn(len(index))
     geometry = gpd.points_from_xy(np.ones(len(index)), np.ones(len(index)))
-    df = gpd.GeoDataFrame({"values": data, "time": index}, geometry=geometry)
+    df = gpd.GeoDataFrame({"values": data, "datetime": index}, geometry=geometry)
     return df
 
 

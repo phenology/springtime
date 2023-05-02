@@ -89,12 +89,17 @@ class ModisSinglePoint(Dataset):
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
         dataframes = [pd.read_csv(path) for path in self._paths]
-        # TODO replace band+value column with columns named after band
         df = pd.concat(dataframes)
         geometry = geopandas.points_from_xy(
             [self.point[0]] * len(df), [self.point[1]] * len(df)
         )
-        return geopandas.GeoDataFrame(df, geometry=geometry)
+        # convert calendar_date to datetime
+        gdf = geopandas.GeoDataFrame(df, geometry=geometry)
+        gdf["datetime"] = pd.to_datetime(gdf["calendar_date"])
+        # Set band as columns
+        return gdf.pivot(
+            index=["datetime", "geometry"], columns="band", values="value"
+        ).reset_index()
 
     def _r_download(self):
         if len(self.bands) == 1:

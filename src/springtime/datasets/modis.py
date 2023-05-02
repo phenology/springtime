@@ -9,7 +9,7 @@
 Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
 """
 
-from typing import Literal, Sequence, Tuple
+from typing import Literal, Sequence, Tuple, Union
 
 import geopandas
 import pandas as pd
@@ -20,7 +20,7 @@ from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import run_r_script
+from springtime.utils import PointsFromOther, run_r_script
 
 
 class Extent(BaseModel):
@@ -138,7 +138,7 @@ class ModisMultiplePoints(Dataset):
     """
 
     dataset: Literal["modis_multiple_points"] = "modis_multiple_points"
-    points: Sequence[Tuple[float, float]]
+    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
     """Points as longitude, latitude in WGS84 projection."""
     product: str
     """a MODIS product. Use `modis_products()` to get list of available products."""

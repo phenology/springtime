@@ -6,7 +6,7 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence
+from typing import NamedTuple, Sequence, Tuple
 
 import geopandas as gpd
 from pydantic import BaseModel, PositiveInt, validator
@@ -47,6 +47,18 @@ class NamedArea(BaseModel):
 class NamedIdentifiers(BaseModel):
     name: str
     items: Sequence[int]
+
+
+class PointsFromOther(BaseModel):
+    source: str
+    _points: Sequence[Tuple[float, float]] = []
+
+    def get_points(self, other):
+        self._points = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
+
+    def __iter__(self):
+        for item in self._points:
+            yield item
 
 
 # date range of years

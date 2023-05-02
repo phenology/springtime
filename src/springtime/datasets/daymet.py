@@ -34,7 +34,7 @@ pyproj
 """
 
 from datetime import datetime
-from typing import Literal, Sequence, Tuple
+from typing import Literal, Sequence, Tuple, Union
 
 import geopandas
 import pandas as pd
@@ -43,6 +43,7 @@ from pydantic import root_validator, validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
+from springtime.utils import PointsFromOther
 from springtime.utils import NamedArea, run_r_script
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
@@ -170,7 +171,7 @@ class DaymetMultiplePoints(Daymet):
     """
 
     dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
-    points: Sequence[Tuple[float, float]]
+    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
     """Points as longitude, latitude in WGS84 projection."""
 
     @property

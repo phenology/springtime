@@ -5,7 +5,7 @@
 import logging
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import click
 import pandas as pd
@@ -13,6 +13,7 @@ import yaml
 from pydantic import BaseModel, validator
 
 from springtime.datasets import Datasets
+from springtime.utils import PointsFromOther
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +52,24 @@ class Workflow(BaseModel):
     def execute(self):
         """(Down)load data, pre-process, run models, evaluate."""
         self.create_session()
-        # self.autocomplete()
-        self.download_data()
-        df, datacubes = self.load_data()
+
+        dataframes = {}
+        # TODO check for dependencies to infer order
+        for dataset_name, dataset in self.datasets.items():
+            if hasattr(dataset,"points") and isinstance(dataset.points, PointsFromOther):
+                dataset.points.get_points(dataframes[dataset.points.source])
+            print("Downloading dataset: ", dataset_name)
+            dataset.download()
+            ds = dataset.load()
+            logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
+            dataframes[dataset_name] = ds
+
+        # TODO resample and transpose
+        # df = pd.concat(dataframes)
+        # df.to_csv(self.session.output_dir / "data.csv")
+
         # TODO do something with datacubes
-        self.run_experiments(df)
+        # self.run_experiments(df)
 
     def create_session(self):
         """Create a context for executing the experiment."""
@@ -63,31 +77,7 @@ class Workflow(BaseModel):
         if self.recipe is not None:
             self.recipe.copy(self.session.output_dir / "data.csv")
 
-    def autocomplete(self):
-        """Substitute time and area in datasets and model function mappings."""
 
-    def download_data(self):
-        """Download the data."""
-        for name, dataset in self.datasets.items():
-            print("Downloading dataset: ", name)
-            dataset.download()
-
-    def load_data(self):
-        """Load and merge input datasets."""
-        dataframes = []
-        datacubes = []
-        for dataset_name, dataset in self.datasets.items():
-            ds = dataset.load()
-            logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
-            if issubclass(ds.__class__, pd.DataFrame):
-                dataframes.append(ds)
-            else:
-                datacubes.append(ds)
-
-        df = pd.concat(dataframes)
-        df.to_csv(self.session.output_dir / "data.csv")
-
-        return df, datacubes
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""

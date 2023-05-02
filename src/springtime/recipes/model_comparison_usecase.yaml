@@ -1,0 +1,42 @@
+datasets:
+  npn_obs:
+    dataset: RNPN
+    species_ids:
+      functional_type: "Deciduous broadleaf" # multiple species
+      # TODO implement from functional type
+    phenophase_ids:
+      # TODO call npn_phenophase_ids_by_name to get items
+        name: breaking leaf buds
+    years: [2015, 2020]
+    area:
+      name: Washington # 500km boundingbox centered at latitude: 47.751076 and longitude: -120.740135
+      bbox:
+        [
+          -124.08406940413612,
+          45.50277198520317,
+          -117.39620059586387,
+          49.99938001479683,
+        ]
+  daymet:
+    dataset: daymet_multiple_points
+    points:
+      # TODO make sure from point is implemented
+      from: npn_obs
+    years: [2015, 2020] # TODO don't duplicate
+    variables:
+      - tmin
+      - tmax
+    resample:
+      # TODO make sure resample is called during execution
+      frequency: month
+  modis:
+    dataset: modis_multiple_points
+    points:
+      from: npn_obs
+    years: [2015, 2020] # TODO don't duplicate
+    product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+    bands: [Fpar_500m, Lai_500m] #8 days
+    resample:
+      # TODO make sure resample is called during execution
+      frequency: month
+# TODO if extent is not zero we need an aggregation

@@ -28,6 +28,9 @@ datasets:
   maple_buds:
     dataset: RNPN
     years: [2010, 2011]
+    phenophase_ids:
+        name: Breaking leaf buds
+        items: [371, 373]
     area:
       name: somewhere
       bbox: [-112, 30, -108, 35.0]

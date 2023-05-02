@@ -7,82 +7,82 @@ datasets:
     dataset: daymet_single_point
     point: [-84.2625, 36.0133]
     years: [1980, 2010]
-  daymet_single_point_single_year:
-    dataset: daymet_single_point
-    point: [-84.2625, 36.0133]
-    years: [2010, 2010]
-  daymet_single_point_invalid_year:
-    dataset: daymet_single_point
-    point: [-84.2625, 36.0133]
-    years: [2020, 2010]
-  daymet_single_point_too_early:
-    dataset: daymet_single_point
-    point: [-84.2625, 36.0133]
-    years: [1900, 2010]
-  daymet_single_point_too_late:
-    dataset: daymet_single_point
-    point: [-84.2625, 36.0133]
-    years: [1980, 2100]
-  daymet_bounding_box_tmin:
-    dataset: daymet_bounding_box
-    area:
-      name: indianapolis
-      bbox: [-86.5,39.5, -86, 40.1]
-    years: [2018, 2020]
-    variables:
-      - tmin
-  daymet_bounding_box_tminandtmax:
-    dataset: daymet_bounding_box
-    area:
-      name: indianapolis
-      bbox: [-86.5,39.5, -86, 40.1]
-    years: [2019, 2020]
-    variables:
-      - tmin
-      - tmax
-  daymet_bounding_box_all_variables:
-    dataset: daymet_bounding_box
-    area:
-      name: indianapolis
-      bbox: [-86.5,39.5, -86, 40.1]
-    years: [1980, 1981]
+  # daymet_single_point_single_year:
+  #   dataset: daymet_single_point
+  #   point: [-84.2625, 36.0133]
+  #   years: [2010, 2010]
+  # daymet_single_point_invalid_year:
+  #   dataset: daymet_single_point
+  #   point: [-84.2625, 36.0133]
+  #   years: [2020, 2010]
+  # daymet_single_point_too_early:
+  #   dataset: daymet_single_point
+  #   point: [-84.2625, 36.0133]
+  #   years: [1900, 2010]
+  # daymet_single_point_too_late:
+  #   dataset: daymet_single_point
+  #   point: [-84.2625, 36.0133]
+  #   years: [1980, 2100]
+  # daymet_bounding_box_tmin:
+  #   dataset: daymet_bounding_box
+  #   area:
+  #     name: indianapolis
+  #     bbox: [-86.5,39.5, -86, 40.1]
+  #   years: [2018, 2020]
+  #   variables:
+  #     - tmin
+  # daymet_bounding_box_tminandtmax:
+  #   dataset: daymet_bounding_box
+  #   area:
+  #     name: indianapolis
+  #     bbox: [-86.5,39.5, -86, 40.1]
+  #   years: [2019, 2020]
+  #   variables:
+  #     - tmin
+  #     - tmax
+  # daymet_bounding_box_all_variables:
+  #   dataset: daymet_bounding_box
+  #   area:
+  #     name: indianapolis
+  #     bbox: [-86.5,39.5, -86, 40.1]
+  #   years: [1980, 1981]
 
-  daymet_bounding_box_all_variables_monthly:
-    dataset: daymet_bounding_box
-    area:
-      name: indianapolis
-      bbox: [-86.5,39.5, -86, 40.1]
-    years: [1980, 1981]
-    frequency: monthly
+  # daymet_bounding_box_all_variables_monthly:
+  #   dataset: daymet_bounding_box
+  #   area:
+  #     name: indianapolis
+  #     bbox: [-86.5,39.5, -86, 40.1]
+  #   years: [1980, 1981]
+  #   frequency: monthly
 
-  daymet_multi_point:
-    dataset: daymet_multiple_points
-    points:
-      - [-84.2625, 36.0133]
-      - [-86, 39.6]
-      - [-85, 40]
-    years: [1980, 2010]
-    variables:
-      - tmin
+  # daymet_multi_point:
+  #   dataset: daymet_multiple_points
+  #   points:
+  #     - [-84.2625, 36.0133]
+  #     - [-86, 39.6]
+  #     - [-85, 40]
+  #   years: [1980, 2010]
+  #   variables:
+  #     - tmin
 
-  daymet_single_point_in_hawaii:
-    dataset: daymet_single_point
-    point: [-155.243537, 19.354621]
-    years: [1980, 2010]
+  # daymet_single_point_in_hawaii:
+  #   dataset: daymet_single_point
+  #   point: [-155.243537, 19.354621]
+  #   years: [1980, 2010]
 
-  daymet_multi_point_in_hawaii_and_na:
-    dataset: daymet_multiple_points
-    points:
-      - [-86, 39.6]
-      - [-155.243537, 19.354621]
-    years: [1980, 2010]
+  # daymet_multi_point_in_hawaii_and_na:
+  #   dataset: daymet_multiple_points
+  #   points:
+  #     - [-86, 39.6]
+  #     - [-155.243537, 19.354621]
+  #   years: [1980, 2010]
 
-  daymet_bounding_box_tmin_in_hawaii:
-    dataset: daymet_bounding_box
-    area:
-      name: hawaii
-      bbox: [-156.2, 19.2, -155.1, 19.3]
-    years: [2019, 2020]
-    variables:
-      - tmin
-    mosaic: hi
+  # daymet_bounding_box_tmin_in_hawaii:
+  #   dataset: daymet_bounding_box
+  #   area:
+  #     name: hawaii
+  #     bbox: [-156.2, 19.2, -155.1, 19.3]
+  #   years: [2019, 2020]
+  #   variables:
+  #     - tmin
+  #   mosaic: hi

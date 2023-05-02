@@ -208,3 +208,27 @@ def rolling_mean(
     """
     # TODO implement
     raise NotImplementedError()
+
+
+def resample(df, freq="month", operator="mean", column="datetime"):
+    """Resample data on year, geometry, and given frequency.
+
+    Options for freq (properties of df.time.dt):
+    - 'month'
+    - 'week'
+    - 'day'
+    - 'dayofyear'
+    - ...
+    """
+    groups = [
+        "geometry",
+        getattr(df[column].dt, "year").rename("year"),
+        getattr(df[column].dt, freq).rename(freq),
+    ]
+
+    # Can't sort when grouping on geometry
+    new_df = (
+        df.groupby(groups, sort=False).agg(operator, numeric_only=True).reset_index()
+    )
+
+    return gpd.GeoDataFrame(new_df)

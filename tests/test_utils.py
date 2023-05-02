@@ -5,10 +5,11 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 from geopandas.testing import assert_geodataframe_equal
+from numpy.testing import assert_array_equal
 import pytest
 from shapely.geometry import Point
 
-from springtime.utils import rolling_mean, transponse_df
+from springtime.utils import rolling_mean, transponse_df, resample
 
 
 def test_join_spatiotemporal_same_geometry():
@@ -180,3 +181,20 @@ def test_rolling_average():
         }
     )
     pd.testing.assert_frame_equal(result, expected)
+
+
+@pytest.fixture
+def sample_df():
+    index = pd.date_range("20100101", "20111231", freq="h")
+    data = np.random.randn(len(index))
+    geometry = gpd.points_from_xy(np.ones(len(index)), np.ones(len(index)))
+    df = gpd.GeoDataFrame({"values": data, "datetime": index}, geometry=geometry)
+    return df
+
+
+def test_resample_monthly(sample_df):
+    resampled = resample(sample_df, freq="month")
+
+    assert len(resampled) == 24
+    assert_array_equal(resampled.month.unique(), np.arange(12) + 1)
+    assert_array_equal(resampled.year.unique(), np.array([2010, 2011]))

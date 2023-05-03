@@ -28,7 +28,7 @@ datasets:
       - tmin
       - tmax
     resample:
-      frequency: month
+      frequency: week
       operator: median
   # TODO renable once someone has donwloaded the data and shared it in the team
   # modis:
@@ -44,10 +44,10 @@ datasets:
 
 ### Alternative using pycaret
 experiment:
-  type: regression  # --> pycaret.regression.RegressionExperiment
+  experiment_type: regression  # --> pycaret.regression.RegressionExperiment
   setup:
     # data: None  # All of the above
-    target: "first_leaves_doy"
+    target: "breaking leaf buds_doy"
     train_size: 0.75
     preprocess: false
     normalize: true
@@ -58,8 +58,8 @@ experiment:
     session_id: 123  # control randomness for reproducibility
 
   create_model:
-    estimator: lm
-    cross_validation: false
+    estimator: lr
+    # cross_validation: false
 
   # compare_models:
   #   include:

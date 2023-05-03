@@ -2,35 +2,28 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from typing import Any, Literal
 from pydantic import BaseModel
-from pydantic.decorator import ValidatedFunction
 from pycaret.utils.generic import MLUsecase
-import pycaret
 import pycaret.regression
 
 
-RegressionSetup = ValidatedFunction(
-    pycaret.regression.RegressionExperiment.setup, None
-).model
+RegressionSetup = dict[str, Any]
 
-RegressionCreateModel = ValidatedFunction(
-    pycaret.regression.RegressionExperiment.create_model,
-    config={"arbitrary_types_allowed": True},
-).model
+RegressionCreateModel = dict[str, Any]
 
-RegressionCompareModels = ValidatedFunction(
-    pycaret.regression.RegressionExperiment.compare_models,
-    config={"arbitrary_types_allowed": True},
-).model
+RegressionCompareModels = dict[str, Any]
 
+class ClassificationExperiment(BaseModel):
+    experiment_type: Literal['classification']
+    # TODO implement
 
 class RegressionExperiment(BaseModel):
-    type: MLUsecase.REGRESSION
+    experiment_type: Literal['regression']
 
     setup: RegressionSetup
     create_model: RegressionCreateModel | None
     compare_models: RegressionCompareModels | None
-
 
 # TODO: try to use pydantic validatedfunction to dynamically construct pydantic
 # models based on pycaret function signatures

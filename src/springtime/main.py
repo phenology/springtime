@@ -10,9 +10,11 @@ from typing import Dict, List, Optional
 import click
 import pandas as pd
 import yaml
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
+from pycaret import regression
 
 from springtime.datasets import Datasets
+from springtime.experiment import ClassificationExperiment, RegressionExperiment
 from springtime.utils import PointsFromOther, resample, transponse_df
 
 logger = logging.getLogger(__name__)
@@ -37,8 +39,7 @@ class Session(BaseModel):
 
 class Workflow(BaseModel):
     datasets: Dict[str, Datasets]
-    cross_validation: List = []
-    models: List = []
+    experiment: RegressionExperiment |ClassificationExperiment | None = Field(discriminator='experiment_type')
     recipe: Optional[Path] = None
     session: Optional[Session] = None
 
@@ -95,14 +96,14 @@ class Workflow(BaseModel):
             if issubclass(ds.__class__, pd.DataFrame)
         ]
         main_df = others.pop(0)
-        df = main_df.join(others, how="outer")
+        df = main_df.join(others, how="inner")
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"
         df.to_csv(data_fn)
         logger.warning(f"Data saved to: {data_fn}")
 
         # TODO do something with datacubes
-        # self.run_experiments(df)
+        self.run_experiments(df)
 
     def create_session(self):
         """Create a context for executing the experiment."""
@@ -113,15 +114,22 @@ class Workflow(BaseModel):
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""
-        scores = {}
-        for model in self.models:
-            with self.cross_validation:
-                model.fit(df)
-                score = model.score()
-                scores[model] = score
+        if self.experiment is None:
+            return
+        
+        if self.experiment.experiment_type == "regression":
+            s = regression.RegressionExperiment()
+        else:
+            raise ValueError('Unknown experiment type')
 
-        with open(self.session.output_dir / "data.csv", "w") as output_file:
-            yaml.dump(scores, output_file)
+        s.setup(df, **self.experiment.setup)
+        if self.experiment.create_model:
+            model = s.create_model(**self.experiment.create_model)
+            model_fn = self.session.output_dir / self.experiment.create_model["estimator"]
+            s.save_model(model, model_fn)
+            logger.warning(f'Saving model to {model_fn}')
+        if self.experiment.compare_models:
+            model = s.compare_models(**self.experiment.compare_models)
 
 
 def main(recipe):

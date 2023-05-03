@@ -28,7 +28,7 @@ datasets:
       - tmin
       - tmax
     resample:
-      frequency: week
+      frequency: month
       operator: median
   # TODO renable once someone has donwloaded the data and shared it in the team
   # modis:
@@ -41,7 +41,7 @@ datasets:
   #   resample:
   #     frequency: month
 # TODO if extent is not zero we need an aggregation
-
+dropna: True
 ### Alternative using pycaret
 experiment:
   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
@@ -59,7 +59,7 @@ experiment:
 
   create_model:
     estimator: lr
-    # cross_validation: false
+    cross_validation: false
 
   # compare_models:
   #   include:

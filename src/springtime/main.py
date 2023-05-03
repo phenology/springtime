@@ -5,7 +5,7 @@
 import logging
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import click
 import pandas as pd
@@ -39,7 +39,10 @@ class Session(BaseModel):
 
 class Workflow(BaseModel):
     datasets: Dict[str, Datasets]
-    experiment: RegressionExperiment |ClassificationExperiment | None = Field(discriminator='experiment_type')
+    dropna: bool = True
+    experiment: RegressionExperiment | ClassificationExperiment | None = Field(
+        discriminator="experiment_type"
+    )
     recipe: Optional[Path] = None
     session: Optional[Session] = None
 
@@ -96,7 +99,9 @@ class Workflow(BaseModel):
             if issubclass(ds.__class__, pd.DataFrame)
         ]
         main_df = others.pop(0)
-        df = main_df.join(others, how="inner")
+        df = main_df.join(others, how="outer")
+        if self.dropna:
+            df.dropna(inplace=True)
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"
         df.to_csv(data_fn)
@@ -116,18 +121,20 @@ class Workflow(BaseModel):
         """Train and evaluate ML models."""
         if self.experiment is None:
             return
-        
+
         if self.experiment.experiment_type == "regression":
             s = regression.RegressionExperiment()
         else:
-            raise ValueError('Unknown experiment type')
+            raise ValueError("Unknown experiment type")
 
         s.setup(df, **self.experiment.setup)
         if self.experiment.create_model:
             model = s.create_model(**self.experiment.create_model)
-            model_fn = self.session.output_dir / self.experiment.create_model["estimator"]
+            model_fn = (
+                self.session.output_dir / self.experiment.create_model["estimator"]
+            )
             s.save_model(model, model_fn)
-            logger.warning(f'Saving model to {model_fn}')
+            logger.warning(f"Saving model to {model_fn}")
         if self.experiment.compare_models:
             model = s.compare_models(**self.experiment.compare_models)
 

@@ -22,7 +22,6 @@ datasets:
   daymet:
     dataset: daymet_multiple_points
     points:
-      # TODO make sure from point is implemented
       source: npn_obs
     years: [2015, 2020] # TODO don't duplicate
     variables:
@@ -31,14 +30,15 @@ datasets:
     resample:
       # TODO make sure resample is called during execution
       frequency: month
-  modis:
-    dataset: modis_multiple_points
-    points:
-      source: npn_obs
-    years: [2015, 2020] # TODO don't duplicate
-    product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
-    bands: [Fpar_500m, Lai_500m] #8 days
-    resample:
-      # TODO make sure resample is called during execution
-      frequency: month
+  # TODO renable once someone has donwloaded the data and shared it in the team
+  # modis:
+  #   dataset: modis_multiple_points
+  #   points:
+  #     source: npn_obs
+  #   years: [2015, 2020] # TODO don't duplicate
+  #   product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+  #   bands: [Fpar_500m, Lai_500m] #8 days
+  #   resample:
+  #     # TODO make sure resample is called during execution
+  #     frequency: month
 # TODO if extent is not zero we need an aggregation

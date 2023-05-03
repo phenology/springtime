@@ -41,3 +41,36 @@ datasets:
   #   resample:
   #     frequency: month
 # TODO if extent is not zero we need an aggregation
+
+### Alternative using pycaret
+experiment:
+  type: regression  # --> pycaret.regression.RegressionExperiment
+  setup:
+    # data: None  # All of the above
+    target: "first_leaves_doy"
+    train_size: 0.75
+    preprocess: false
+    normalize: true
+    normalize_method: zscore  # i.e. default
+    fold_strategy: kfold  # i.e. default
+    fold: 10
+    fold_shuffle: true
+    session_id: 123  # control randomness for reproducibility
+
+  create_model:
+    estimator: lm
+    cross_validation: false
+
+  # compare_models:
+  #   include:
+  #     - 'lr'  # linear regression
+  #     - 'rf'  # random forest regressor
+  #     - 'xgboost'  # Extreme gradient boosting (bonus)
+  #     - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+  #     - interpret.glassbox.ExplainableBoostingRegressor  # Must be instantiated before passing to pycaret
+  #   fit_kwargs:
+  #     merf.MERF:   # This won't work out of the box
+  #       fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
+  #       random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
+  #       clusters: "site_id"
+  #   cross_validation: False  # evaluate metrics on holdout set for now

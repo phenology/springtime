@@ -48,6 +48,7 @@ dependencies:
   - r-readr
   - r-reshape2
   - r-rcppeigen
+  - r-rgdal
   - r-rgenoud
   - r-rnpn
   - r-rvest

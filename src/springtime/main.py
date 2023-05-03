@@ -13,7 +13,7 @@ import yaml
 from pydantic import BaseModel, validator
 
 from springtime.datasets import Datasets
-from springtime.utils import PointsFromOther, resample
+from springtime.utils import PointsFromOther, resample, transponse_df
 
 logger = logging.getLogger(__name__)
 
@@ -71,13 +71,24 @@ class Workflow(BaseModel):
                         freq=dataset.resample.frequency,
                         operator=dataset.resample.operator,
                     )
+                    # Transpose
+                    ds = transponse_df(
+                        ds,
+                        index=("year", "geometry"),
+                        columns=(dataset.resample.frequency,),
+                    )
                 else:
                     # TODO resample xarray dataset
                     raise NotImplementedError()
+            else:
+                # make sure "year" column exist.
+                ds["year"] = ds.datetime.dt.year
+                ds.drop("datetime", axis="columns", inplace=True)
             logger.warning(f"Dataset {dataset_name} resampled to {len(ds)} rows")
+            # TODO add a check whether the combination of (year and geometry) is unique.
             dataframes[dataset_name] = ds
 
-        # TODO resample and transpose
+        # TODO do join
         # df = pd.concat(dataframes)
         # df.to_csv(self.session.output_dir / "data.csv")
 

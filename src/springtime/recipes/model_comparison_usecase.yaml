@@ -57,20 +57,21 @@ experiment:
     fold_shuffle: true
     session_id: 123  # control randomness for reproducibility
 
-  create_model:
-    estimator: lr
-    cross_validation: true
+  # create_model:
+  #   estimator: lr
+  #   cross_validation: true
 
-  # compare_models:
-  #   include:
-  #     - 'lr'  # linear regression
-  #     - 'rf'  # random forest regressor
-  #     - 'xgboost'  # Extreme gradient boosting (bonus)
-  #     - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
-  #     - interpret.glassbox.ExplainableBoostingRegressor  # Must be instantiated before passing to pycaret
-  #   fit_kwargs:
-  #     merf.MERF:   # This won't work out of the box
-  #       fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
-  #       random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
-  #       clusters: "site_id"
-  #   cross_validation: False  # evaluate metrics on holdout set for now
+  compare_models:
+    include:
+      - 'lr'  # linear regression
+      - 'rf'  # random forest regressor
+      - 'xgboost'  # Extreme gradient boosting (bonus)
+    #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+    #   - interpret.glassbox.ExplainableBoostingRegressor  # Must be instantiated before passing to pycaret
+    # fit_kwargs:
+    #   merf.MERF:   # This won't work out of the box
+    #     fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
+    #     random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
+    #     clusters: "site_id"
+    cross_validation: true
+    n_select: 2

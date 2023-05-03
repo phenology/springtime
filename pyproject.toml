@@ -40,7 +40,7 @@ dependencies = [
   "joblib",  # unspecified dependency of pyphenology
   "pyyaml",
   "pandas",
-  "pycaret",
+  "pycaret[models]",
   "pydantic",
   "click",
   "geopandas",

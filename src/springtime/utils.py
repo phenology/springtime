@@ -6,10 +6,10 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence
+from typing import NamedTuple, Sequence, Tuple
 
 import geopandas as gpd
-from pydantic import BaseModel, PositiveInt, validator
+from pydantic import BaseModel, PositiveInt, validator, PrivateAttr
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
@@ -47,6 +47,18 @@ class NamedArea(BaseModel):
 class NamedIdentifiers(BaseModel):
     name: str
     items: Sequence[int]
+
+
+class PointsFromOther(BaseModel):
+    source: str
+    _points: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
+
+    def get_points(self, other):
+        self._points = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
+
+    def __iter__(self):
+        for item in self._points:
+            yield item
 
 
 # date range of years
@@ -153,7 +165,11 @@ def run_r_script(script: str, timeout=30, max_tries=3):
         input=script.encode(),
         stderr=subprocess.PIPE,
     )
-    result.check_returncode()
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError:
+        logger.error(result.stderr)
+        raise
 
 
 def transponse_df(df, index=("year", "geometry"), columns=("doy",)):
@@ -208,6 +224,17 @@ def rolling_mean(
     """
     # TODO implement
     raise NotImplementedError()
+
+
+class ResampleConfig(BaseModel):
+    frequency: str = "month"
+    """See 
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.dt.html
+    for allowed values."""
+    operator: str = "mean"
+    """See 
+    https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html
+    for allowed values."""
 
 
 def resample(df, freq="month", operator="mean", column="datetime"):

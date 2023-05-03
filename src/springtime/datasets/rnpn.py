@@ -3,10 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import geopandas as gpd
 import pandas as pd
+from pydantic import BaseModel
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
@@ -17,6 +18,26 @@ data_dir = CONFIG.data_dir / "rnpn"
 species_file = data_dir / "species.csv"
 phenophases_file = data_dir / "phenophases.csv"
 stations_file = data_dir / "stations.csv"
+
+
+class SpeciesByFunctionalType(BaseModel):
+    functional_type: str
+
+    @property
+    def name(self):
+        return self.functional_type
+
+    @property
+    def items(self):
+        return npn_species_ids_by_functional_type(self.functional_type).items
+
+
+class PhenophasesByName(BaseModel):
+    name: str
+
+    @property
+    def items(self):
+        return npn_phenophase_ids_by_name(self.name).items
 
 
 class RNPN(Dataset):
@@ -66,8 +87,8 @@ class RNPN(Dataset):
     """
 
     dataset: Literal["RNPN"] = "RNPN"
-    species_ids: Optional[NamedIdentifiers]
-    phenophase_ids: NamedIdentifiers
+    species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]]
+    phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
     area: Optional[NamedArea] = None
     use_first: bool = True
     """When true uses first_yes columns as value, otherwise the last_yes columns."""
@@ -162,7 +183,7 @@ def npn_species():
             library(rnpn)
             # species_type column has nested df, which can not be converted, so drop it
             df = subset(npn_species(), select=-species_type)
-            write.table(df, file="{species_file}", sep=",", 
+            write.table(df, file="{species_file}", sep=",",
                         eol="\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)
@@ -180,7 +201,7 @@ def npn_phenophases():
         script = f"""\
             library(rnpn)
             df = npn_phenophases()
-            write.table(df, file="{phenophases_file}", sep=",", 
+            write.table(df, file="{phenophases_file}", sep=",",
                         eol="\\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)
@@ -198,7 +219,7 @@ def npn_stations():
         script = f"""\
             library(rnpn)
             df = npn_stations()
-            write.table(df, file="{stations_file}", sep=",", 
+            write.table(df, file="{stations_file}", sep=",",
                         eol="\n", row.names=FALSE, col.names=TRUE)
         """
         run_r_script(script)

@@ -95,14 +95,18 @@ class Workflow(BaseModel):
             if issubclass(ds.__class__, pd.DataFrame)
         ]
         main_df = others.pop(0)
-        df = main_df.join(others)
-        df.to_csv(self.session.output_dir / "data.csv")
+        df = main_df.join(others, how="outer")
+        logger.warning(f"Datesets joined to shape: {df.shape}")
+        data_fn = self.session.output_dir / "data.csv"
+        df.to_csv(data_fn)
+        logger.warning(f"Data saved to: {data_fn}")
 
         # TODO do something with datacubes
         # self.run_experiments(df)
 
     def create_session(self):
         """Create a context for executing the experiment."""
+        # TDDO make session dir unique on each run
         self.session = Session()
         if self.recipe is not None:
             self.recipe.copy(self.session.output_dir / "data.csv")

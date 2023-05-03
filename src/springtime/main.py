@@ -5,7 +5,7 @@
 import logging
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional
 
 import click
 import pandas as pd
@@ -13,7 +13,7 @@ import yaml
 from pydantic import BaseModel, validator
 
 from springtime.datasets import Datasets
-from springtime.utils import PointsFromOther
+from springtime.utils import PointsFromOther, resample
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +56,24 @@ class Workflow(BaseModel):
         dataframes = {}
         # TODO check for dependencies to infer order
         for dataset_name, dataset in self.datasets.items():
-            if hasattr(dataset,"points") and isinstance(dataset.points, PointsFromOther):
+            if hasattr(dataset, "points") and isinstance(
+                dataset.points, PointsFromOther
+            ):
                 dataset.points.get_points(dataframes[dataset.points.source])
             print("Downloading dataset: ", dataset_name)
             dataset.download()
             ds = dataset.load()
             logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
+            if dataset.resample:
+                if issubclass(ds.__class__, pd.DataFrame):
+                    ds = resample(
+                        ds,
+                        freq=dataset.resample.frequency,
+                        operator=dataset.resample.operator,
+                    )
+                else:
+                    # TODO resample xarray dataset
+                    raise NotImplementedError()
             dataframes[dataset_name] = ds
 
         # TODO resample and transpose
@@ -76,8 +88,6 @@ class Workflow(BaseModel):
         self.session = Session()
         if self.recipe is not None:
             self.recipe.copy(self.session.output_dir / "data.csv")
-
-
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""

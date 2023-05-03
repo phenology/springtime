@@ -226,6 +226,11 @@ def rolling_mean(
     raise NotImplementedError()
 
 
+class ResampleConfig(BaseModel):
+    frequency: str = "month"
+    operator: str = "mean"
+
+
 def resample(df, freq="month", operator="mean", column="datetime"):
     """Resample data on year, geometry, and given frequency.
 

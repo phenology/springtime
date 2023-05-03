@@ -2,9 +2,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from abc import ABC, abstractmethod
+from typing import Optional
 from pydantic import BaseModel, validator
 
-from springtime.utils import YearRange
+from springtime.utils import ResampleConfig, YearRange
 
 
 class Dataset(BaseModel, ABC):
@@ -13,6 +14,8 @@ class Dataset(BaseModel, ABC):
     years: YearRange
     """ years is passed as range for example years=[2000, 2002] downloads data
     for three years."""
+    resample: Optional[ResampleConfig] = None
+    # TODO run multiple resamplings like weekly, monthly with min and max?
 
     @validator("years")
     def _validate_year_range(cls, values: YearRange):

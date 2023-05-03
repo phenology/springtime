@@ -72,7 +72,11 @@ class Workflow(BaseModel):
                         operator=dataset.resample.operator,
                     )
                     # Transpose
-                    ds = transponse_df(ds, index=("year", "geometry"), columns=(dataset.resample.frequency,))
+                    ds = transponse_df(
+                        ds,
+                        index=("year", "geometry"),
+                        columns=(dataset.resample.frequency,),
+                    )
                 else:
                     # TODO resample xarray dataset
                     raise NotImplementedError()

@@ -180,7 +180,8 @@ class DaymetMultiplePoints(Daymet):
     @property
     def _handlers(self):
         return [
-            DaymetSinglePoint(years=self.years, point=point, variables=self.variables) for point in self.points
+            DaymetSinglePoint(years=self.years, point=point, variables=self.variables)
+            for point in self.points
         ]
 
     def download(self):

@@ -59,7 +59,7 @@ experiment:
 
   create_model:
     estimator: lr
-    cross_validation: false
+    cross_validation: true
 
   # compare_models:
   #   include:

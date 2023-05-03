@@ -135,9 +135,17 @@ class Workflow(BaseModel):
             )
             s.save_model(model, model_fn)
             logger.warning(f"Saving model to {model_fn}")
+
+            if self.experiment.create_model['cross_validation']:
+                df = s.get_leaderboard()
+                leaderboard_fn = (
+                    self.session.output_dir / "leaderboard.csv"
+                )
+                logger.warning(f"Saving leaderboard to {leaderboard_fn}")
+                df.drop('Model', axis='columns').to_csv(leaderboard_fn)
+
         if self.experiment.compare_models:
             model = s.compare_models(**self.experiment.compare_models)
-
 
 def main(recipe):
     Workflow.from_recipe(recipe).execute()

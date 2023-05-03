@@ -228,7 +228,9 @@ def rolling_mean(
 
 class ResampleConfig(BaseModel):
     frequency: str = "month"
+    """See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.dt.html for allowed values."""
     operator: str = "mean"
+    """See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html for allowed values."""
 
 
 def resample(df, freq="month", operator="mean", column="datetime"):

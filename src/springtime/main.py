@@ -133,36 +133,31 @@ class Workflow(BaseModel):
             estimator = self.experiment.create_model["estimator"]
             self.save_model(s, model, name=estimator)
 
-            if self.experiment.create_model['cross_validation']:
+            if self.experiment.create_model["cross_validation"]:
                 self.save_leaderboard(s)
 
         if self.experiment.compare_models:
             if self.experiment.compare_models["n_select"]:
                 best_models = s.compare_models(**self.experiment.compare_models)
                 for i, model in enumerate(best_models):
-                    self.save_model(s, model, name=f'best#{i}')
+                    self.save_model(s, model, name=f"best#{i}")
             else:
                 best_model = s.compare_models(**self.experiment.compare_models)
-                self.save_model(s, best_model, name='best')
+                self.save_model(s, best_model, name="best")
 
-            if self.experiment.compare_models['cross_validation']:
+            if self.experiment.compare_models["cross_validation"]:
                 self.save_leaderboard(s)
 
     def save_model(self, s, model, name):
-        model_fn = (
-                self.session.output_dir / name
-            )
+        model_fn = self.session.output_dir / name
         logger.warning(f"Saving model to {model_fn}")
         s.save_model(model, model_fn)
 
     def save_leaderboard(self, s):
         df = s.get_leaderboard()
-        leaderboard_fn = (
-                    self.session.output_dir / "leaderboard.csv"
-                )
+        leaderboard_fn = self.session.output_dir / "leaderboard.csv"
         logger.warning(f"Saving leaderboard to {leaderboard_fn}")
-        df.drop('Model', axis='columns').to_csv(leaderboard_fn)
-
+        df.drop("Model", axis="columns").to_csv(leaderboard_fn)
 
 
 def main(recipe):

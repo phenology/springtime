@@ -74,6 +74,7 @@ class Workflow(BaseModel):
                 else:
                     # TODO resample xarray dataset
                     raise NotImplementedError()
+            logger.warning(f"Dataset {dataset_name} resampled to {len(ds)} rows")
             dataframes[dataset_name] = ds
 
         # TODO resample and transpose

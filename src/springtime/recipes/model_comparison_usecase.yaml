@@ -29,6 +29,7 @@ datasets:
       - tmax
     resample:
       frequency: month
+      operator: median
   # TODO renable once someone has donwloaded the data and shared it in the team
   # modis:
   #   dataset: modis_multiple_points

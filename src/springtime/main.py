@@ -88,9 +88,15 @@ class Workflow(BaseModel):
             # TODO add a check whether the combination of (year and geometry) is unique.
             dataframes[dataset_name] = ds
 
-        # TODO do join
-        # df = pd.concat(dataframes)
-        # df.to_csv(self.session.output_dir / "data.csv")
+        # do join
+        others = [
+            ds.set_index(["year", "geometry"])
+            for ds in dataframes.values()
+            if issubclass(ds.__class__, pd.DataFrame)
+        ]
+        main_df = others.pop(0)
+        df = main_df.join(others)
+        df.to_csv(self.session.output_dir / "data.csv")
 
         # TODO do something with datacubes
         # self.run_experiments(df)

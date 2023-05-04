@@ -59,13 +59,21 @@ experiment:
 
   # create_model:
   #   estimator: lr
+      # estimator: 'sklearn.svm.SVR'
   #   cross_validation: true
 
+  init_kwargs:
+    sklearn.svm.SVR:
+      kernel: 'rbf'
+      gamma: 0.1
+      C: 100.0
+      epsilon: 0.1
   compare_models:
     include:
       - 'lr'  # linear regression
       - 'rf'  # random forest regressor
       - 'xgboost'  # Extreme gradient boosting (bonus)
+      - 'sklearn.svm.SVR'
     #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
     #   - interpret.glassbox.ExplainableBoostingRegressor  # Must be instantiated before passing to pycaret
     # fit_kwargs:

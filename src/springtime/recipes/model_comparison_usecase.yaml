@@ -46,7 +46,6 @@ dropna: True
 experiment:
   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
   setup:
-    # data: None  # All of the above
     target: "breaking leaf buds_doy"
     train_size: 0.75
     preprocess: false
@@ -56,6 +55,7 @@ experiment:
     fold: 10
     fold_shuffle: true
     session_id: 123  # control randomness for reproducibility
+    index: False # Exclude year and geomentry columns
 
   # create_model:
   #   estimator: lr
@@ -75,3 +75,7 @@ experiment:
     #     clusters: "site_id"
     cross_validation: true
     n_select: 2
+
+  plots:
+    - error
+    - residuals

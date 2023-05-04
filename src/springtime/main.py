@@ -132,6 +132,7 @@ class Workflow(BaseModel):
             model = s.create_model(**self.experiment.create_model)
             estimator = self.experiment.create_model["estimator"]
             self.save_model(s, model, name=estimator)
+            self.plots_model(s, model, estimator)
 
             if self.experiment.create_model["cross_validation"]:
                 self.save_leaderboard(s)
@@ -140,13 +141,30 @@ class Workflow(BaseModel):
             if self.experiment.compare_models["n_select"]:
                 best_models = s.compare_models(**self.experiment.compare_models)
                 for i, model in enumerate(best_models):
-                    self.save_model(s, model, name=f"best#{i}")
+                    name = f"best#{i}"
+                    self.save_model(s, model, name=name)
+                    self.plots_model(s, model, name)
             else:
                 best_model = s.compare_models(**self.experiment.compare_models)
-                self.save_model(s, best_model, name="best")
+                name="best"
+                self.save_model(s, best_model, name)
+                self.plots_model(s, best_model, name)
 
             if self.experiment.compare_models["cross_validation"]:
                 self.save_leaderboard(s)
+
+    def plots_model(self, experiment, model, model_name):
+        if self.experiment.plots is None:
+            return
+        
+        for plot_name in self.experiment.plots:
+            self.plot_model(experiment, model, model_name, plot_name)
+
+    def plot_model(self, experiment, model, model_name, plot_name):
+        plot_fn_in_cwd = Path(experiment.plot_model(model, plot=plot_name, save=True))
+        plot_fn = self.session.output_dir / f'{model_name} {plot_fn_in_cwd.name}'
+        plot_fn_in_cwd.rename(plot_fn)
+        logger.warning(f'Saving {plot_name} plot to {plot_fn}')
 
     def save_model(self, s, model, name):
         model_fn = self.session.output_dir / name

@@ -67,14 +67,18 @@ experiment:
       gamma: 0.1
       C: 100.0
       epsilon: 0.1
+    interpret.glassbox.ExplainableBoostingRegressor:
+      interactions: 0
+      validation_size: 0
+      outer_bags: 1
+      min_samples_leaf: 1
   compare_models:
     include:
       - 'lr'  # linear regression
       - 'rf'  # random forest regressor
-      - 'xgboost'  # Extreme gradient boosting (bonus)
       - 'sklearn.svm.SVR'
+      - 'interpret.glassbox.ExplainableBoostingRegressor'
     #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
-    #   - interpret.glassbox.ExplainableBoostingRegressor  # Must be instantiated before passing to pycaret
     # fit_kwargs:
     #   merf.MERF:   # This won't work out of the box
     #     fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns

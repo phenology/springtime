@@ -11,14 +11,13 @@ import click
 import pandas as pd
 import yaml
 from pydantic import BaseModel, Field, validator
-from pycaret import regression
 
 from springtime.datasets import Datasets
 from springtime.experiment import (
-    ClassificationExperiment,
     RegressionExperiment,
-    materialize_estimator,
-    materialize_estimators,
+    TSForecastingExperiment,
+    compare_models,
+    create_model,
 )
 from springtime.utils import PointsFromOther, resample, transponse_df
 
@@ -45,7 +44,7 @@ class Session(BaseModel):
 class Workflow(BaseModel):
     datasets: Dict[str, Datasets]
     dropna: bool = True
-    experiment: RegressionExperiment | ClassificationExperiment | None = Field(
+    experiment: RegressionExperiment | TSForecastingExperiment | None = Field(
         discriminator="experiment_type"
     )
     recipe: Optional[Path] = None
@@ -127,72 +126,29 @@ class Workflow(BaseModel):
         if self.experiment is None:
             return
 
-        if self.experiment.experiment_type == "regression":
-            s = regression.RegressionExperiment()
-        else:
-            raise ValueError("Unknown experiment type")
+        s = self.experiment.run()
+        # TODO check rest of code also works for time series, not just regression
 
         s.setup(df, **self.experiment.setup)
-        if self.experiment.create_model:
-            cm = self.experiment.create_model
-            raw_estimator = cm["estimator"]
-            cm["estimator"] = materialize_estimator(
-                name=raw_estimator,
-                buildin_models=s.models().index,
-                init_kwargs=self.experiment.init_kwargs,
-            )
-            model = s.create_model(**cm)
-            self.save_model(s, model, raw_estimator)
-            self.plots_model(s, model, raw_estimator)
 
-            if self.experiment.create_model["cross_validation"]:
-                self.save_leaderboard(s)
+        output_dir = self.session.output_dir
+        if self.experiment.create_model:
+            create_model(
+                s,
+                output_dir,
+                self.experiment.create_model,
+                self.experiment.init_kwargs,
+                self.experiment.plots,
+            )
 
         if self.experiment.compare_models:
-            cm = self.experiment.compare_models
-            cm["include"] = materialize_estimators(
-                names=cm.get("include"),
-                buildin_models=s.models().index,
-                init_kwargs=self.experiment.init_kwargs,
+            compare_models(
+                s,
+                output_dir,
+                self.experiment.compare_models,
+                self.experiment.init_kwargs,
+                self.experiment.plots,
             )
-            if self.experiment.compare_models["n_select"]:
-                best_models = s.compare_models(**cm)
-                for i, model in enumerate(best_models):
-                    name = f"best#{i}"
-                    self.save_model(s, model, name=name)
-                    self.plots_model(s, model, name)
-            else:
-                best_model = s.compare_models(**cm)
-                name = "best"
-                self.save_model(s, best_model, name)
-                self.plots_model(s, best_model, name)
-
-            if self.experiment.compare_models["cross_validation"]:
-                self.save_leaderboard(s)
-
-    def plots_model(self, experiment, model, model_name):
-        if self.experiment.plots is None:
-            return
-
-        for plot_name in self.experiment.plots:
-            self.plot_model(experiment, model, model_name, plot_name)
-
-    def plot_model(self, experiment, model, model_name, plot_name):
-        plot_fn_in_cwd = Path(experiment.plot_model(model, plot=plot_name, save=True))
-        plot_fn = self.session.output_dir / f"{model_name} {plot_fn_in_cwd.name}"
-        plot_fn_in_cwd.rename(plot_fn)
-        logger.warning(f"Saving {plot_name} plot to {plot_fn}")
-
-    def save_model(self, s, model, name):
-        model_fn = self.session.output_dir / name
-        logger.warning(f"Saving model to {model_fn}")
-        s.save_model(model, model_fn)
-
-    def save_leaderboard(self, s):
-        df = s.get_leaderboard()
-        leaderboard_fn = self.session.output_dir / "leaderboard.csv"
-        logger.warning(f"Saving leaderboard to {leaderboard_fn}")
-        df.drop("Model", axis="columns").to_csv(leaderboard_fn)
 
 
 def main(recipe):

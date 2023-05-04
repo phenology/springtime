@@ -42,7 +42,6 @@ datasets:
   #     frequency: month
 # TODO if extent is not zero we need an aggregation
 dropna: True
-### Alternative using pycaret
 experiment:
   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
   setup:

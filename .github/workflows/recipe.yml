@@ -30,7 +30,7 @@ jobs:
         Rscript -e 'install.packages(c("daymetr", "rnpn"), repos = "http://cran.us.r-project.org")'
     - name: Install
       run: |
-        pip install .
+        pip install .[r]
     - name: Run recipe
       run: |
         springtime $RECIPE

@@ -14,12 +14,15 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Install mamba on CRIB
 
-One of CRIB Intel x86_64 machines
+Select one of the CRIB Intel x86_64 machines. Then open a terminal and run the code below:
 
 ```bash
 curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
 bash Mambaforge-Linux-x86_64.sh
+```
+You may reply yes to this question:
 
+```bash
 Do you wish the installer to initialize Mambaforge
 by running conda init? [yes|no]
 [no] >>> yes

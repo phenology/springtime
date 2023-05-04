@@ -36,6 +36,10 @@ jobs:
         springtime $RECIPE
       env:
         RECIPE: ${{ inputs.recipe }}
+    - name: Check results
+      run: |
+        ls -l /tmp/output
+        cat /tmp/output/leaderboard.csv
     - name: Archive recipe results
       uses: actions/upload-artifact@v3
       with:

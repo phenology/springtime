@@ -11,7 +11,7 @@ datasets:
         name: breaking leaf buds
     years: [2018, 2020]
     area:
-      name: Washington # small boundingbox centered at latitude: 47.751076 and longitude: -120.740135
+      name: WashingtonDC
       bbox:
         [
           -77.9,38.2,-76.1,39.4

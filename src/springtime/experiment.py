@@ -113,7 +113,9 @@ def materialize_estimator(name, buildin_models, init_kwargs):
         return name
     elif "." not in name:
         raise ValueError(
-            f"{name} is not a valid model name! Choose one of {list(buildin_models)} or '<module>.<class>' like 'sklearn.svm.SVR'"
+            f"{name} is not a valid model name! \
+            Choose one of {list(buildin_models)} \
+            or '<module>.<class>' like 'sklearn.svm.SVR'"
         )
     else:
         module_name, class_name = name.rsplit(".", 1)

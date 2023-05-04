@@ -99,29 +99,63 @@ e.g.
 
 ```yaml
 datasets:
-  syringa_filtered:
-    dataset: PEP725Phenor
-    species: Syringa vulgaris
-    years: [2000, 2001]
+  npn_obs:
+    dataset: RNPN
+    species_ids:
+      functional_type: "Deciduous broadleaf" # multiple species
+    phenophase_ids:
+        name: breaking leaf buds
+    years: [2015, 2020]
     area:
-      name: somewhere
-      bbox: [4, 45, 8, 50]
-models:
-  target: day_of_first_bloom
-  sklearn:
-    model: sklearn.linear_model
-    options: ...
+      name: Washington
+      bbox:
+        [
+          -124.08406940413612,
+          45.50277198520317,
+          -117.39620059586387,
+          49.99938001479683,
+        ]
+  daymet:
+    dataset: daymet_multiple_points
+    points:
+      source: npn_obs
+    years: [2015, 2020]
+    variables:
+      - tmin
+      - tmax
+    resample:
+      frequency: month
+      operator: median
+dropna: True
+experiment:
+  experiment_type: regression  # --> pycaret.regression.RegressionExperiment
+  setup:
+    ... # setup of the experiment
+  init_kwargs:
+    ... # intial arguments for models
+  compare_models:
+    include:
+      - 'lr'  # linear regression
+      - 'rf'  # random forest regressor
+      - 'sklearn.svm.SVR'
+      - 'interpret.glassbox.ExplainableBoostingRegressor'
+    cross_validation: true
+    n_select: 2
+  plots:
+    - error
+    - residuals
 ```
 
 Such a recipe can then be executed with `springtime` command in a terminal:
 
 ```bash
-springtime run recipe_syringa.yaml
+springtime run model_comparison_usecase.yaml
 ```
 
-We provide several "recipes" for downloading data from various sources.
-See "Datasets"
-[documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+We provide several "recipes" for running
+[experiments](https://springtime.readthedocs.io/en/latest/experiments/) and
+[downloading data](https://springtime.readthedocs.io/en/latest/datasets/) from
+various sources.
 
 <!--recipe-end-->
 
@@ -130,6 +164,8 @@ See "Datasets"
 
 Springtime is written in Python (with parts in R) and can also be used in an
 interactive (IPython/Jupyter) session. For example:
+
+#### Downloading data
 
 ```Python
 from springtime.datasets.PEP725Phenor import PEP725Phenor
@@ -141,5 +177,6 @@ df = dataset.load()
 We provide several notebooks for downloading data from various sources.
 See "Datasets"
 [documentation](https://springtime.readthedocs.io/en/latest/datasets/).
+
 
 <!--api-end-->

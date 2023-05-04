@@ -12,6 +12,19 @@ SPDX-License-Identifier: Apache-2.0
    end="<!--installation-end-->"
 %}
 
+## Install mamba on CRIB
+
+One of CRIB Intel x86_64 machines
+
+```bash
+curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+bash Mambaforge-Linux-x86_64.sh
+
+Do you wish the installer to initialize Mambaforge
+by running conda init? [yes|no]
+[no] >>> yes
+```
+
 ## Install on CRIB or other managed JupyterHub service
 
 If you want to run or develop springtime using JupyterHub on a machine that you
@@ -32,10 +45,10 @@ git clone https://github.com/phenology/springtime.git
 cd springtime
 
 # 2. Create new environment
-mamba env create --file environment.yml
+mamba env create --file environment.yml --name springtime_x86
 
 # 3. Activate the environment
-mamba activate springtime
+mamba activate springtime_x86
 
 # 4. Developer installation
 pip install -e .

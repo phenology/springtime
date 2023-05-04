@@ -10,7 +10,7 @@ build-backend = "hatchling.build"
 name = "springtime"
 description = "Spatiotemporal phenology research with interpretable models"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = "AGPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0 AND CC0-1.0 AND GPL-2.0-only"
 keywords = [
   "phenology",
@@ -37,9 +37,11 @@ dependencies = [
   "xarray",
   "pyphenology",
   "scipy",  # unspecified dependency of pyphenology
+  "interpret",
   "joblib",  # unspecified dependency of pyphenology
   "pyyaml",
   "pandas",
+  "pycaret[models]",
   "pydantic",
   "click",
   "geopandas",

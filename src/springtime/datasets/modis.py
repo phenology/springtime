@@ -98,6 +98,7 @@ class ModisSinglePoint(Dataset):
         )
         # convert calendar_date to datetime
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
+
         gdf["datetime"] = pd.to_datetime(gdf["calendar_date"])
         # Set band as columns
         return gdf.pivot(
@@ -179,9 +180,7 @@ class ModisMultiplePoints(Dataset):
         """
         dataframes = [handler.load() for handler in self._handlers]
         df = pd.concat(dataframes)
-        return geopandas.GeoDataFrame(
-            df, geometry=geopandas.points_from_xy(df.longitude, df.latitude)
-        )
+        return geopandas.GeoDataFrame(df)
 
 
 def modis_products():

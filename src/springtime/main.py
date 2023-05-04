@@ -5,14 +5,20 @@
 import logging
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import click
 import pandas as pd
 import yaml
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
 
 from springtime.datasets import Datasets
+from springtime.experiment import (
+    RegressionExperiment,
+    TSForecastingExperiment,
+    compare_models,
+    create_model,
+)
 from springtime.utils import PointsFromOther, resample, transponse_df
 
 logger = logging.getLogger(__name__)
@@ -37,8 +43,10 @@ class Session(BaseModel):
 
 class Workflow(BaseModel):
     datasets: Dict[str, Datasets]
-    cross_validation: List = []
-    models: List = []
+    dropna: bool = True
+    experiment: RegressionExperiment | TSForecastingExperiment | None = Field(
+        discriminator="experiment_type"
+    )
     recipe: Optional[Path] = None
     session: Optional[Session] = None
 
@@ -96,13 +104,15 @@ class Workflow(BaseModel):
         ]
         main_df = others.pop(0)
         df = main_df.join(others, how="outer")
+        if self.dropna:
+            df.dropna(inplace=True)
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"
         df.to_csv(data_fn)
         logger.warning(f"Data saved to: {data_fn}")
 
         # TODO do something with datacubes
-        # self.run_experiments(df)
+        self.run_experiments(df)
 
     def create_session(self):
         """Create a context for executing the experiment."""
@@ -113,15 +123,32 @@ class Workflow(BaseModel):
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""
-        scores = {}
-        for model in self.models:
-            with self.cross_validation:
-                model.fit(df)
-                score = model.score()
-                scores[model] = score
+        if self.experiment is None:
+            return
 
-        with open(self.session.output_dir / "data.csv", "w") as output_file:
-            yaml.dump(scores, output_file)
+        s = self.experiment.run()
+        # TODO check rest of code also works for time series, not just regression
+
+        s.setup(df, **self.experiment.setup)
+
+        output_dir = self.session.output_dir
+        if self.experiment.create_model:
+            create_model(
+                s,
+                output_dir,
+                self.experiment.create_model,
+                self.experiment.init_kwargs,
+                self.experiment.plots,
+            )
+
+        if self.experiment.compare_models:
+            compare_models(
+                s,
+                output_dir,
+                self.experiment.compare_models,
+                self.experiment.init_kwargs,
+                self.experiment.plots,
+            )
 
 
 def main(recipe):

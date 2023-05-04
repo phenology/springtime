@@ -30,14 +30,63 @@ datasets:
     resample:
       frequency: month
       operator: median
-  # TODO renable once someone has donwloaded the data and shared it in the team
-  # modis:
-  #   dataset: modis_multiple_points
-  #   points:
-  #     source: npn_obs
-  #   years: [2015, 2020] # TODO don't duplicate
-  #   product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
-  #   bands: [Fpar_500m, Lai_500m] #8 days
-  #   resample:
-  #     frequency: month
+  modis:
+    dataset: modis_multiple_points
+    points:
+      source: npn_obs
+    years: [2015, 2020] # TODO don't duplicate
+    product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+    bands: [Fpar_500m, Lai_500m] #8 days
+    resample:
+      frequency: month
+      operator: mean
 # TODO if extent is not zero we need an aggregation
+dropna: True
+experiment:
+  experiment_type: regression  # --> pycaret.regression.RegressionExperiment
+  setup:
+    target: "breaking leaf buds_doy"
+    train_size: 0.75
+    preprocess: false
+    normalize: true
+    normalize_method: zscore  # i.e. default
+    fold_strategy: kfold  # i.e. default
+    fold: 10
+    fold_shuffle: true
+    session_id: 123  # control randomness for reproducibility
+    index: False # Exclude year and geomentry columns
+
+  # create_model:
+  #   estimator: lr
+      # estimator: 'sklearn.svm.SVR'
+  #   cross_validation: true
+
+  init_kwargs:
+    sklearn.svm.SVR:
+      kernel: 'rbf'
+      gamma: 0.1
+      C: 100.0
+      epsilon: 0.1
+    interpret.glassbox.ExplainableBoostingRegressor:
+      interactions: 0
+      validation_size: 0
+      outer_bags: 1
+      min_samples_leaf: 1
+  compare_models:
+    include:
+      - 'lr'  # linear regression
+      - 'rf'  # random forest regressor
+      - 'sklearn.svm.SVR'
+      - 'interpret.glassbox.ExplainableBoostingRegressor'
+    #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+    # fit_kwargs:
+    #   merf.MERF:   # This won't work out of the box
+    #     fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
+    #     random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
+    #     clusters: "site_id"
+    cross_validation: true
+    n_select: 2
+
+  plots:
+    - error
+    - residuals

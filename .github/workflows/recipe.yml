@@ -10,7 +10,7 @@ on:
       recipe:
         description: 'Recipe to run'
         required: true
-        default: 'test/recipes/simple_usecase.yml'
+        default: 'tests/recipes/simple_usecase.yaml'
 
 defaults:
   run:

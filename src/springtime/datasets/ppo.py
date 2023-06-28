@@ -87,9 +87,10 @@ class RPPO(Dataset):
 
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         df = gpd.GeoDataFrame(df, geometry=geometry)
-        df["datetime"] = pd.to_datetime(
-            df["year"] * 1000 + df["dayOfYear"], format="%Y%j"
+        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
+            df["dayOfYear"] - 1, unit="D"
         )
+        
         non_variables = {"geometry", "datetime", "year", "dayOfYear"}
         variables = [v for v in df.columns if v not in non_variables]
         df = df[["datetime", "geometry"] + variables]

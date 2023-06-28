@@ -149,12 +149,11 @@ experiment:
 Such a recipe can then be executed with `springtime` command in a terminal:
 
 ```bash
-springtime run model_comparison_usecase.yaml
+springtime model_comparison_usecase.yaml
 ```
 
 We provide several "recipes" for running
 [experiments](https://springtime.readthedocs.io/en/latest/experiments/).
-
 <!--recipe-end-->
 
 <!--api-start-->
@@ -175,6 +174,4 @@ df = dataset.load()
 We provide several notebooks for downloading data from various sources.
 See "Datasets"
 [documentation](https://springtime.readthedocs.io/en/latest/datasets/).
-
-
 <!--api-end-->

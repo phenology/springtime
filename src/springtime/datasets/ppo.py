@@ -87,16 +87,18 @@ class RPPO(Dataset):
 
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         df = gpd.GeoDataFrame(df, geometry=geometry)
-        df['datetime'] = pd.to_datetime(df['year'] * 1000 + df['dayOfYear'], format='%Y%j')
-        non_variables = {"geometry", "datetime", 'year', 'dayOfYear'}
+        df["datetime"] = pd.to_datetime(
+            df["year"] * 1000 + df["dayOfYear"], format="%Y%j"
+        )
+        non_variables = {"geometry", "datetime", "year", "dayOfYear"}
         variables = [v for v in df.columns if v not in non_variables]
-        df = df[['datetime', 'geometry'] + variables]
+        df = df[["datetime", "geometry"] + variables]
 
         df.attrs["readme"] = data["readme"][0]
         df.attrs["citation"] = data["citation"][0]
-        df.attrs['number_possible'] = data['number_possible'][0]
+        df.attrs["number_possible"] = data["number_possible"][0]
         return df
-    
+
     def _build_filename(self):
         parts = [self.genus.replace(" ", "_"), self.termID]
         if self.years is not None:

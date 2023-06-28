@@ -218,11 +218,18 @@ def _to_geopandas(df):
     # to get raw file see phenocam_data_dir directory.
     non_derived_variables = {
         # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
-        'date','year','doy','image_count','midday_filename',
+        "date",
+        "year",
+        "doy",
+        "image_count",
+        "midday_filename",
         # Columns added by phenocamr
-        'site','roi_id_number','veg_type',
+        "site",
+        "roi_id_number",
+        "veg_type",
         # Columns added by us
-        'datetime', 'geometry'
+        "datetime",
+        "geometry",
     }
     variables = [var for var in df.columns if var not in non_derived_variables]
     return df[["datetime", "geometry"] + variables]

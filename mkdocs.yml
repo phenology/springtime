@@ -27,8 +27,7 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
-  - Models:
-      - Existing models: models.md
+  - Models: models.md
   - Developer Guide: develop.md
 
 theme:

@@ -6,8 +6,8 @@
 from typing import Literal, Optional
 
 import geopandas
+import pandas as pd
 import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
@@ -24,7 +24,7 @@ class PEP725Phenor(Dataset):
 
         ```python
         from springtime.datasets.PEP725Phenor import PEP725Phenor
-        dataset = PEP725Phenor(species='Syringa vulgaris')
+        dataset = PEP725Phenor(species='Syringa vulgaris', years=[2000, 2000])
         dataset.download()
         df = dataset.load()
 
@@ -75,11 +75,9 @@ class PEP725Phenor(Dataset):
         """Load the dataset from disk into memory."""
         phenor = importr("phenor")
         r_df = phenor.pr_merge_pep725(str(self.location))
-        with ro.default_converter + pandas2ri.converter:
-            df = ro.conversion.get_conversion().rpy2py(r_df)
+        df = ro.pandas2ri.rpy2py_dataframe(r_df)
         years_set = set(self.years.range)
         df["species"] = df["species"].astype("category")
-        df["country"] = df["country"].astype("category")
 
         df = geopandas.GeoDataFrame(
             df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
@@ -88,7 +86,18 @@ class PEP725Phenor(Dataset):
         # Filter on years
         df = df[(df["year"].isin(years_set))]
 
+        # Convert year and day to datetime
+        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
+            df["day"] - 1, unit="D"
+        )
+
+        # Filter on requested data
         df = df[(df["bbch"] == self.bbch)]
+
+        # Re-order and excludes cols
+        df = df[["datetime", "geometry", "species", "bbch"]]
+
+        # Filter on bbox
         if self.area is None:
             return df
         return df.cx[

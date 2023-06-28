@@ -153,9 +153,7 @@ springtime run model_comparison_usecase.yaml
 ```
 
 We provide several "recipes" for running
-[experiments](https://springtime.readthedocs.io/en/latest/experiments/) and
-[downloading data](https://springtime.readthedocs.io/en/latest/datasets/) from
-various sources.
+[experiments](https://springtime.readthedocs.io/en/latest/experiments/).
 
 <!--recipe-end-->
 

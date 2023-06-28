@@ -226,7 +226,7 @@ class DaymetBoundingBox(Daymet):
 
     Example:
 
-        To download daily data for 3 points:
+        To download daily data:
 
         from springtime.datasets.daymet import DaymetBoundingBox
 
@@ -241,7 +241,7 @@ class DaymetBoundingBox(Daymet):
         source.download()
         df = source.load()
 
-        To download monthly data for 3 points:
+        To download monthly data:
 
         from springtime.datasets.daymet import DaymetBoundingBox
 
@@ -256,6 +256,7 @@ class DaymetBoundingBox(Daymet):
         )
         source.download()
         df = source.load()
+        df
 
 
     Do not make bounding box too large as there is a 6Gb maximum download size.
@@ -292,9 +293,6 @@ class DaymetBoundingBox(Daymet):
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
-        # TODO skip files not asked for by
-        # self.years + self.variables + self.frequency combinations
-
     @root_validator()
     def _expand_variables(cls, values):
         v = values["variables"]
@@ -320,7 +318,7 @@ class DaymetBoundingBox(Daymet):
             location = c({box[3]},{box[0]},{box[1]},{box[2]}),
             start = {self.years.start},
             end =  {self.years.end},
-            frequency = {self.frequency},
+            frequency = "{self.frequency}",
             param = {params},
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")

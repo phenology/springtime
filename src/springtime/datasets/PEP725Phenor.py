@@ -8,7 +8,6 @@ from typing import Literal, Optional
 import geopandas
 import pandas as pd
 import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
@@ -76,8 +75,7 @@ class PEP725Phenor(Dataset):
         """Load the dataset from disk into memory."""
         phenor = importr("phenor")
         r_df = phenor.pr_merge_pep725(str(self.location))
-        with ro.default_converter + pandas2ri.converter:
-            df = ro.conversion.get_conversion().rpy2py(r_df)
+        df = ro.pandas2ri.rpy2py_dataframe(r_df)
         years_set = set(self.years.range)
         df["species"] = df["species"].astype("category")
         df["country"] = df["country"].astype("category")

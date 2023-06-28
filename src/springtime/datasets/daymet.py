@@ -224,6 +224,41 @@ class DaymetBoundingBox(Daymet):
     install.packages("daymetr")
     ```
 
+    Example:
+
+        To download daily data:
+
+        from springtime.datasets.daymet import DaymetBoundingBox
+
+        source = DaymetBoundingBox(
+            variables = ["tmin", "tmax"],
+            area = {
+                "name": "indianapolis",
+                "bbox": [-86.5, 39.5, -86, 40.1]
+                },
+            years=[2000, 2002]
+        )
+        source.download()
+        df = source.load()
+
+        To download monthly data:
+
+        from springtime.datasets.daymet import DaymetBoundingBox
+
+        source = DaymetBoundingBox(
+            variables = ["tmin", "tmax"],
+            area = {
+                "name": "indianapolis",
+                "bbox": [-86.5, 39.5, -86, 40.1]
+                },
+            years=[2000, 2002],
+            frequency = "monthly",
+        )
+        source.download()
+        df = source.load()
+        df
+
+
     Do not make bounding box too large as there is a 6Gb maximum download size.
     """
 
@@ -252,10 +287,11 @@ class DaymetBoundingBox(Daymet):
 
     def load(self):
         files = list(self._box_dir.glob("*.nc"))
-        return xr.open_mfdataset(files)
-        # TODO skip files not asked for by
-        # self.years + self.variables + self.frequency combinations
-        # TODO: add pre-processing to convert to dataframe.
+        df = xr.open_mfdataset(files).to_dataframe().reset_index()
+        df.rename(columns={"time": "datetime"}, inplace=True)
+        geometry = geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
+        gdf = geopandas.GeoDataFrame(df, geometry=geometry)
+        return gdf[["datetime", "geometry"] + list(self.variables)]
 
     @root_validator()
     def _expand_variables(cls, values):
@@ -282,6 +318,7 @@ class DaymetBoundingBox(Daymet):
             location = c({box[3]},{box[0]},{box[1]},{box[2]}),
             start = {self.years.start},
             end =  {self.years.end},
+            frequency = "{self.frequency}",
             param = {params},
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")

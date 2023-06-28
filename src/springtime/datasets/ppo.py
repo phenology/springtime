@@ -6,6 +6,7 @@
 from typing import Literal, Optional
 
 import geopandas as gpd
+import pandas as pd
 import rpy2.robjects as ro
 from pydantic.types import PositiveInt
 
@@ -20,20 +21,21 @@ class RPPO(Dataset):
     Uses rppo (https://docs.ropensci.org/rppo/) to get data from
     http://plantphenology.org/
 
-
     Example:
 
-    ```python
-    dataset = RPPO(
-        genus="Quercus Pinus",
-        termID="obo:PPO_0002313",
-        limit=10,
-        years=[2019, 2020]
-        # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
-    )
-    dataset.download()
-    gdf = dataset.load()
-    ```
+        ```python
+        from springtime.datasets.ppo import RPPO
+        dataset = RPPO(
+            genus="Quercus Pinus",
+            termID="obo:PPO_0002313",
+            limit=10,
+            years=[2019, 2020]
+            # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
+        )
+        dataset.download()
+        df = dataset.load()
+        df
+        ```
     """
 
     dataset: Literal["rppo"] = "rppo"
@@ -82,12 +84,21 @@ class RPPO(Dataset):
 
         data = dict(zip(rdata.names, list(rdata)))
         df = ro.pandas2ri.rpy2py_dataframe(data["data"])
-        df.attrs["readme"] = data["readme"][0]
-        df.attrs["citation"] = data["citation"][0]
 
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return gdf
+        df = gpd.GeoDataFrame(df, geometry=geometry)
+        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
+            df["dayOfYear"] - 1, unit="D"
+        )
+        
+        non_variables = {"geometry", "datetime", "year", "dayOfYear"}
+        variables = [v for v in df.columns if v not in non_variables]
+        df = df[["datetime", "geometry"] + variables]
+
+        df.attrs["readme"] = data["readme"][0]
+        df.attrs["citation"] = data["citation"][0]
+        df.attrs["number_possible"] = data["number_possible"][0]
+        return df
 
     def _build_filename(self):
         parts = [self.genus.replace(" ", "_"), self.termID]

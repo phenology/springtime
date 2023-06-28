@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from datetime import datetime
 import logging
 from itertools import product
 from typing import Literal, Sequence, Tuple
@@ -30,12 +31,38 @@ Variable = Literal[
     "land_surface_elevation",
 ]
 
+short_vars = {
+    "maximum_temperature": "tx",
+    "mean_temperature": "tg",
+    "minimum_temperature": "tn",
+    "precipitation_amount": "rr",
+    "relative_humidity": "hu",
+    "sea_level_pressure": "pp",
+    "surface_shortwave_downwelling_radiation": "qq",
+    "wind_speed": "fg",
+    "land_surface_elevation": "elevation",
+}
+
 
 class EOBS(Dataset):
     """E-OBS dataset.
 
     Fetches complete grid from
     https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+
+    Examples:
+
+    To get elevation of whole E-OBS grid:
+
+    ```python
+    from springtime.datasets.e_obs import EOBS
+    datasource = EOBS(product_type='elevation',
+                      variables=['land_surface_elevation'],
+                      years=[2000, 2002]
+                      )
+    datasource.download()
+    ds = datasource.load()
+
     """
 
     dataset: Literal[
@@ -82,17 +109,6 @@ class EOBS(Dataset):
         return matched_periods
 
     def _filename(self, variable: Variable, period: str):
-        short_vars = {
-            "maximum_temperature": "tx",
-            "mean_temperature": "tg",
-            "minimum_temperature": "tn",
-            "precipitation_amount": "rr",
-            "relative_humidity": "hu",
-            "sea_level_pressure": "pp",
-            "surface_shortwave_downwelling_radiation": "qq",
-            "wind_speed": "fg",
-            "land_surface_elevation": "",
-        }
         short_var = short_vars[variable]
         if self.product_type == "ensemble_mean":
             rpv = f"{self.grid_resolution}_reg_{period}_v{self.version}"
@@ -108,6 +124,13 @@ class EOBS(Dataset):
 
     def _path(self, variable: Variable, period: str):
         return self._root_dir / self._filename(variable, period)
+
+    def _to_dataframe(self, ds: xr.Dataset):
+        df = ds.to_dataframe()
+        df = df.reset_index().rename(columns={"time": "datetime"})
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        return gdf[["datetime", "geometry"] + list(self.variables)]
 
     def download(self):
         self._root_dir.mkdir(exist_ok=True)
@@ -126,8 +149,12 @@ class EOBS(Dataset):
             for variable, period in product(self.variables, self._periods)
         ]
         ds = open_mfdataset(paths)
+        short2long = {v: k for k, v in short_vars.items() if k in self.variables}
+        ds = ds.rename_vars(short2long)
         if self.product_type == "elevation":
-            return ds.to_dataframe()
+            # elevation has no time dimension, add so rest of code works as expected
+            dt = datetime(self.years.start, 1, 1)
+            return ds.expand_dims({"time": [dt]}, axis=0)
         return ds.sel(
             time=slice(f"{self.years.start}-01-01", f"{self.years.end}-12-31")
         )
@@ -139,16 +166,29 @@ class EOBSSinglePoint(EOBS):
     Fetches complete grid from
     https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
 
-    Example:
+    Examples:
 
-    ```python
-    from springtime.datasets.e_obs import EOBSPoint
-    datasource = EOBSPoint(point=[5, 50],
-                           product_type='ensemble_mean',
-                           years=[2000,2002])
-    datasource.download()
-    ds = datasource.load()
-    ```
+        ```python
+        from springtime.datasets.e_obs import EOBSSinglePoint
+        datasource = EOBSSinglePoint(point=[5, 50],
+                                    product_type='ensemble_mean',
+                                    grid_resolution='0.25deg',
+                                    years=[2000,2002])
+        datasource.download()
+        df = datasource.load()
+        ```
+
+        To get elevation:
+
+        ```python
+        from springtime.datasets.e_obs import EOBSSinglePoint
+        datasource = EOBSSinglePoint(point=[5, 50],
+                                    product_type='elevation',
+                                    variables=['land_surface_elevation'],
+                                    years=[2000, 2002]
+                                    )
+        datasource.download()
+        df = datasource.load()
 
     """
 
@@ -158,11 +198,8 @@ class EOBSSinglePoint(EOBS):
 
     def load(self):
         ds = super().load()
-        df = ds.sel(
-            longitude=self.point[0], latitude=self.point[1], method="nearest"
-        ).to_dataframe()
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        return gpd.GeoDataFrame(df, geometry=geometry)
+        ds = ds.sel(longitude=self.point[0], latitude=self.point[1], method="nearest")
+        return self._to_dataframe(ds)
 
 
 class EOBSMultiplePoints(EOBS):
@@ -170,6 +207,22 @@ class EOBSMultiplePoints(EOBS):
 
     Fetches complete grid from
     https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
+
+    Examples:
+
+    ```python
+    from springtime.datasets.e_obs import EOBSMultiplePoints
+    datasource = EOBSMultiplePoints(points=[
+                                        [5, 50],
+                                        [5, 55],
+                                    ],
+                                    product_type='ensemble_mean',
+                                    grid_resolution='0.25deg',
+                                    years=[2000,2002])
+    datasource.download()
+    df = datasource.load()
+    df
+    ```
 
     """
 
@@ -182,13 +235,12 @@ class EOBSMultiplePoints(EOBS):
         # pointwise selection
         lons = xr.DataArray([p[0] for p in self.points], dims="points")
         lats = xr.DataArray([p[1] for p in self.points], dims="points")
-        df = ds.sel(
+        ds = ds.sel(
             longitude=lons,
             latitude=lats,
             method="nearest",
-        ).to_dataframe()
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        return gpd.GeoDataFrame(df, geometry=geometry)
+        )
+        return self._to_dataframe(ds)
 
 
 class EOBSBoundingBox(EOBS):
@@ -201,18 +253,18 @@ class EOBSBoundingBox(EOBS):
 
         To load coarse mean temperature around amsterdam from 2002 till 2002::
 
-            from springtime.datasets.e_obs import EOBSBoundingBox
+        from springtime.datasets.e_obs import EOBSBoundingBox
 
-            dataset = EOBSBoundingBox(
-                years=[2000,2002],
-                area={
-                    'name': 'amsterdam',
-                    'bbox': [4, 50, 5, 55]
-                },
-                grid_resolution='0.25deg'
-            )
-            dataset.download()
-            ds = dataset.load()
+        dataset = EOBSBoundingBox(
+            years=[2000,2002],
+            area={
+                'name': 'amsterdam',
+                'bbox': [4, 50, 5, 55]
+            },
+            grid_resolution='0.25deg'
+        )
+        dataset.download()
+        df = dataset.load()
 
     """
 
@@ -222,7 +274,8 @@ class EOBSBoundingBox(EOBS):
     def load(self):
         ds = super().load()
         box = self.area.bbox
-        return ds.sel(
+        ds = ds.sel(
             longitude=slice(box[0], box[2]),
             latitude=slice(box[1], box[3]),
         )
+        return self._to_dataframe(ds)

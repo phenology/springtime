@@ -220,7 +220,7 @@ def _to_geopandas(df):
         # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
         'date','year','doy','image_count','midday_filename',
         # Columns added by phenocamr
-        'site','veg_type',
+        'site',
         # Columns added by us
         'datetime', 'geometry'
     }

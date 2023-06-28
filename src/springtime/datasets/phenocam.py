@@ -230,7 +230,7 @@ def _to_geopandas(df):
 
 def _load_location(location: Path) -> pd.DataFrame:
     # TODO store header of csv in df.attr
-    df = pd.read_csv(location, skiprows=24)
+    df = pd.read_csv(location, skiprows=24, parse_dates=["date"])
     (site, veg_type, roi_id_number, _freq) = location.stem.split("_")
     df.insert(0, "veg_type", veg_type)
     df.insert(0, "roi_id_number", roi_id_number)

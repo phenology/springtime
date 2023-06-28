@@ -77,6 +77,7 @@ class PEP725Phenor(Dataset):
         r_df = phenor.pr_merge_pep725(str(self.location))
         df = ro.pandas2ri.rpy2py_dataframe(r_df)
         years_set = set(self.years.range)
+        df["species"] = df["species"].astype("category")
 
         df = geopandas.GeoDataFrame(
             df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
@@ -94,7 +95,7 @@ class PEP725Phenor(Dataset):
         df = df[(df["bbch"] == self.bbch)]
 
         # Re-order and excludes cols
-        df = df[["datetime", "geometry", "bbch"]]
+        df = df[["datetime", "geometry", "species", "bbch"]]
 
         # Filter on bbox
         if self.area is None:

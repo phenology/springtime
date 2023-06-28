@@ -6,6 +6,7 @@
 from typing import Literal, Optional
 
 import geopandas
+import pandas as pd
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.packages import importr
@@ -24,7 +25,7 @@ class PEP725Phenor(Dataset):
 
         ```python
         from springtime.datasets.PEP725Phenor import PEP725Phenor
-        dataset = PEP725Phenor(species='Syringa vulgaris')
+        dataset = PEP725Phenor(species='Syringa vulgaris', years=[2000, 2000])
         dataset.download()
         df = dataset.load()
 
@@ -88,7 +89,18 @@ class PEP725Phenor(Dataset):
         # Filter on years
         df = df[(df["year"].isin(years_set))]
 
+        # Convert year and day to datetime
+        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
+            df["day"] - 1, unit="D"
+        )
+
+        # Filter on requested data
         df = df[(df["bbch"] == self.bbch)]
+
+        # Re-order and excludes cols
+        df = df[["datetime", "geometry", "bbch"]]
+
+        # Filter on bbox
         if self.area is None:
             return df
         return df.cx[

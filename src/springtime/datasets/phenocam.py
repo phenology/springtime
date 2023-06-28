@@ -33,6 +33,20 @@ class PhenocamrSite(Dataset):
     ```R
     install.packages("phenocamr")
     ```
+
+    Example:
+
+        ```python
+        from springtime.datasets import PhenocamrSite
+
+        dataset = PhenocamrSite(
+            site="harvard$",
+            years=(2019, 2020),
+        )
+        dataset.download()
+        df = dataset.load()
+        df
+        ```
     """
 
     dataset: Literal["phenocam"] = "phenocam"
@@ -112,6 +126,23 @@ class PhenocamrBoundingBox(Dataset):
     ```R
     install.packages("phenocamr")
     ```
+
+    Example:
+
+        ```python
+        from springtime.datasets import PhenocamrBoundingBox
+
+        dataset = PhenocamrBoundingBox(
+            area={
+                "name": "harvard",
+                "bbox": [-73, 42, -72, 43],
+            },
+            years=(2019, 2020),
+        )
+        dataset.download()
+        df = dataset.load()
+        df
+        ```
     """
 
     dataset: Literal["phenocambbox"] = "phenocambbox"
@@ -181,7 +212,20 @@ def _to_geopandas(df):
     sites = list_sites()
     site_locations = sites[["site", "geometry"]]
     df = df.merge(site_locations, on="site")
-    return geopandas.GeoDataFrame(df, geometry=df.geometry)
+    df = geopandas.GeoDataFrame(df, geometry=df.geometry)
+    df.rename(columns={"date": "datetime"}, inplace=True)
+    # Do not return variables that are not derived from image data
+    # to get raw file see phenocam_data_dir directory.
+    non_derived_variables = {
+        # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
+        'date','year','doy','image_count','midday_filename',
+        # Columns added by phenocamr
+        'site','roi_id_number','veg_type',
+        # Columns added by us
+        'datetime', 'geometry'
+    }
+    variables = [var for var in df.columns if var not in non_derived_variables]
+    return df[["datetime", "geometry"] + variables]
 
 
 def _load_location(location: Path) -> pd.DataFrame:

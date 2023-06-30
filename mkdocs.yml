@@ -14,7 +14,7 @@ nav:
       - Getting started:
           - Installation: setup.md
           - Usage: usage.md
-      - Example workflow: notebooks/pk_wishful_workflows.ipynb
+      - Recipes: recipes.md
   - Datasets:
       - Data sources and existing tools: datasets.md
       - Field observations:
@@ -27,7 +27,7 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
-      - Available dataset recipes: recipes.md
+  - Models: models.md
   - Developer Guide: develop.md
 
 theme:

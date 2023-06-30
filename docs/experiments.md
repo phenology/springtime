@@ -9,7 +9,7 @@ sources](https://springtime.readthedocs.io/en/latest/datasets/) and executing a
 range of [machine learning
 methods](https://springtime.readthedocs.io/en/latest/models/) with it.
 
-Note that a "recipe" is a file with `yaml` extension.
+Note that a "recipe" is a file in [yaml format](https://yaml.org/).
 
 ??? example "Model comparison usecase"
     ```yaml

@@ -14,7 +14,7 @@ nav:
       - Getting started:
           - Installation: setup.md
           - Usage: usage.md
-      - Recipes: experiments.md
+      - Recipes: recipes.md
   - Datasets:
       - Data sources and existing tools: datasets.md
       - Field observations:

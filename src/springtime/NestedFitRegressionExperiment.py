@@ -280,7 +280,7 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
             self.logger.info(
                 "SubProcess create_model() called =================================="
             )
-            // Added by sverhoeven to make fit_kwargs nested
+            # Added by sverhoeven to make fit_kwargs nested
             fit_models_args = fit_kwargs.get(model_name, None)
             create_model_args = dict(
                 estimator=model,

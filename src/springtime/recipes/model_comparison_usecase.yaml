@@ -81,11 +81,11 @@ experiment:
       - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
     fit_kwargs:
       merf.MERF:   # This won't work out of the box
-        fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
+        fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
         random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
-        clusters: "site_id"
+        cluster_column: "site_id"
     cross_validation: true
-    n_select: 2
+    n_select: 5
 
   plots:
     - error

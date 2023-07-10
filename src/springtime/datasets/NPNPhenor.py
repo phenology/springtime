@@ -23,6 +23,12 @@ class NPNPhenor(Dataset):
     Could use https://data.usanpn.org/observations/get-started to figure out
     which species/phenophases combis are available.
 
+    Attributes:
+        dataset: lorem ipsum
+        species: lorem ipsum
+        phenophase: lorem ipsum
+        area: lorem ipsum
+
     Example:
 
         ```python
@@ -57,15 +63,14 @@ class NPNPhenor(Dataset):
     ```
 
     """
-
     dataset: Literal["NPNPhenor"] = "NPNPhenor"
-
     species: int
     phenophase: int
     area: Optional[NamedArea] = None
 
     @property
     def directory(self):
+        """Return the directory where data is stored."""
         return CONFIG.data_dir / "NPN"
 
     def _filename(self, year):
@@ -131,12 +136,14 @@ class NPNPhenor(Dataset):
 
 
 def npn_species(species=ro.NULL, list=True):
+    """List the available species."""
     phenor = importr("phenor")
     r_df = phenor.check_npn_species(species=species, list=list)
     return ro.pandas2ri.rpy2py_dataframe(r_df)
 
 
 def npn_phenophases(phenophase=ro.NULL, list=True):
+    """List the available phenophases."""
     phenor = importr("phenor")
     r_df = phenor.check_npn_phenophases(phenophase=phenophase, list=list)
     return ro.pandas2ri.rpy2py_dataframe(r_df)

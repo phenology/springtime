@@ -83,8 +83,8 @@ experiment:
     # so if estimator does not understand it crashes and is skipped.
     fit_kwargs:
       MERF:
-        fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
-        random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
+        fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
+        random_effects: []
         cluster_column: "site_id"
     cross_validation: true
     n_select: 5

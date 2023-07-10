@@ -68,6 +68,7 @@ docs = [
   "mkdocs-jupyter>=0.22.0",
   "mkdocs-gen-files",
   "mkdocs-include-markdown-plugin",
+  "mkdocstrings[python]",
 ]
 
 [project.urls]

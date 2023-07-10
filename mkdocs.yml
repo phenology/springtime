@@ -75,6 +75,11 @@ plugins:
       ]
 - include-markdown
 - search
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_signature: true
 extra:
   generator: false
 

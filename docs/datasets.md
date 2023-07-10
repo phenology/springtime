@@ -63,3 +63,12 @@ flowchart TD
     S4 & M4 & F7 & F5 & P1 --> S1
     F8 --> S1
 ```
+
+
+## Daymet
+
+::: springtime.datasets.daymet
+
+## Phenor
+
+::: springtime.datasets.NPNPhenor

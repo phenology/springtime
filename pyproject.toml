@@ -47,6 +47,8 @@ dependencies = [
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
+  "interpret",
+  "merf",
 ]
 dynamic = ["version"]
 

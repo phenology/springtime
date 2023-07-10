@@ -79,13 +79,17 @@ experiment:
       - 'sklearn.svm.SVR'
       - 'interpret.glassbox.ExplainableBoostingRegressor'
       - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+    # fit_kwargs are given to each estimator.fit method 
+    # so if estimator does not understand it crashes and is skipped.
     fit_kwargs:
-      merf.MERF:   # This won't work out of the box
+      MERF:
         fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
         random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
         cluster_column: "site_id"
     cross_validation: true
     n_select: 5
+    # errors: 'ignore'
+    # errors: 'raise'
 
   # create_model:
   #   estimator: 'merf.MERF'

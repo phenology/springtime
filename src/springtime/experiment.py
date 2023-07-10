@@ -6,8 +6,11 @@ from importlib import import_module
 import logging
 from pathlib import Path
 from typing import Any, Literal, Sequence
+
 from pydantic import BaseModel
-from pycaret import regression, time_series
+from pycaret import time_series
+
+from springtime.NestedFitRegressionExperiment import NestedFitRegressionExperiment
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +80,7 @@ class RegressionExperiment(CaretExperiment):
     for available plot names."""
 
     def run(self):
-        return regression.RegressionExperiment()
+        return NestedFitRegressionExperiment()
 
 
 def materialize_estimators(
@@ -141,7 +144,7 @@ def create_model(s, output_dir, cm, init_kwargs, plots):
     save_model(s, model, output_dir, raw_estimator)
     plots_model(plots, s, model, output_dir, raw_estimator)
 
-    if 'cross_validation' in cm and cm["cross_validation"]:
+    if "cross_validation" in cm and cm["cross_validation"]:
         save_leaderboard(s, output_dir)
 
 
@@ -154,6 +157,9 @@ def compare_models(s, output_dir, cm, init_kwargs, plots):
 
     if cm["n_select"]:
         best_models = s.compare_models(**cm)
+        # if only single model succeeeded then it is returned not as a list but itself
+        if not isinstance(best_models, list):
+            best_models = [best_models]
         for i, model in enumerate(best_models):
             name = f"best#{i}"
             save_model(s, model, output_dir, name=name)

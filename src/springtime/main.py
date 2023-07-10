@@ -133,7 +133,7 @@ class Workflow(BaseModel):
         df2 = df.reset_index()
         # site_ids = wkt.dumps(df2.geometry) # fails cluster column should be numeric not string
         site_ids = gpd.GeoSeries(df2.geometry).y
-        df2['site_id'] = site_ids
+        df2.insert(0, 'site_id', site_ids)
         df = df2.set_index(['year', 'geometry'])
 
         s.setup(df, **self.experiment.setup)

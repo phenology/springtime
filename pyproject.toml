@@ -69,6 +69,7 @@ docs = [
   "mkdocs-gen-files",
   "mkdocs-include-markdown-plugin",
   "mkdocstrings[python]",
+  "pip install mkdocs-literate-nav",
 ]
 
 [project.urls]

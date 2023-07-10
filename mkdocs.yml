@@ -27,7 +27,7 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
-      - API Reference: datasets_api.md
+      - API Reference: reference/
   - Models: models.md
   - Developer Guide: develop.md
 
@@ -91,7 +91,11 @@ plugins:
           show_root_full_path: false
           show_object_full_path: true
           show_symbol_type_heading: true  # currently only available for insiders
-
+- gen-files:  # Auto-generate API reference files
+    scripts:
+        - docs/gen_apiref_datasets.py
+- literate-nav:  # Create an index for the auto-generated api reference
+    nav_file: SUMMARY.md
 extra:
   generator: false
 

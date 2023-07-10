@@ -47,6 +47,7 @@ dependencies = [
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
+  "merf@git+https://github.com/phenology/merf.git",
 ]
 dynamic = ["version"]
 
@@ -94,3 +95,6 @@ quality-checks = [
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.hatch.metadata]
+allow-direct-references = true

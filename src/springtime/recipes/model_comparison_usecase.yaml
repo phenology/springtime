@@ -78,12 +78,12 @@ experiment:
       - 'rf'  # random forest regressor
       - 'sklearn.svm.SVR'
       - 'interpret.glassbox.ExplainableBoostingRegressor'
-    #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
-    # fit_kwargs:
-    #   merf.MERF:   # This won't work out of the box
-    #     fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
-    #     random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
-    #     clusters: "site_id"
+      - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+    fit_kwargs:
+      merf.MERF:   # This won't work out of the box
+        fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
+        random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
+        clusters: "site_id"
     cross_validation: true
     n_select: 2
 

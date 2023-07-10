@@ -9,6 +9,7 @@ from typing import Dict, Optional
 
 import click
 import pandas as pd
+import geopandas as gpd
 import yaml
 from pydantic import BaseModel, Field, validator
 
@@ -128,6 +129,12 @@ class Workflow(BaseModel):
 
         s = self.experiment.run()
         # TODO check rest of code also works for time series, not just regression
+
+        df2 = df.reset_index()
+        # site_ids = wkt.dumps(df2.geometry) # fails cluster column should be numeric not string
+        site_ids = gpd.GeoSeries(df2.geometry).y
+        df2['site_id'] = site_ids
+        df = df2.set_index(['year', 'geometry'])
 
         s.setup(df, **self.experiment.setup)
 

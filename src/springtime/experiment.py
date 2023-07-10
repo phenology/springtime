@@ -136,11 +136,12 @@ def create_model(s, output_dir, cm, init_kwargs, plots):
         buildin_models=s.models().index,
         init_kwargs=init_kwargs,
     )
+
     model = s.create_model(**cm)
     save_model(s, model, output_dir, raw_estimator)
     plots_model(plots, s, model, output_dir, raw_estimator)
 
-    if cm["cross_validation"]:
+    if 'cross_validation' in cm and cm["cross_validation"]:
         save_leaderboard(s, output_dir)
 
 
@@ -150,6 +151,7 @@ def compare_models(s, output_dir, cm, init_kwargs, plots):
         buildin_models=s.models().index,
         init_kwargs=init_kwargs,
     )
+
     if cm["n_select"]:
         best_models = s.compare_models(**cm)
         for i, model in enumerate(best_models):
@@ -160,7 +162,7 @@ def compare_models(s, output_dir, cm, init_kwargs, plots):
         best_model = s.compare_models(**cm)
         name = "best"
         save_model(s, best_model, output_dir, name)
-        plots_model(plots, s, model, output_dir, name)
+        plots_model(plots, s, best_model, output_dir, name)
 
     if cm["cross_validation"]:
         save_leaderboard(s, output_dir)

@@ -78,12 +78,12 @@ experiment:
       validation_size: 0
       outer_bags: 1
       min_samples_leaf: 1
-    merf.MERF:
-      fixed_effects_model:
+    # merf.MEEBM:
+      # fixed_effects_model:
         # The default model
-        sklearn.ensemble import RandomForestRegressor:
-          n_estimators: 300
-          n_jobs: -1
+        # sklearn.ensemble.RandomForestRegressor:
+        #   n_estimators: 300
+        #   n_jobs: -1
         # or model without any init_kwargs use
         # interpret.glassbox.ExplainableBoostingRegressor
         # or model with init_kwargs use
@@ -92,7 +92,12 @@ experiment:
         #   validation_size: 0
         #   outer_bags: 1
         #   min_samples_leaf: 1
-
+    merf.meebm.MEEBM:
+      max_iterations: 42
+      interactions: 0
+      validation_size: 0
+      outer_bags: 1
+      min_samples_leaf: 1
   compare_models:
     include:
       - 'lr'  # linear regression
@@ -100,17 +105,22 @@ experiment:
       - 'sklearn.svm.SVR'
       - 'interpret.glassbox.ExplainableBoostingRegressor'
       - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+      - merf.meebm.MEEBM
     # fit_kwargs are given to each estimator.fit method 
     # so if estimator does not understand it crashes and is skipped.
     fit_kwargs:
-      MERF:
+      # MERF:
+      #   fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
+      #   random_effects: []
+      #   cluster_column: "latitude"
+      MEEBM:
         fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
         random_effects: []
         cluster_column: "latitude"
     cross_validation: true
     n_select: 5
     # errors: 'ignore'
-    # errors: 'raise'
+    errors: 'raise'
 
   # create_model:
   #   estimator: 'merf.MERF'

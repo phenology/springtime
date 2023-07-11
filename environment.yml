@@ -11,6 +11,8 @@ dependencies:
   - pip!=21.3
   - python==3.10
   - hatch
+  - git
+  - rpy2
   # R dependencies
   - r-base >=4.2
   # - r-BayesianTools   # not in any anconda channel

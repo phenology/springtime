@@ -90,7 +90,7 @@ class RPPO(Dataset):
         df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
             df["dayOfYear"] - 1, unit="D"
         )
-        
+
         non_variables = {"geometry", "datetime", "year", "dayOfYear"}
         variables = [v for v in df.columns if v not in non_variables]
         df = df[["datetime", "geometry"] + variables]

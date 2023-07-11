@@ -1,3 +1,13 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# TODO get nested fit_kwargs into pyfacet release
+# Code copied from
+# https://github.com/pycaret/pycaret/blob/fa8cb5e800ba2249520e2f57d27c6584c99a2eed/pycaret/internal/pycaret_experiment/supervised_experiment.py#L369
+# ruff: noqa: E501
+# mypy: ignore-errors
+
 import datetime
 import time
 import traceback
@@ -12,8 +22,6 @@ from pycaret.internal.parallel.parallel_backend import ParallelBackend
 from pycaret.internal.validation import is_sklearn_cv_generator
 from pycaret.utils.generic import MLUsecase, id_or_display_name
 
-
-# TODO get nested fit_kwargs into pyfacet release
 
 class NestedFitRegressionExperiment(regression.RegressionExperiment):
     def compare_models(
@@ -37,6 +45,10 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
         parallel: ParallelBackend | None = None,
         caller_params: Optional[dict] = None,
     ):
+        """Same as https://pycaret.readthedocs.io/en/latest/api/regression.html#pycaret.regression.compare_models
+
+        But the fit_kwargs parameter is nested by model name.
+        """
         self._check_setup_ran()
 
         if parallel is not None:
@@ -288,6 +300,7 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
                 fold=fold,
                 round=round,
                 cross_validation=cross_validation,
+                # fit_kwargs=fit_kwargs
                 # Changed by sverhoeven to make fit_kwargs nested
                 fit_kwargs=fit_kwargs.get(model_name, {}),
                 groups=groups,

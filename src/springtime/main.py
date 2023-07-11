@@ -11,7 +11,6 @@ import click
 import pandas as pd
 import geopandas as gpd
 import yaml
-from shapely import wkt
 from pydantic import BaseModel, Field, validator
 
 from springtime.datasets import Datasets
@@ -42,8 +41,10 @@ class Session(BaseModel):
     class Config:
         validate_all = True
 
+
 class DerivedFeatures(BaseModel):
     """Derived features to add to the data for experiment."""
+
     longitude: bool = False
     """Add longitude as a feature if True."""
     latitude: bool = False
@@ -52,11 +53,12 @@ class DerivedFeatures(BaseModel):
 
 class Preparation(BaseModel):
     """Data preparation.
-    
-    Data preparation done 
+
+    Data preparation done
     after data from all the datasets has been joined together
     and before the data is passed to the experiment and save as data.csv.
     """
+
     dropna: bool = True
     """Drop rows with missing values if True."""
     derived: DerivedFeatures = DerivedFeatures()
@@ -68,13 +70,14 @@ class Preparation(BaseModel):
             df2 = df.reset_index()
             longitudes = gpd.GeoSeries(df2.geometry).x
             df2["longitude"] = longitudes
-            df = df2.set_index(['year', 'geometry'])
+            df = df2.set_index(["year", "geometry"])
         if self.derived.latitude:
             df2 = df.reset_index()
             latitudes = gpd.GeoSeries(df2.geometry).y
             df2["latitude"] = latitudes
-            df = df2.set_index(['year', 'geometry'])
+            df = df2.set_index(["year", "geometry"])
         return df
+
 
 class Workflow(BaseModel):
     datasets: Dict[str, Datasets] = {}
@@ -140,12 +143,11 @@ class Workflow(BaseModel):
         main_df = others.pop(0)
         df = main_df.join(others, how="outer")
         df = self.preparation.prepare(df)
- 
+
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"
         df.to_csv(data_fn)
         logger.warning(f"Data saved to: {data_fn}")
-
 
         # TODO do something with datacubes
         self.run_experiments(df)
@@ -156,8 +158,6 @@ class Workflow(BaseModel):
         self.session = Session()
         if self.recipe is not None:
             self.recipe.copy(self.session.output_dir / "data.csv")
-
-
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""

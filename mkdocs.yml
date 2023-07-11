@@ -27,7 +27,7 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
-      - API Reference: reference/
+      - API Reference: reference/springtime/datasets/
   - Models: models.md
   - Developer Guide: develop.md
 
@@ -85,7 +85,7 @@ plugins:
           show_if_no_docstring: false
           signature_crossrefs: true
           docstring_section_style: table
-          show_submodules: true
+          show_submodules: false
           show_root_heading: false
           show_root_toc_entry: false
           show_root_full_path: false
@@ -96,6 +96,7 @@ plugins:
         - docs/gen_apiref_datasets.py
 - literate-nav:  # Create an index for the auto-generated api reference
     nav_file: SUMMARY.md
+- section-index
 extra:
   generator: false
 

@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# TODO get nested fit_kwargs into pyfacet release
+# TODO get nested fit_kwargs into pyfacet release or
+# wait for https://github.com/pycaret/pycaret/issues/2836 to be resolved
 # Code copied from
 # https://github.com/pycaret/pycaret/blob/fa8cb5e800ba2249520e2f57d27c6584c99a2eed/pycaret/internal/pycaret_experiment/supervised_experiment.py#L369
 # ruff: noqa: E501

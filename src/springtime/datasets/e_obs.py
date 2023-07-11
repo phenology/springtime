@@ -5,7 +5,7 @@
 from datetime import datetime
 import logging
 from itertools import product
-from typing import Literal, Sequence, Tuple
+from typing import Literal, Sequence, Tuple, Union
 from urllib.request import urlretrieve
 from springtime.datasets.abstract import Dataset
 
@@ -15,7 +15,7 @@ from pydantic import validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea
+from springtime.utils import NamedArea, PointsFromOther
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +227,7 @@ class EOBSMultiplePoints(EOBS):
     """
 
     dataset: Literal["EOBSMultiplePoints"] = "EOBSMultiplePoints"
-    points: Sequence[Tuple[float, float]]
+    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
     """Points as longitude, latitude in WGS84 projection."""
 
     def load(self):

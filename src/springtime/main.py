@@ -193,7 +193,7 @@ def main(recipe):
     Workflow.from_recipe(recipe).execute()
 
 
-@click.command()
+@click.command
 @click.argument("recipe")
 def cli(recipe):
     main(recipe)

@@ -18,3 +18,5 @@ RUN Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn")
 
 # To add to an existing jupyterhub
 RUN pip install ipykernel
+
+LABEL org.opencontainers.image.source https://github.com/phenology/springtime

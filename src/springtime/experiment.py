@@ -157,6 +157,7 @@ def compare_models(s, output_dir, cm, init_kwargs, plots):
 
     if cm["n_select"]:
         best_models = s.compare_models(**cm)
+        print(best_models)
         # if only single model succeeeded then it is returned not as a list but itself
         if not isinstance(best_models, list):
             best_models = [best_models]

@@ -280,8 +280,6 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
             self.logger.info(
                 "SubProcess create_model() called =================================="
             )
-            # Added by sverhoeven to make fit_kwargs nested
-            fit_models_args = fit_kwargs.get(model_name, None)
             create_model_args = dict(
                 estimator=model,
                 system=False,
@@ -290,7 +288,8 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
                 fold=fold,
                 round=round,
                 cross_validation=cross_validation,
-                fit_kwargs=fit_models_args,
+                # Changed by sverhoeven to make fit_kwargs nested
+                fit_kwargs=fit_kwargs.get(model_name, {}),
                 groups=groups,
                 probability_threshold=probability_threshold,
                 refit=False,
@@ -441,7 +440,9 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
                         round=round,
                         cross_validation=False,
                         predict=False,
-                        fit_kwargs=fit_kwargs,
+                        # fit_kwargs=fit_kwargs,
+                        # Changed by sverhoeven to make fit_kwargs nested
+                        fit_kwargs=fit_kwargs.get(self._get_model_name(model), {}),
                         groups=groups,
                         probability_threshold=probability_threshold,
                     )

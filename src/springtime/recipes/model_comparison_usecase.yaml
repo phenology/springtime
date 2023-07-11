@@ -41,7 +41,10 @@ datasets:
       frequency: month
       operator: mean
 # TODO if extent is not zero we need an aggregation
-dropna: True
+preparation:
+  dropna: True
+  derived:
+    latitude: True
 experiment:
   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
   setup:
@@ -55,6 +58,9 @@ experiment:
     fold_shuffle: true
     session_id: 123  # control randomness for reproducibility
     index: False # Exclude year and geomentry columns
+    # categorical_features: 
+    #   - site_id
+    # max_encoding_ohe: 250
 
   # create_model:
   #   estimator: lr
@@ -85,7 +91,7 @@ experiment:
       MERF:
         fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
         random_effects: []
-        cluster_column: "site_id"
+        cluster_column: "latitude"
     cross_validation: true
     n_select: 5
     # errors: 'ignore'
@@ -96,7 +102,7 @@ experiment:
   #   fit_kwargs:
   #       fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
   #       random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
-  #       cluster_column: "site_id"
+  #       cluster_column: "latitude"
     
   plots:
     - error

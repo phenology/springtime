@@ -42,10 +42,43 @@ class Session(BaseModel):
     class Config:
         validate_all = True
 
+class DerivedFeatures(BaseModel):
+    """Derived features to add to the data for experiment."""
+    longitude: bool = False
+    """Add longitude as a feature if True."""
+    latitude: bool = False
+    """Add latitude as a feature if True."""
+
+
+class Preparation(BaseModel):
+    """Data preparation.
+    
+    Data preparation done 
+    after data from all the datasets has been joined together
+    and before the data is passed to the experiment and save as data.csv.
+    """
+    dropna: bool = True
+    """Drop rows with missing values if True."""
+    derived: DerivedFeatures = DerivedFeatures()
+
+    def prepare(self, df: pd.DataFrame) -> pd.DataFrame:
+        if self.dropna:
+            df.dropna(inplace=True)
+        if self.derived.longitude:
+            df2 = df.reset_index()
+            longitudes = gpd.GeoSeries(df2.geometry).x
+            df2["longitude"] = longitudes
+            df = df2.set_index(['year', 'geometry'])
+        if self.derived.latitude:
+            df2 = df.reset_index()
+            latitudes = gpd.GeoSeries(df2.geometry).y
+            df2["latitude"] = latitudes
+            df = df2.set_index(['year', 'geometry'])
+        return df
 
 class Workflow(BaseModel):
-    datasets: Dict[str, Datasets]
-    dropna: bool = True
+    datasets: Dict[str, Datasets] = {}
+    preparation: Preparation = Preparation()
     experiment: RegressionExperiment | TSForecastingExperiment | None = Field(
         discriminator="experiment_type"
     )
@@ -106,12 +139,13 @@ class Workflow(BaseModel):
         ]
         main_df = others.pop(0)
         df = main_df.join(others, how="outer")
-        if self.dropna:
-            df.dropna(inplace=True)
+        df = self.preparation.prepare(df)
+ 
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"
         df.to_csv(data_fn)
         logger.warning(f"Data saved to: {data_fn}")
+
 
         # TODO do something with datacubes
         self.run_experiments(df)
@@ -123,6 +157,8 @@ class Workflow(BaseModel):
         if self.recipe is not None:
             self.recipe.copy(self.session.output_dir / "data.csv")
 
+
+
     def run_experiments(self, df):
         """Train and evaluate ML models."""
         if self.experiment is None:
@@ -130,13 +166,6 @@ class Workflow(BaseModel):
 
         s = self.experiment.run()
         # TODO check rest of code also works for time series, not just regression
-
-        df2 = df.reset_index()
-        # site_ids = wkt.dumps(df2.geometry) # fails cluster column should be numeric not string
-        # site_ids = gpd.GeoSeries(df2.geometry).apply(wkt.dumps)
-        site_ids = gpd.GeoSeries(df2.geometry).y
-        df2.insert(0, 'site_id', site_ids)
-        df = df2.set_index(['year', 'geometry'])
 
         s.setup(df, **self.experiment.setup)
 

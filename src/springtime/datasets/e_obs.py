@@ -150,7 +150,13 @@ class EOBS(Dataset):
             self._path(variable, period)
             for variable, period in product(self.variables, self._periods)
         ]
-        ds = open_mfdataset(paths, chunks={'latitude': 10, 'longitude': 10})
+        ds = open_mfdataset(
+            paths,
+            chunks={"latitude": 10, "longitude": 10},
+            # For 0.1deg grid we saw the lat/longs are not exactly the same
+            # the difference is very small (1e-10), but it causes problems when joining
+            join="override",
+        )
         short2long = {v: k for k, v in short_vars.items() if k in self.variables}
         ds = ds.rename_vars(short2long)
         if self.product_type == "elevation":
@@ -236,12 +242,14 @@ class EOBSMultiplePoints(EOBS):
         ds = super().load()
         df = pd.DataFrame()
         for point in self.points:
+            logger.warning(f'Loading E-OBS for point {point}')
             ds_point = ds.sel(
                 longitude=point[0],
                 latitude=point[1],
                 method="nearest",
             )
             df_point = self._to_dataframe(ds_point)
+            # TODO ds_point can be very far from point, check distance
             geometry = gpd.GeoSeries([Point(point[0], point[1])] * len(df_point))
             df_point.geometry = geometry
             df = pd.concat([df, df_point])

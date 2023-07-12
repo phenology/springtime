@@ -27,7 +27,7 @@ datasets:
   eobs:
     dataset: EOBSMultiplePoints
     product_type: ensemble_mean
-    grid_resolution: 0.25deg # default is 0.1 but memory intensive
+    grid_resolution: 0.1deg
     points:
       source: pep_obs
     years: [2000, 2000] # [2000, 2016]

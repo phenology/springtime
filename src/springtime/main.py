@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import math
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict, Optional
@@ -135,31 +134,13 @@ class Workflow(BaseModel):
             # TODO add a check whether the combination of (year and geometry) is unique.
             dataframes[dataset_name] = ds
 
-        # do join
         others = [
             ds.set_index(["year", "geometry"])
             for ds in dataframes.values()
             if issubclass(ds.__class__, pd.DataFrame)
         ]
-        df = others.pop(0)
-        df.to_csv("/tmp/output/pep.csv")
-        others[0].to_csv("/tmp/output/eobs.csv")
-        for other in others:
-            df = gpd.sjoin_nearest(
-                gpd.GeoDataFrame(df.reset_index(), geometry="geometry"),
-                gpd.GeoDataFrame(other.reset_index(), geometry="geometry"),
-                max_distance=0.130,
-                distance_col="distance"
-            )
-            distance = df.pop("distance")
-            df.insert(0, distance.name, distance)
-            df.drop("index_right", axis=1, inplace=True)
-            df = df[df["year_right"] == df["year_left"]]
-            df.drop("year_left", axis=1, inplace=True)
-            df.rename(columns={"year_right": "year"}, inplace=True)
-            df.set_index(["year", "geometry"], inplace=True)
-
-        # df = main_df.join(others, how="outer")
+        main_df = others.pop(0)
+        df = main_df.join(others, how="outer")
         df = self.preparation.prepare(df)
 
         logger.warning(f"Datesets joined to shape: {df.shape}")

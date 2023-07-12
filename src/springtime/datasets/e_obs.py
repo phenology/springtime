@@ -10,9 +10,11 @@ from urllib.request import urlretrieve
 from springtime.datasets.abstract import Dataset
 
 import geopandas as gpd
+import pandas as pd
 import xarray as xr
 from pydantic import validator
 from xarray import open_mfdataset
+from shapely.geometry import Point
 
 from springtime.config import CONFIG
 from springtime.utils import NamedArea, PointsFromOther
@@ -232,15 +234,20 @@ class EOBSMultiplePoints(EOBS):
 
     def load(self):
         ds = super().load()
-        # pointwise selection
-        lons = xr.DataArray([p[0] for p in self.points], dims="points")
-        lats = xr.DataArray([p[1] for p in self.points], dims="points")
-        ds = ds.sel(
-            longitude=lons,
-            latitude=lats,
-            method="nearest",
-        )
-        return self._to_dataframe(ds)
+        df = pd.DataFrame()
+        for point in self.points:
+            ds_point = ds.sel(
+                longitude=point[0],
+                latitude=point[1],
+                method="nearest",
+            )
+            df_point = self._to_dataframe(ds_point)
+            geometry = gpd.GeoSeries([Point(point[0], point[1])] * len(df_point))
+            df_point.geometry = geometry
+            df = pd.concat([df, df_point])
+            # TODO add class prop to return eobs grid location
+            # as eobs_grid_lon and eobs_grid_lat columns
+        return df
 
 
 class EOBSBoundingBox(EOBS):

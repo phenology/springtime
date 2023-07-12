@@ -27,52 +27,9 @@ tool in a terminal or use it as a Python library e.g. in a Jupyter notebook.
 
 <!--intro-end-->
 
-[Documentation](https://springtime.readthedocs.io/)
+For more information and instruction, please refer to the
+[documentation](https://springtime.readthedocs.io/)
 
-<!--installation-start-->
-## Requirements
-
-This project requires python and R. To simplify installation of the (indirect) R
-depencencies you can create a Anaconda environment using [Mamba
-forge](https://github.com/conda-forge/miniforge#mambaforge) from our environment file:
-
-```shell
-curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/main/environment.yml
-mamba env create --file environment.yml
-conda activate springtime
-```
-
-## Install Python package with dependencies
-
-Once you have python and R, to install springtime in your current environment,
-type
-
-```bash
-pip install git+https://github.com/phenology/springtime.git
-```
-
-## Install R dependencies
-
-Some datasets use [R](https://www.r-project.org/) libraries. The R dependencies
-can be installed with
-
-```bash
-Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
-Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
-Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
-```
-
-
-## Verify installation
-
-```bash
-python -m rpy2.situation
-> ...
-> Calling `R RHOME`: /home/peter/miniconda3/envs/springtime/lib/R
-> Environment variable R_LIBS_USER: None
-> ...
-```
-<!--installation-end-->
 
 <!--illustration-start-->
 ## Example task

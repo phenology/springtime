@@ -58,7 +58,7 @@ experiment:
     fold_shuffle: true
     session_id: 123  # control randomness for reproducibility
     index: False # Exclude year and geomentry columns
-    # categorical_features: 
+    # categorical_features:
     #   - site_id
     # max_encoding_ohe: 250
 
@@ -85,7 +85,7 @@ experiment:
       - 'sklearn.svm.SVR'
       - 'interpret.glassbox.ExplainableBoostingRegressor'
       - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
-    # fit_kwargs are given to each estimator.fit method 
+    # fit_kwargs are given to each estimator.fit method
     # so if estimator does not understand it crashes and is skipped.
     fit_kwargs:
       MERF:
@@ -103,7 +103,7 @@ experiment:
   #       fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
   #       random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
   #       cluster_column: "latitude"
-    
+
   plots:
     - error
     - residuals

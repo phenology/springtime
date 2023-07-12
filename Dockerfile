@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 FROM --platform=amd64 mambaorg/micromamba:1.4.6
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml /tmp/env.yaml

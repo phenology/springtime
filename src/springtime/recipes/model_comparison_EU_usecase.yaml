@@ -41,7 +41,7 @@ datasets:
   modis:
     dataset: modis_multiple_points
     points:
-      source: npn_obs
+      source: pep_obs
     years: [2000, 2000] # TODO don't duplicate
     product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
     bands: [Fpar_500m, Lai_500m] #8 days

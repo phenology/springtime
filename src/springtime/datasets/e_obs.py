@@ -150,7 +150,7 @@ class EOBS(Dataset):
             self._path(variable, period)
             for variable, period in product(self.variables, self._periods)
         ]
-        ds = open_mfdataset(paths)
+        ds = open_mfdataset(paths, chunks={'latitude': 10, 'longitude': 10})
         short2long = {v: k for k, v in short_vars.items() if k in self.variables}
         ds = ds.rename_vars(short2long)
         if self.product_type == "elevation":

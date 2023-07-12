@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from datetime import datetime
+import time
 import logging
 from itertools import product
 from typing import Literal, Sequence, Tuple, Union
@@ -14,7 +15,6 @@ import pandas as pd
 import xarray as xr
 from pydantic import validator
 from xarray import open_mfdataset
-from shapely.geometry import Point
 
 from springtime.config import CONFIG
 from springtime.utils import NamedArea, PointsFromOther
@@ -237,25 +237,78 @@ class EOBSMultiplePoints(EOBS):
     dataset: Literal["EOBSMultiplePoints"] = "EOBSMultiplePoints"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
     """Points as longitude, latitude in WGS84 projection."""
+    keep_grid_location: bool = False
+    """If True, keep the eobs_longitude and eobs_lantitude columns.
+    If False, drop them."""
 
     def load(self):
-        ds = super().load()
-        df = pd.DataFrame()
-        for point in self.points:
-            logger.warning(f'Loading E-OBS for point {point}')
-            ds_point = ds.sel(
-                longitude=point[0],
-                latitude=point[1],
-                method="nearest",
-            )
-            df_point = self._to_dataframe(ds_point)
-            # TODO ds_point can be very far from point, check distance
-            geometry = gpd.GeoSeries([Point(point[0], point[1])] * len(df_point))
-            df_point.geometry = geometry
-            df = pd.concat([df, df_point])
-            # TODO add class prop to return eobs grid location
-            # as eobs_grid_lon and eobs_grid_lat columns
-        return df
+        lons = xr.DataArray([p[0] for p in self.points], dims="points_index")
+        lats = xr.DataArray([p[1] for p in self.points], dims="points_index")
+        points_df = gpd.GeoDataFrame(
+            geometry=gpd.points_from_xy(lons, lats)
+        ).reset_index(names="points_index")
+        logger.warning(
+            f"Loading E-OBS for {len(self.points)} points for years {self.years}"
+        )
+        period_dfs = []
+        for period in self._periods:
+            period_df = None
+            for variable in self.variables:
+                logger.warning(f"Loading {variable} for {period}")
+                start = time.time()
+                path = self._path(variable, period)
+                var_ds = xr.open_dataset(path)
+                var_ds = var_ds.rename_vars({short_vars[variable]: variable})
+                if self.product_type == "elevation":
+                    dt = datetime(self.years.start, 1, 1)
+                    var_ds = var_ds.expand_dims({"time": [dt]}, axis=0)
+                else:
+                    var_ds = var_ds.sel(
+                        time=slice(
+                            f"{self.years.start}-01-01", f"{self.years.end}-12-31"
+                        )
+                    )
+                var_ds = var_ds.sel(
+                    longitude=lons,
+                    latitude=lats,
+                    method="nearest",
+                )
+                # print(var_ds)
+                var_df = var_ds.to_dataframe()
+                # print('to dataframe')
+                var_df.reset_index(inplace=True)
+                if self.keep_grid_location:
+                    var_df.rename(
+                        columns={
+                            "longitude": "eobs_longitude",
+                            "latitude": "eobs_latitude",
+                        },
+                        inplace=True,
+                    )
+                else:
+                    var_df.drop(columns=["longitude", "latitude"], inplace=True)
+                var_df = pd.merge(points_df, var_df, on="points_index")
+                var_df = var_df.drop(columns=["points_index"]).rename(
+                    columns={"time": "datetime"}
+                )
+                # print(var_df)
+                # print(var_df.info())
+                if period_df is None:
+                    period_df = var_df
+                else:
+                    if self.keep_grid_location:
+                        # Having eobs_* one time is enough
+                        var_df = var_df.drop(
+                            columns=["eobs_longitude", "eobs_latitude"]
+                        )
+                    period_df = pd.merge(
+                        period_df, var_df, on=["datetime", "geometry"], how="outer"
+                    )
+                end = time.time()
+                logger.warning(f"Loaded {variable} for {period} in {end-start} seconds")
+            period_dfs.append(period_df)
+        df = pd.concat(period_dfs)
+        return gpd.GeoDataFrame(df).sort_values(by=["datetime", "geometry"])
 
 
 class EOBSBoundingBox(EOBS):

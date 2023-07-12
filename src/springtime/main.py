@@ -140,8 +140,11 @@ class Workflow(BaseModel):
             for ds in dataframes.values()
             if issubclass(ds.__class__, pd.DataFrame)
         ]
-        main_df = others.pop(0)
-        df = main_df.join(others, how="outer")
+        if len(others) == 1:
+            df = others[0]
+        else:
+            main_df = others.pop(0)
+            df = main_df.join(others, how="outer")
         df = self.preparation.prepare(df)
 
         logger.warning(f"Datesets joined to shape: {df.shape}")

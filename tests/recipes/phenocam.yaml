@@ -31,3 +31,19 @@ datasets:
       name: harvard
       bbox: [-73, 42, -72, 43]
     years: [2019, 2020]
+  phenocam_one_roi_two_vars:
+    dataset: phenocam
+    site: harvard
+    rois:
+      - 1
+    veg_type: "DB"
+    frequency: "3"
+    years: [2019, 2020]
+    variables: ["midday_r", "midday_g"]
+  phenocam_area_one_var:
+    dataset: phenocambbox
+    area:
+      name: harvard
+      bbox: [-73, 42, -72, 43]
+    years: [2019, 2020]
+    variables: ["rcc_std"]

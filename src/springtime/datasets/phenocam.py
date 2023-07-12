@@ -24,15 +24,47 @@ phenocam_data_dir = CONFIG.data_dir / "phenocam"
 
 # variables with "flag" in their names are removed from the list below because
 # their values might be NaN.
-PhenocamVariables = Literal['midday_r', 'midday_g', 'midday_b',
-       'midday_gcc', 'midday_rcc', 'r_mean', 'r_std', 'g_mean', 'g_std',
-       'b_mean', 'b_std', 'gcc_mean', 'gcc_std', 'gcc_50', 'gcc_75', 'gcc_90',
-       'rcc_mean', 'rcc_std', 'rcc_50', 'rcc_75', 'rcc_90', 'max_solar_elev',
-       'smooth_gcc_mean','smooth_gcc_50', 'smooth_gcc_75', 'smooth_gcc_90', 'smooth_rcc_mean',
-       'smooth_rcc_50', 'smooth_rcc_75', 'smooth_rcc_90', 'smooth_ci_gcc_mean',
-       'smooth_ci_gcc_50', 'smooth_ci_gcc_75', 'smooth_ci_gcc_90',
-       'smooth_ci_rcc_mean', 'smooth_ci_rcc_50', 'smooth_ci_rcc_75',
-       'smooth_ci_rcc_90']
+PhenocamVariables = Literal[
+    "midday_r",
+    "midday_g",
+    "midday_b",
+    "midday_gcc",
+    "midday_rcc",
+    "r_mean",
+    "r_std",
+    "g_mean",
+    "g_std",
+    "b_mean",
+    "b_std",
+    "gcc_mean",
+    "gcc_std",
+    "gcc_50",
+    "gcc_75",
+    "gcc_90",
+    "rcc_mean",
+    "rcc_std",
+    "rcc_50",
+    "rcc_75",
+    "rcc_90",
+    "max_solar_elev",
+    "smooth_gcc_mean",
+    "smooth_gcc_50",
+    "smooth_gcc_75",
+    "smooth_gcc_90",
+    "smooth_rcc_mean",
+    "smooth_rcc_50",
+    "smooth_rcc_75",
+    "smooth_rcc_90",
+    "smooth_ci_gcc_mean",
+    "smooth_ci_gcc_50",
+    "smooth_ci_gcc_75",
+    "smooth_ci_gcc_90",
+    "smooth_ci_rcc_mean",
+    "smooth_ci_rcc_50",
+    "smooth_ci_rcc_75",
+    "smooth_ci_rcc_90",
+]
+
 
 class Phenocam(Dataset):
     veg_type: Optional[str]

@@ -248,7 +248,7 @@ class EOBSMultiplePoints(EOBS):
             geometry=gpd.points_from_xy(lons, lats)
         ).reset_index(names="points_index")
         logger.warning(
-            f"Loading E-OBS for {len(self.points)} points for years {self.years}"
+            f"Loading E-OBS for {len(self.points)} points for {self.years}"
         )
         period_dfs = []
         for period in self._periods:

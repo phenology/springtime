@@ -17,8 +17,8 @@ RUN Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn")
 
 # Copy repo and install package
 WORKDIR /home/jovyan
-COPY --chown=${NB_UID}:${NB_GID} . .
-RUN pip install -e .[r]
+COPY --chown=${NB_UID}:${NB_GID} . springtime
+RUN pip install -e ./springtime[r]
 
 # Add label to link to repo
 LABEL org.opencontainers.image.source https://github.com/phenology/springtime

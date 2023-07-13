@@ -140,10 +140,11 @@ The docker image is hosted on [GitHub Container Registry
 You need to setup a personal access token following the instructions
 [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic).
 
-Then create a new tag and push the image to GHCR:
+Then build and push the image to GHCR:
 
 ```bash
-docker tag springtime ghcr.io/phenology/springtime:latest
+# In the root of the repository
+docker build -t ghcr.io/phenology/springtime:latest .
 docker push ghcr.io/phenology/springtime:latest
 ```
 

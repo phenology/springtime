@@ -91,27 +91,27 @@ You can use the docker image in two ways. The following command will start a
 jupyter lab instance in which the springtime environment is installed:
 
 ```bash
-docker run --rm -it -p 8888:8888 -v "${PWD}":/home/jovyan/work springtime
+docker run --rm -it -p 8888:8888 -v "${PWD}":/home/jovyan/work ghcr.io/phenology/springtime:latest
 ```
 
 Alternatively, you can use the docker image to use the springtime command on
 your terminal:
 
 ```bash
-docker run --rm springtime springtime --help
+docker run --rm ghcr.io/phenology/springtime:latest springtime --help
 ```
 
 You could also set an alias like so:
 
 ```bash
 # By setting this alias
-alias springtime="docker run --rm springtime springtime"
+alias springtime="docker run --rm ghcr.io/phenology/springtime:latest springtime"
 
 # you can now run
 springtime --help
 
 # which will effectively execute
-docker run --rm springtime springtime --help
+docker run --rm ghcr.io/phenology/springtime:latest springtime --help
 ```
 
 As such, you can effectively use the docker version of springtime exactly like
@@ -122,10 +122,10 @@ you would use a local installation.
 Essentially, the commands above can be split into a few parts:
 
 ```
-docker run <OPTIONS> springtime <COMMAND>
+docker run <OPTIONS> ghcr.io/phenology/springtime:latest <COMMAND>
 ```
 
-The core command `docker run springimte` starts a container based on the
+The core command `docker run ghcr.io/phenology/springtime:latest` starts a container based on the
 `springtime` image you just pulled. The `--rm` option makes sure it is deleted
 again after it is done executing `<COMMAND>`. The default command is to start a
 jupyter lab instance, so that's what happens if you don't specify `<COMMAND>`.
@@ -144,11 +144,10 @@ simply executing and exiting. Thus container will terminate once you terminate
 your jupyter lab session.
 
 Additional options may be added to the docker command as well. For example, to
-run on a macbook, we had to use `--platform linux/amd64` and specify the full
-path to the container, instead of just the name:
+run on a macbook, we had to add `--platform linux/amd64`:
 
 ```
-docker run --rm  ghcr.io/phenology/springtime springtime --help
+docker run --rm --platform linux/amd64 ghcr.io/phenology/springtime springtime --help
 ```
 
 Be aware that docker containers can consume significant resources on your

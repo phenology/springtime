@@ -134,15 +134,23 @@ class Workflow(BaseModel):
             # TODO add a check whether the combination of (year and geometry) is unique.
             dataframes[dataset_name] = ds
 
-        # do join
-        others = [
-            ds.set_index(["year", "geometry"])
-            for ds in dataframes.values()
-            if issubclass(ds.__class__, pd.DataFrame)
-        ]
+        others = []
+        for ds in dataframes.values():
+            if issubclass(ds.__class__, pd.DataFrame):
+                # Can not join df with Point objects so we convert to WKT strings.
+                ds = ds.to_wkt()
+                ds.set_index(["year", "geometry"], inplace=True)
+                others.append(ds)
         main_df = others.pop(0)
-        df = main_df.join(others, how="outer")
-        df = self.preparation.prepare(df)
+        if len(others) == 0:
+            df = main_df
+        else:
+            df = main_df.join(others, how="outer")
+            df.reset_index(inplace=True)
+            geometry = gpd.GeoSeries.from_wkt(df.pop("geometry"))
+            df = gpd.GeoDataFrame(df, geometry=geometry)
+            df.set_index(["year", "geometry"], inplace=True)
+            df = self.preparation.prepare(df)
 
         logger.warning(f"Datesets joined to shape: {df.shape}")
         data_fn = self.session.output_dir / "data.csv"

@@ -1,0 +1,117 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
+datasets:
+  pep_obs:
+    dataset: PEP725Phenor
+    species: Syringa vulgaris
+    bbch: 60
+    years: [2000, 2016] # currently observations are available till 2016
+    area:
+      name: Germany # from https://gist.github.com/graydon/11198540#file-country-bounding-boxes-py-L45
+      bbox:
+        # Smaller bbox for testing purposes.
+        [
+          5.98865807458,
+          47.3024876979,
+          7.0169958839,
+          49.983104153,
+        ]
+        # [
+        #   5.98865807458,
+        #   47.3024876979,
+        #   15.0169958839,
+        #   54.983104153,
+        # ]
+  eobs:
+    dataset: EOBSMultiplePoints
+    product_type: ensemble_mean
+    grid_resolution: 0.1deg
+    points:
+      source: pep_obs
+    years: [2000, 2016] # [2000, 2016]
+    variables:
+      - mean_temperature
+      - maximum_temperature
+      - minimum_temperature
+    resample:
+      frequency: month
+      operator: median
+  # modis:
+  #   dataset: modis_multiple_points
+  #   points:
+  #     source: pep_obs
+  #   years: [2000, 2016] # TODO don't duplicate
+  #   product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+  #   bands: [Fpar_500m, Lai_500m] #8 days
+  #   resample:
+  #     frequency: month
+  #     operator: mean
+# # TODO if extent is not zero we need an aggregation
+# preparation:
+#   dropna: True
+#   derived:
+#     latitude: True
+# experiment:
+#   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
+#   setup:
+#     target: "breaking leaf buds_doy"
+#     train_size: 0.75
+#     preprocess: false
+#     normalize: true
+#     normalize_method: zscore  # i.e. default
+#     fold_strategy: kfold  # i.e. default
+#     fold: 10
+#     fold_shuffle: true
+#     session_id: 123  # control randomness for reproducibility
+#     index: False # Exclude year and geomentry columns
+#     # categorical_features:
+#     #   - site_id
+#     # max_encoding_ohe: 250
+
+#   # create_model:
+#   #   estimator: lr
+#       # estimator: 'sklearn.svm.SVR'
+#   #   cross_validation: true
+
+#   init_kwargs:
+#     sklearn.svm.SVR:
+#       kernel: 'rbf'
+#       gamma: 0.1
+#       C: 100.0
+#       epsilon: 0.1
+#     interpret.glassbox.ExplainableBoostingRegressor:
+#       interactions: 0
+#       validation_size: 0
+#       outer_bags: 1
+#       min_samples_leaf: 1
+#   compare_models:
+#     include:
+#       - 'lr'  # linear regression
+#       - 'rf'  # random forest regressor
+#       - 'sklearn.svm.SVR'
+#       - 'interpret.glassbox.ExplainableBoostingRegressor'
+#       - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+#     # fit_kwargs are given to each estimator.fit method
+#     # so if estimator does not understand it crashes and is skipped.
+#     fit_kwargs:
+#       MERF:
+#         fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
+#         random_effects: []
+#         cluster_column: "latitude"
+#     cross_validation: true
+#     n_select: 5
+#     # errors: 'ignore'
+#     # errors: 'raise'
+
+#   # create_model:
+#   #   estimator: 'merf.MERF'
+#   #   fit_kwargs:
+#   #       fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
+#   #       random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
+#   #       cluster_column: "latitude"
+
+#   plots:
+#     - error
+#     - residuals

@@ -60,6 +60,9 @@ class PointsFromOther(BaseModel):
         for item in self._points:
             yield item
 
+    def __len__(self):
+        return len(self._points)
+
 
 # date range of years
 class YearRange(NamedTuple):

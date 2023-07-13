@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # due to import of rppo
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Sequence
 
 import geopandas as gpd
 import pandas as pd
@@ -13,6 +13,9 @@ from pydantic.types import PositiveInt
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, run_r_script
+
+# non-numerice variables are removed from the list below.
+PPOVariables = Literal["dayOfYear"]
 
 
 class RPPO(Dataset):
@@ -47,6 +50,10 @@ class RPPO(Dataset):
     """Maximum number of records to retreive"""
     timeLimit: PositiveInt = 60
     """Number of seconds to wait for the server to respond"""
+    variables: Sequence[PPOVariables] = tuple()
+    """variables you want to load. When empty will load all the
+    variables.
+    """
 
     @property
     def path(self):
@@ -91,8 +98,10 @@ class RPPO(Dataset):
             df["dayOfYear"] - 1, unit="D"
         )
 
-        non_variables = {"geometry", "datetime", "year", "dayOfYear"}
+        non_variables = {"geometry", "datetime", "year"}
         variables = [v for v in df.columns if v not in non_variables]
+        if self.variables:
+            variables = list(self.variables)
         df = df[["datetime", "geometry"] + variables]
 
         df.attrs["readme"] = data["readme"][0]

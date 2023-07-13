@@ -12,18 +12,18 @@ datasets:
       name: Germany # from https://gist.github.com/graydon/11198540#file-country-bounding-boxes-py-L45
       bbox:
         # Smaller bbox for testing purposes.
-        # [
-        #   5.98865807458,
-        #   47.3024876979,
-        #   7.0169958839,
-        #   49.983104153,
-        # ]
         [
           5.98865807458,
           47.3024876979,
-          15.0169958839,
-          54.983104153,
+          7.0169958839,
+          49.983104153,
         ]
+        # [
+        #   5.98865807458,
+        #   47.3024876979,
+        #   15.0169958839,
+        #   54.983104153,
+        # ]
   eobs:
     dataset: EOBSMultiplePoints
     product_type: ensemble_mean
@@ -38,16 +38,16 @@ datasets:
     resample:
       frequency: month
       operator: median
-  modis:
-    dataset: modis_multiple_points
-    points:
-      source: pep_obs
-    years: [2000, 2016] # TODO don't duplicate
-    product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
-    bands: [Fpar_500m, Lai_500m] #8 days
-    resample:
-      frequency: month
-      operator: mean
+  # modis:
+  #   dataset: modis_multiple_points
+  #   points:
+  #     source: pep_obs
+  #   years: [2000, 2016] # TODO don't duplicate
+  #   product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+  #   bands: [Fpar_500m, Lai_500m] #8 days
+  #   resample:
+  #     frequency: month
+  #     operator: mean
 # # TODO if extent is not zero we need an aggregation
 # preparation:
 #   dropna: True

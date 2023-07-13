@@ -9,6 +9,13 @@ datasets:
     termID: obo:PPO_0002313
     limit: 10
     years: [2019, 2020]
+  ppo_pinus_with_one_variable:
+    dataset: rppo
+    genus: Quercus Pinus
+    termID: obo:PPO_0002313
+    limit: 10
+    years: [2019, 2020]
+    variables: ["dayOfYear"]
   ppo_pinus_area:
     dataset: rppo
     genus: Quercus virginiana

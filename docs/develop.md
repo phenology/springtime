@@ -132,6 +132,22 @@ hatch run mkdocs serve
 hatch run mkdocs build --clean --strict
 ```
 
+## Docker build
+
+The docker image is hosted on [GitHub Container Registry
+(GHCR)](https://github.com/phenology/springtime/pkgs/container/springtime).
+
+You need to setup a personal access token following the instructions
+[here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic).
+
+Then build and push the image to GHCR:
+
+```bash
+# In the root of the repository
+docker build -t ghcr.io/phenology/springtime:latest .
+docker push ghcr.io/phenology/springtime:latest
+```
+
 ## Contributing guidelines
 
 We welcome contributions from everyone. Please use our [GitHub issue

@@ -27,6 +27,8 @@ jobs:
         micromamba-version: '1.4.6-0'  # 1.4.7 has a bug
         cache-environment: true
         environment-file: environment.yml
+        create-args: >-
+          python=3.10
     - name: Install R dependencies
       run: |
         Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'

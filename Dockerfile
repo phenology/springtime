@@ -1,26 +1,24 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+FROM --platform=amd64 jupyter/r-notebook:python-3.10
 
-FROM --platform=amd64 mambaorg/micromamba:1.4.6
+# Most springtime dependencies can be added from conda channels
+COPY --chown=${NB_UID}:${NB_GID} environment.yml /tmp/
+RUN mamba env update --name base --file /tmp/environment.yml &&\
+    mamba clean --all -f -y && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
 
-COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml /tmp/env.yaml
-RUN micromamba install -y -n base -f /tmp/env.yaml && \
-    micromamba clean --all --yes
-
-# Make sure the conda environment is activated for the remaining build
-# instructions below
-ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
-
-WORKDIR /repo
-COPY . .
-RUN pip install .[r]
-
+# Additional R dependencies not available on conda channels
 RUN Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 RUN Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 RUN Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
 
-# To add to an existing jupyterhub
-RUN pip install ipykernel
+# Copy repo and install package
+WORKDIR /home/jovyan
+COPY --chown=${NB_UID}:${NB_GID} . springtime
+RUN pip install -e ./springtime[r]
 
+# Add label to link to repo
 LABEL org.opencontainers.image.source https://github.com/phenology/springtime

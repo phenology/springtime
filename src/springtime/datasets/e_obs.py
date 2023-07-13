@@ -273,9 +273,7 @@ class EOBSMultiplePoints(EOBS):
                     latitude=lats,
                     method="nearest",
                 )
-                # print(var_ds)
                 var_df = var_ds.to_dataframe()
-                # print('to dataframe')
                 var_df.reset_index(inplace=True)
                 if self.keep_grid_location:
                     var_df.rename(
@@ -291,8 +289,6 @@ class EOBSMultiplePoints(EOBS):
                 var_df = var_df.drop(columns=["points_index"]).rename(
                     columns={"time": "datetime"}
                 )
-                # print(var_df)
-                # print(var_df.info())
                 if period_df is None:
                     period_df = var_df
                 else:

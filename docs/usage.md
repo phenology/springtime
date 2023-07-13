@@ -73,7 +73,7 @@ springtime model_comparison_usecase.yaml
 ```
 
 We provide several "recipes" for running
-[experiments](https://springtime.readthedocs.io/en/latest/experiments/).
+[experiments](https://springtime.readthedocs.io/en/latest/recipes/).
 
 ## Python API
 

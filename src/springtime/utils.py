@@ -26,8 +26,8 @@ class BoundingBox(NamedTuple):
     ymax: float
 
     @classmethod
-    def from_points(points: Sequence[Tuple[float, float]]):
-        return BoundingBox(
+    def from_points(cls, points: Sequence[Tuple[float, float]]):
+        return cls(
             xmin=min(map(lambda p: p[0], points)),
             ymin=min(map(lambda p: p[1], points)),
             xmax=max(map(lambda p: p[0], points)),
@@ -76,6 +76,7 @@ class PointsFromOther(BaseModel):
 
 
 Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
+
 
 # date range of years
 class YearRange(NamedTuple):
@@ -276,15 +277,29 @@ def resample(df, freq="month", operator="mean", column="datetime"):
 
     return gpd.GeoDataFrame(new_df)
 
+
 def points_from_cube(ds: xr.Dataset, points: Points) -> pd.DataFrame:
+    """From a cube, extract the values at the given points.
+
+    Args:
+        ds: Xarray datset with latitude and longitude dimensions
+        points: List of points as (lon, lat) tuples
+
+    Returns:
+        Dataframe with columns for each point and each variable in the dataset.
+    """
     lons = xr.DataArray([p[0] for p in points], dims="points_index")
     lats = xr.DataArray([p[1] for p in points], dims="points_index")
-    points_df = gpd.GeoDataFrame(
-        geometry=gpd.points_from_xy(lons, lats)
-    ).reset_index(names="points_index")
-    df = ds.sel(
-        longitude=lons,
-        latitude=lats,
-        method="nearest",
-    ).to_dataframe().reset_index()
+    points_df = gpd.GeoDataFrame(geometry=gpd.points_from_xy(lons, lats)).reset_index(
+        names="points_index"
+    )
+    df = (
+        ds.sel(
+            longitude=lons,
+            latitude=lats,
+            method="nearest",
+        )
+        .to_dataframe()
+        .reset_index()
+    )
     return df.merge(points_df, on="points_index", how="right")

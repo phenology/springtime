@@ -3,7 +3,7 @@ from hashlib import sha1
 import json
 from pathlib import Path
 from time import sleep
-from typing import Literal, Sequence, Tuple, Union
+from typing import Literal, Optional, Sequence, Tuple, Union
 
 import requests
 import geopandas
@@ -31,34 +31,43 @@ class TokenInfo(BaseModel):
     expiration: datetime
 
 
-class ModisAppeears(Dataset):
-    dataset: Literal["modis_appeears"] = "modis_appeears"
-    """Points as longitude, latitude in WGS84 projection."""
+class Appeears(Dataset):
     product: str
-    """a MODIS product. Use `modis_products()` to get list of available products."""
-    bands: conset(str, min_items=1)  # type: ignore
-    """MODIS product bands.
+    """An AρρEEARS product name.
 
-    Use `modis_bands(product)` to get list of available bands for a product.
+    Use `products()` to get a list of currently available in AρρEEARS.
     """
-    _token: TokenInfo = None
+    layers: conset(str, min_items=1)  # type: ignore
+    """Layers of a AρρEEARS product.
+
+    Use `layers(product)` to get list of available layers for a product.
+    """
+    _token: Optional[TokenInfo] = None
 
     def _check_token(self):
         if self._token is None:
-            username, password = read_auth()
+            username, password = _read_credentials()
             self._token = self._login(username, password)
         if self._token.expiration < datetime.now():
             self._token = self._login(username, password)
 
     @property
     def output_dir(self):
-        d = CONFIG.data_dir / "modis_appeears"
+        """Output directory for downloaded data."""
+        d = CONFIG.data_dir / "appeears"
         d.mkdir(exist_ok=True, parents=True)
         return d
 
 
-class ModisAppeearsArea(ModisAppeears):
-    dataset: Literal["modis_appeears_area"] = "modis_appeears_area"
+class AppeearsArea(Appeears):
+    """MODIS land products subsets from AppEEARS by an area of interest.
+
+    https://appeears.earthdatacloud.nasa.gov/
+
+    Credentials are read from `~/.config/springtime/credentials.json`.
+    JSON file should look like `{"username": "foo", "password": "bar"}`.
+    """
+    dataset: Literal["appeears_area"] = "appeears_area"
     area: NamedArea
 
     @property
@@ -69,16 +78,16 @@ class ModisAppeearsArea(ModisAppeears):
         self._check_token()
         if (self.output_dir / self._path).exists():
             return
-        task = submit_area_task(
+        task = _submit_area_task(
             product=self.product,
             area=self.area,
-            layers=self.bands,
+            layers=self.layers,
             years=self.years,
             token=self._token,
         )
-        poll_task(task, token=self._token)
+        _poll_task(task, token=self._token)
         logger.warning(f"Task {task} completed")
-        files = list_files(task, token=self._token)
+        files = _list_files(task, token=self._token)
         for file in files:
             if self.area.name == self._path:
                 file.download(task, self.output_dir, token=self._token)
@@ -86,8 +95,20 @@ class ModisAppeearsArea(ModisAppeears):
     def load(self):
         return xr.open_dataset(self.output_dir / self._path)
 
-class ModisAppeearsPointsFromArea(ModisAppeears):
-    dataset: Literal["modis_appeears_points_from_area"] = "modis_appeears_points_from_area"
+
+class AppeearsPointsFromArea(Appeears):
+    """MODIS land products subsets using AppEEARS by points from an area of interest.
+
+    First the bounding box of area is downloaded and then points are selected from the area.
+
+    https://appeears.earthdatacloud.nasa.gov/
+
+    Credentials are read from `~/.config/springtime/credentials.json`.
+    JSON file should look like `{"username": "foo", "password": "bar"}`.
+    """
+    dataset: Literal[
+        "appeears_points_from_area"
+    ] = "appeears_points_from_area"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
     @property
@@ -103,14 +124,14 @@ class ModisAppeearsPointsFromArea(ModisAppeears):
 
     @property
     def _path(self):
-        return f'{self._area.name}*-results.nc'
+        return f"{self._area.name}*-results.nc"
 
     @property
     def source(self):
-        return ModisAppeearsArea(
+        return AppeearsArea(
             product=self.product,
             area=self._area,
-            bands=self.bands,
+            layers=self.layers,
             years=self.years,
         )
 
@@ -121,18 +142,26 @@ class ModisAppeearsPointsFromArea(ModisAppeears):
         ds = self.source.load()
         return points_from_cube(ds, self.points)
 
-class ModisAppeearsPoints(ModisAppeears):
-    dataset: Literal["modis_appeears_points"] = "modis_appeears_points"
+
+class AppeearsPoints(Appeears):
+    """MODIS land products subsets using AppEEARS.
+
+    https://appeears.earthdatacloud.nasa.gov/
+
+    Credentials are read from `~/.config/springtime/credentials.json`.
+    JSON file should look like `{"username": "foo", "password": "bar"}`.
+    """
+    dataset: Literal["appeears_points"] = "appeears_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
     def _points_hash(self, points: Points):
         return sha1(json.dumps(points).encode("utf-8")).hexdigest()
 
     def _task_name(self, points: Points):
-        return generate_task_name(
+        return _generate_task_name(
             product=self.product,
             points=self._points_hash(points),
-            layers=self.bands,
+            layers=self.layers,
             years=self.years,
         )
 
@@ -152,26 +181,26 @@ class ModisAppeearsPoints(ModisAppeears):
             self._run_task(points_chunk)
 
     def _run_task(self, points):
-        task_name = generate_task_name(
+        task_name = _generate_task_name(
             product=self.product,
             points=self._points_hash(points),
-            layers=self.bands,
+            layers=self.layers,
             years=self.years,
         )
         if (self.output_dir / self._path(points)).exists():
             return
-        task = submit_point_task(
+        task = _submit_point_task(
             product=self.product,
             points=points,
-            layers=self.bands,
+            layers=self.layers,
             years=self.years,
             token=self._token,
             name=task_name,
         )
         logger.warning(f"Waiting for task {task} to complete")
-        poll_task(task, token=self._token)
+        _poll_task(task, token=self._token)
         logger.warning(f"Task {task} completed")
-        files = list_files(task, token=self._token)
+        files = _list_files(task, token=self._token)
         logger.warning(f"Downloading {files} files")
 
         for file in files:
@@ -202,7 +231,7 @@ class ModisAppeearsPoints(ModisAppeears):
         )
 
 
-def read_auth():
+def _read_credentials():
     # TODO get config dir from session
     config_dir = Path("~/.config/springtime").expanduser()
     config_file = config_dir / "appeears.json"
@@ -212,7 +241,7 @@ def read_auth():
     return body["username"], body["password"]
 
 
-def login(username, password):
+def _login(username, password):
     response = requests.post(
         "https://appeears.earthdatacloud.nasa.gov/api/login",
         auth=(username, password),
@@ -231,7 +260,6 @@ class ProductInfo(BaseModel):
     DOI: str
     Available: bool
     RasterType: str
-    Resolution: str
     TemporalGranularity: str
     DocLink: str
     Source: str
@@ -240,35 +268,95 @@ class ProductInfo(BaseModel):
     Deleted: bool
 
 
-def products():
+def products() -> list[ProductInfo]:
+    """Get list of products
+
+    Returns:
+        list of products
+
+    """
     response = requests.get(
         "https://appeears.earthdatacloud.nasa.gov/api/product",
     )
     response.raise_for_status()
-    return [ProductInfo(p) for p in response.json()]
+    return [ProductInfo(**p) for p in response.json()]
 
 
-def layers(product):
+class LayerInfo(BaseModel):
+    AddOffset: str
+    Available: bool
+    DataType: str
+    Description: str
+    Dimensions: list[str]
+    FillValue: int
+    IsQA: bool
+    Layer: str
+    OrigDataType: str
+    OrigValidMax: int
+    OrigValidMin: int
+    QualityLayers: str
+    QualityProductAndVersion: str
+    ScaleFactor: str
+    Units: str
+    ValidMax: int
+    ValidMin: int
+    XSize: int
+    YSize: int
+
+
+def layers(product: str) -> dict[str, LayerInfo]:
+    """Get layers for a product
+
+    Args:
+        product: product name and version.
+
+    Returns:
+        list of layers
+
+    Example:
+
+        ```python
+        import springtime.datasets.appeears as ma
+        products = ma.products()
+        product = next(filter(
+            lambda p: p.Product == 'MOD15A2H' and p.Version == '061',
+            products
+        ))
+        layers = ma.layers(product.ProductAndVersion)
+        {k:v.Description for k,v in layers.items()}
+        ```
+
+        Outputs:
+
+        ```python
+        {'FparExtra_QC': 'Extra detail Quality for Lai and Fpar',
+        'FparLai_QC': 'Quality for Lai and Fpar',
+        'FparStdDev_500m': 'Standard deviation of Fpar',
+        'Fpar_500m': 'Fraction of photosynthetically active radiation',
+        'LaiStdDev_500m': 'Standard deviation of Lai',
+        'Lai_500m': 'Leaf area index'}
+        ```
+    """
     response = requests.get(
         f"https://appeears.earthdatacloud.nasa.gov/api/product/{product}",
     )
     response.raise_for_status()
-    return response.json()
+    body = response.json()
+    return {k: LayerInfo(**v) for k, v in body.items()}
 
 
-def generate_task_name(
+def _generate_task_name(
     product: str,
     points: str,
     layers: Sequence[str],
     years: YearRange,
-    type: str = "point",
 ):
-    return f"{type}_{product}_{years.start}_{years.end}_{layers}_{points}"
-      
+    return f"{product}_{years.start}_{years.end}_{layers}_{points}"
 
-def submit_point_task(
+
+def _submit_point_task(
     product: str,
-    points: Union[Sequence[Tuple[float, float]], PointsFromOther],
+    points: Points,
     layers: Sequence[str],
     years: YearRange,
     name: str,
@@ -286,7 +374,7 @@ def submit_point_task(
                 "recurring": True,
                 "yearRange": [years.start, years.end],
             },
-            "layers": [{"product": product, "layer": l} for l in layers],
+            "layers": [{"product": product, "layer": layer} for layer in layers],
             "coordinates": [
                 {
                     "longitude": p[0],
@@ -307,7 +395,7 @@ def submit_point_task(
     return task_response["task_id"]
 
 
-def submit_area_task(
+def _submit_area_task(
     product: str,
     area: NamedArea,
     layers: Sequence[str],
@@ -324,7 +412,7 @@ def submit_area_task(
                 "recurring": True,
                 "yearRange": [years.start, years.end],
             },
-            "layers": [{"product": product, "layer": l} for l in layers],
+            "layers": [{"product": product, "layer": layer} for layer in layers],
             "output": {"projection": "geographic", "format": {"type": "netcdf4"}},
             "geo": {
                 "type": "FeatureCollection",
@@ -347,9 +435,9 @@ def submit_area_task(
     return task_response["task_id"]
 
 
-def get_task(task: str, token: TokenInfo):
+def _get_task(task: str, token: TokenInfo):
     response = requests.get(
-        "https://appeears.earthdatacloud.nasa.gov/api/task/{0}".format(task_id),
+        "https://appeears.earthdatacloud.nasa.gov/api/task/{0}".format(task),
         headers={"Authorization": "Bearer {0}".format(token.token)},
     )
     response.raise_for_status()
@@ -357,22 +445,35 @@ def get_task(task: str, token: TokenInfo):
     return task_response
 
 
-def get_task_status(task: str, token: TokenInfo):
-    get_task(task, token)["status"]
+def _get_task_status(task: str, token: TokenInfo):
+    _get_task(task, token)["status"]
 
 
-def poll_task(task: str, token: TokenInfo, interval=30, timeout=2 * 60 * 24):
-    for i in range(timeout):
-        status = get_task_status(task, token.token)
-        if status == "done":  # TODO: check for error status
+# TODO make interval and tries settable when called. From config?
+def _poll_task(task: str, token: TokenInfo, interval=30, tries=2 * 60 * 24):
+    """Poll task every interval seconds until it completes or timeout is reached.
+
+    Args:
+        task: task id
+        token: The token.
+        interval: Time between getting status in seconds. Defaults to 30.
+        tries: Maximum number of tries. Defaults to 2*60*24.
+
+    Raises:
+        TimeoutError: When task does not complete within tries*interval seconds.
+    """
+    for _i in range(tries):
+        status = _get_task_status(task, token)
+        if status == "done":
             return
+        # TODO also bailout for error status
         sleep(interval)
     raise TimeoutError(
-        f"Task {task} did not complete within {timeout * interval} seconds"
+        f"Task {task} did not complete within {tries * interval} seconds"
     )
 
 
-class BundleFile(BaseModel):
+class _BundleFile(BaseModel):
     id: str = Field(alias="file_id")
     name: str = Field(alias="file_name")
     size: int = Field(alias="file_size")
@@ -393,10 +494,10 @@ class BundleFile(BaseModel):
         with open(output_dir / self.name, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        logger.warning("Downloaded %s to %s", self.name, self.output_dir)
+        logger.warning("Downloaded %s to %s", self.name, output_dir)
 
 
-def list_files(task: str, token: TokenInfo):
+def _list_files(task: str, token: TokenInfo):
     response = requests.get(
         "https://appeears.earthdatacloud.nasa.gov/api/bundle/{0}".format(task),
         headers={"Authorization": "Bearer {0}".format(token.token)},
@@ -404,4 +505,4 @@ def list_files(task: str, token: TokenInfo):
     response.raise_for_status()
     bundle_response = response.json()
     raw_files = bundle_response["files"]
-    return [BundleFile(**f) for f in raw_files]
+    return [_BundleFile(**f) for f in raw_files]

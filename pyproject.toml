@@ -62,6 +62,7 @@ dev = [
   "reuse",
   "ruff",
   "types-pyyaml", # https://github.com/python/mypy/issues/10632
+  "types-requests",
 ]
 docs = [
   "mkdocs>=1.4.2",

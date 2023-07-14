@@ -6,8 +6,10 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence, Tuple
+from typing import NamedTuple, Sequence, Tuple, Union
+import pandas as pd
 
+import xarray as xr
 import geopandas as gpd
 from pydantic import BaseModel, PositiveInt, validator, PrivateAttr
 from shapely.geometry import Polygon
@@ -22,6 +24,15 @@ class BoundingBox(NamedTuple):
     ymin: float
     xmax: float
     ymax: float
+
+    @classmethod
+    def from_points(points: Sequence[Tuple[float, float]]):
+        return BoundingBox(
+            xmin=min(map(lambda p: p[0], points)),
+            ymin=min(map(lambda p: p[1], points)),
+            xmax=max(map(lambda p: p[0], points)),
+            ymax=max(map(lambda p: p[1], points)),
+        )
 
 
 class NamedArea(BaseModel):
@@ -63,6 +74,8 @@ class PointsFromOther(BaseModel):
     def __len__(self):
         return len(self._points)
 
+
+Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
 
 # date range of years
 class YearRange(NamedTuple):
@@ -262,3 +275,16 @@ def resample(df, freq="month", operator="mean", column="datetime"):
     )
 
     return gpd.GeoDataFrame(new_df)
+
+def points_from_cube(ds: xr.Dataset, points: Points) -> pd.DataFrame:
+    lons = xr.DataArray([p[0] for p in points], dims="points_index")
+    lats = xr.DataArray([p[1] for p in points], dims="points_index")
+    points_df = gpd.GeoDataFrame(
+        geometry=gpd.points_from_xy(lons, lats)
+    ).reset_index(names="points_index")
+    df = ds.sel(
+        longitude=lons,
+        latitude=lats,
+        method="nearest",
+    ).to_dataframe().reset_index()
+    return df.merge(points_df, on="points_index", how="right")

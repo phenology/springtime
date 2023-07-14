@@ -235,7 +235,7 @@ class EOBSMultiplePoints(EOBS):
     """
 
     dataset: Literal["EOBSMultiplePoints"] = "EOBSMultiplePoints"
-    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
+    points: Points
     """Points as longitude, latitude in WGS84 projection."""
     keep_grid_location: bool = False
     """If True, keep the eobs_longitude and eobs_lantitude columns.

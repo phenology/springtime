@@ -58,7 +58,7 @@ class RPPO(Dataset):
     @property
     def path(self):
         fn = self._build_filename()
-        return CONFIG.data_dir / "PPO" / fn
+        return CONFIG.cache_dir / "PPO" / fn
 
     def download(self):
         if self.path.exists():

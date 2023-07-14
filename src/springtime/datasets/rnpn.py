@@ -14,10 +14,10 @@ from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, NamedIdentifiers, run_r_script
 
 request_source = "Springtime user https://github.com/springtime/springtime"
-data_dir = CONFIG.data_dir / "rnpn"
-species_file = data_dir / "species.csv"
-phenophases_file = data_dir / "phenophases.csv"
-stations_file = data_dir / "stations.csv"
+cache_dir = CONFIG.cache_dir / "rnpn"
+species_file = cache_dir / "species.csv"
+phenophases_file = cache_dir / "phenophases.csv"
+stations_file = cache_dir / "stations.csv"
 
 
 class SpeciesByFunctionalType(BaseModel):
@@ -112,7 +112,7 @@ class RNPN(Dataset):
         if self.area is not None:
             parts.append(self.area.name)
         rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
-        return data_dir / rnpn_filename
+        return cache_dir / rnpn_filename
 
     def load(self):
         """Load the dataset into memory."""
@@ -137,7 +137,7 @@ class RNPN(Dataset):
             TimeoutError: If requests still fails after 3 attempts.
 
         """
-        data_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents=True, exist_ok=True)
 
         for year in self.years.range:
             filename = self._filename(year)
@@ -178,7 +178,7 @@ def npn_species():
         Pandas dataframe with species_id and other species related fields.
     """
     if not species_file.exists() or CONFIG.force_override:
-        data_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents=True, exist_ok=True)
         script = f"""\
             library(rnpn)
             # species_type column has nested df, which can not be converted, so drop it
@@ -197,7 +197,7 @@ def npn_phenophases():
         Pandas dataframe with phenophase_id and other phenophase related fields.
     """
     if not phenophases_file.exists() or CONFIG.force_override:
-        data_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents=True, exist_ok=True)
         script = f"""\
             library(rnpn)
             df = npn_phenophases()
@@ -215,7 +215,7 @@ def npn_stations():
         Pandas dataframe with station_id and other station related fields.
     """
     if not stations_file.exists() or CONFIG.force_override:
-        data_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents=True, exist_ok=True)
         script = f"""\
             library(rnpn)
             df = npn_stations()

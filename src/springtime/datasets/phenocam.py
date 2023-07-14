@@ -20,7 +20,7 @@ from springtime.utils import NamedArea
 
 logger = logging.getLogger(__file__)
 
-phenocam_data_dir = CONFIG.data_dir / "phenocam"
+phenocam_cache_dir = CONFIG.cache_dir / "phenocam"
 
 # variables with "flag" in their names are removed from the list below because
 # their values might be NaN.
@@ -81,7 +81,7 @@ class Phenocam(Dataset):
         if self.frequency != "roistats":
             freq = f"{self.frequency}day"
         return (
-            phenocam_data_dir
+            phenocam_cache_dir
             / f"{row.site}_{row.veg_type}_{row.roi_id_number:04}_{freq}.csv"
         )
 
@@ -95,7 +95,7 @@ class Phenocam(Dataset):
         df = geopandas.GeoDataFrame(df, geometry=df.geometry)
         df.rename(columns={"date": "datetime"}, inplace=True)
         # Do not return variables that are not derived from image data
-        # to get raw file see phenocam_data_dir directory.
+        # to get raw file see phenocam_cache_dir directory.
         non_derived_variables = {
             # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
             "date",
@@ -151,10 +151,10 @@ class PhenocamrSite(Phenocam):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
-        phenocam_data_dir.mkdir(parents=True, exist_ok=True)
+        phenocam_cache_dir.mkdir(parents=True, exist_ok=True)
         optional_args = dict()
         if self.veg_type is not None:
             optional_args["veg_type"] = self.veg_type
@@ -168,7 +168,7 @@ class PhenocamrSite(Phenocam):
                 site=self.site,
                 frequency=self.frequency,
                 internal=False,
-                out_dir=str(phenocam_data_dir),
+                out_dir=str(phenocam_cache_dir),
                 **optional_args,
             )
 
@@ -243,7 +243,7 @@ class PhenocamrBoundingBox(Phenocam):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         if self._exists_locally(self._locations()) or CONFIG.force_override:
@@ -283,7 +283,7 @@ def _rdf2pandasdf(r_df) -> pd.DataFrame:
         return ro.conversion.get_conversion().rpy2py(r_df)
 
 
-sites_file = phenocam_data_dir / "site_meta_data.csv"
+sites_file = phenocam_cache_dir / "site_meta_data.csv"
 
 
 def list_sites() -> geopandas.GeoDataFrame:
@@ -309,7 +309,7 @@ def _download_sites():
     sites.to_csv(sites_file, index=False)
 
 
-rois_file = phenocam_data_dir / "roi_data.csv"
+rois_file = phenocam_cache_dir / "roi_data.csv"
 
 
 def list_rois():

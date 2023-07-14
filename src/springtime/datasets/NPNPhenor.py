@@ -136,7 +136,24 @@ class NPNPhenor(Dataset):
 
 
 def npn_species(species=ro.NULL, list=True):
-    """List the available species."""
+    """List the available species.
+
+    Examples:
+
+        # >>> pd.set_option('display.width', None)
+        # >>> pd.set_option("display.max_columns", 7)
+        # >>> pd.set_option("display.max_colwidth", 20)
+        >>> df = npn_species()
+        >>> df.head()
+           species_id         common_name         genus  ...  family_id  family_name  family_common_name
+        1         120        'ohi'a lehua  Metrosideros  ...        301    Myrtaceae       Myrtle Family
+        2        1436          absinthium     Artemisia  ...        242   Asteraceae        Aster Family
+        3        1227  Acadian flycatcher     Empidonax  ...        154   Tyrannidae  Tyrant Flycatchers
+        4        1229    acorn woodpecker    Melanerpes  ...        158      Picidae         Woodpeckers
+        5        2110        Adam and Eve     Aplectrum  ...        307  Orchidaceae       Orchid Family
+        <BLANKLINE>
+        [5 rows x 18 columns]
+    """
     phenor = importr("phenor")
     r_df = phenor.check_npn_species(species=species, list=list)
     return ro.pandas2ri.rpy2py_dataframe(r_df)

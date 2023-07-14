@@ -48,6 +48,7 @@ dependencies = [
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
   "merf@git+https://github.com/phenology/merf.git",
+  "xdg-base-dirs",
 ]
 dynamic = ["version"]
 

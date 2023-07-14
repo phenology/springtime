@@ -91,12 +91,14 @@ class DaymetSinglePoint(Daymet):
         """Path to downloaded file."""
         location_name = f"{self.point[0]}_{self.point[1]}"
         time_stamp = f"{self.years.start}_{self.years.end}"
-        return CONFIG.data_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
+        return (
+            CONFIG.cache_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
+        )
 
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         if not self._path.exists() or CONFIG.force_override:
@@ -141,7 +143,7 @@ class DaymetSinglePoint(Daymet):
             lon = {self.point[0]},
             start = {self.years.start},
             end =  {self.years.end},
-            path="{CONFIG.data_dir}",
+            path="{CONFIG.cache_dir}",
             internal = FALSE)
         """
 
@@ -187,7 +189,7 @@ class DaymetMultiplePoints(Daymet):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         for handler in self._handlers:
@@ -275,7 +277,7 @@ class DaymetBoundingBox(Daymet):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         box_dir_exists = self._box_dir.exists()
@@ -337,5 +339,5 @@ class DaymetBoundingBox(Daymet):
 
         For each variable/year combination."""
         return (
-            CONFIG.data_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
+            CONFIG.cache_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
         )

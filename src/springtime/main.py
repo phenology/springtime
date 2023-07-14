@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from datetime import datetime
 import logging
 from pathlib import Path
 from tempfile import gettempdir
@@ -12,6 +13,7 @@ import pandas as pd
 import geopandas as gpd
 import yaml
 from pydantic import BaseModel, Field, validator
+from springtime.config import CONFIG, Config as SpringtimeConfig
 
 from springtime.datasets import Datasets
 from springtime.experiment import (
@@ -37,6 +39,18 @@ class Session(BaseModel):
             print(f"Creating folder {path}")
             path.mkdir(parents=True)
         return path
+
+    @classmethod
+    def for_recipe(
+        cls,
+        recipe: Path,
+        output_dir: Path | None = None,
+        config: SpringtimeConfig = CONFIG,
+    ) -> "Session":
+        if output_dir is None:
+            now = datetime.now().isoformat()
+            output_dir = config.output_root_dir / f"springtime-{now}-{recipe.name}"
+        return cls(output_dir=output_dir)
 
     class Config:
         validate_all = True
@@ -85,8 +99,6 @@ class Workflow(BaseModel):
     experiment: RegressionExperiment | TSForecastingExperiment | None = Field(
         discriminator="experiment_type"
     )
-    recipe: Optional[Path] = None
-    session: Optional[Session] = None
 
     @classmethod
     def from_recipe(cls, recipe: Path):
@@ -95,11 +107,17 @@ class Workflow(BaseModel):
 
         return cls(**options)
 
-    def execute(self):
-        """(Down)load data, pre-process, run models, evaluate."""
-        self.create_session()
+    def save_recipe(self, path: Path):
+        """Save the workflow as a recipe file."""
 
-        dataframes = {}
+        with open(path, "w") as f:
+            yaml.dump(self.dict(), f)
+
+    def execute(self, session: Session):
+        """(Down)load data, pre-process, run models, evaluate."""
+        self.save_recipe(session.output_dir / "recipe.yaml")
+
+        dataframes: dict[str, pd.DataFrame] = {}
         # TODO check for dependencies to infer order
         for dataset_name, dataset in self.datasets.items():
             if hasattr(dataset, "points") and isinstance(
@@ -153,19 +171,12 @@ class Workflow(BaseModel):
             df = self.preparation.prepare(df)
 
         logger.warning(f"Datesets joined to shape: {df.shape}")
-        data_fn = self.session.output_dir / "data.csv"
+        data_fn = session.output_dir / "data.csv"
         df.to_csv(data_fn)
         logger.warning(f"Data saved to: {data_fn}")
 
         # TODO do something with datacubes
         self.run_experiments(df)
-
-    def create_session(self):
-        """Create a context for executing the experiment."""
-        # TDDO make session dir unique on each run
-        self.session = Session()
-        if self.recipe is not None:
-            self.recipe.copy(self.session.output_dir / "data.csv")
 
     def run_experiments(self, df):
         """Train and evaluate ML models."""
@@ -197,14 +208,33 @@ class Workflow(BaseModel):
             )
 
 
-def main(recipe):
-    Workflow.from_recipe(recipe).execute()
+def main(recipe, output_dir: Optional[Path]):
+    session = Session.for_recipe(recipe, output_dir)
+
+    Workflow.from_recipe(recipe).execute(session)
 
 
 @click.command
-@click.argument("recipe")
-def cli(recipe):
-    main(recipe)
+@click.argument("recipe", type=click.Path(exists=True))
+@click.option("--cache-dir", default=CONFIG.cache_dir, type=click.Path())
+@click.option("--output-dir", default=None, type=click.Path())
+@click.option("--output-root-dir", default=CONFIG.output_root_dir, type=click.Path())
+@click.option(
+    "--pep725-credentials-file",
+    default=CONFIG.pep725_credentials_file,
+    type=click.Path(exists=True),
+)
+def cli(
+    recipe: Path,
+    cache_dir: Path,
+    output_dir: Optional[Path],
+    output_root_dir: Path,
+    pep725_credentials_file: Path,
+):
+    CONFIG.cache_dir = cache_dir
+    CONFIG.output_root_dir = output_root_dir
+    CONFIG.pep725_credentials_file = pep725_credentials_file
+    main(recipe, output_dir)
 
 
 if __name__ == "__main__":

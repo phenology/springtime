@@ -50,7 +50,7 @@ class PyPhenologyDataset(Dataset):
         Should use a generic data reference sytax combined with a local
         filesystem configuration.
         """
-        return CONFIG.data_dir / f"pyphenology_{self.name}_{self.phenophase}.csv"
+        return CONFIG.cache_dir / f"pyphenology_{self.name}_{self.phenophase}.csv"
 
     def exists_locally(self) -> bool:
         """Tell if the data is already present on disk."""

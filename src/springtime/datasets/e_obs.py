@@ -122,7 +122,7 @@ class EOBS(Dataset):
 
     @property
     def _root_dir(self):
-        return CONFIG.data_dir / "e-obs"
+        return CONFIG.cache_dir / "e-obs"
 
     def _path(self, variable: Variable, period: str):
         return self._root_dir / self._filename(variable, period)

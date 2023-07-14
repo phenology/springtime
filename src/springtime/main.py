@@ -48,8 +48,8 @@ class Session(BaseModel):
         config: SpringtimeConfig = CONFIG,
     ) -> "Session":
         if output_dir is None:
-            now = datetime.now().isoformat()
-            output_dir = config.output_root_dir / f"springtime-{recipe.name}-{now}"
+            now = datetime.now().strftime("%Y%m%d-%H%M%S")
+            output_dir = config.output_root_dir / f"springtime-{recipe.stem}-{now}"
         return cls(output_dir=output_dir)
 
     class Config:

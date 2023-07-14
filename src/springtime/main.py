@@ -218,7 +218,9 @@ def main(recipe, output_dir: Optional[Path]):
 @click.argument("recipe", type=click.Path(exists=True, path_type=Path))
 @click.option("--cache-dir", default=CONFIG.cache_dir, type=click.Path(path_type=Path))
 @click.option("--output-dir", default=None, type=click.Path(path_type=Path))
-@click.option("--output-root-dir", default=CONFIG.output_root_dir, type=click.Path(path_type=Path))
+@click.option(
+    "--output-root-dir", default=CONFIG.output_root_dir, type=click.Path(path_type=Path)
+)
 @click.option(
     "--pep725-credentials-file",
     default=CONFIG.pep725_credentials_file,

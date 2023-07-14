@@ -67,6 +67,7 @@ class AppeearsArea(Appeears):
     Credentials are read from `~/.config/springtime/credentials.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
+
     dataset: Literal["appeears_area"] = "appeears_area"
     area: NamedArea
 
@@ -99,16 +100,19 @@ class AppeearsArea(Appeears):
 class AppeearsPointsFromArea(Appeears):
     """MODIS land products subsets using AppEEARS by points from an area of interest.
 
-    First the bounding box of area is downloaded and then points are selected from the area.
+    First the bounding box of area is downloaded and
+    then points are selected from the area.
+
+    This class could be quicker then AppeearsPoints
+    if the amount of points is large and in a small area.
 
     https://appeears.earthdatacloud.nasa.gov/
 
     Credentials are read from `~/.config/springtime/credentials.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
-    dataset: Literal[
-        "appeears_points_from_area"
-    ] = "appeears_points_from_area"
+
+    dataset: Literal["appeears_points_from_area"] = "appeears_points_from_area"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
     @property
@@ -151,6 +155,7 @@ class AppeearsPoints(Appeears):
     Credentials are read from `~/.config/springtime/credentials.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
+
     dataset: Literal["appeears_points"] = "appeears_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 

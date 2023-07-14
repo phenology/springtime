@@ -7,7 +7,6 @@ import time
 from functools import wraps
 from logging import getLogger
 from typing import NamedTuple, Sequence, Tuple, Union
-import pandas as pd
 
 import xarray as xr
 import geopandas as gpd
@@ -303,5 +302,7 @@ def points_from_cube(ds: xr.Dataset, points: Points) -> gpd.GeoDataFrame:
         .to_dataframe()
         .reset_index()
     )
-    df = df.merge(points_df, on="points_index", how="right").drop(['points_index', 'latitude', 'longitude'], axis=1)
+    df = df.merge(points_df, on="points_index", how="right").drop(
+        ["points_index", "latitude", "longitude"], axis=1
+    )
     return gpd.GeoDataFrame(df)

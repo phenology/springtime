@@ -208,7 +208,7 @@ def test_points_from_cube():
     time = pd.date_range("2000-01-01", periods=2)
     shape = (len(time), len(lats), len(lons))
     data1 = np.arange(np.prod(shape)).reshape(shape)
-    data2 = np.arange(np.prod(shape), 2 * np.prod(shape)).reshape(shape) + .5
+    data2 = np.arange(np.prod(shape), 2 * np.prod(shape)).reshape(shape) + 0.5
     ds = xr.Dataset(
         data_vars={
             "var1": (["time", "latitude", "longitude"], data1),

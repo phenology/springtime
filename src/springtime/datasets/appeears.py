@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Springtime authors
+#
+# SPDX-License-Identifier: Apache-2.0
 from datetime import datetime
 from hashlib import sha1
 import json

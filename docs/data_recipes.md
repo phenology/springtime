@@ -48,9 +48,3 @@ Note that a "recipe" is a file with `yaml` extension.
     ```yaml
     {% include "../tests/recipes/ppo.yaml" %}
     ```
-
-
-??? example "PyPhenology recipe"
-    ```yaml
-    {% include "../tests/recipes/pyphenology.yaml" %}
-    ```

@@ -11,7 +11,7 @@ from springtime.main import Workflow, cli, main
 
 
 @pytest.mark.skip(
-    reason="PyPhenologyDataset does not return geometry and datetime columns yet"
+    reason="After dropping pyphenology (#116) we need new sample data"
 )
 def test_workflow():
     w = Workflow(
@@ -30,7 +30,7 @@ def test_workflow():
 
 
 @pytest.mark.skip(
-    reason="PyPhenologyDataset does not return geometry and datetime columns yet"
+    reason="After dropping pyphenology (#116) we need new sample data"
 )
 def test_main():
     file = "tests/recipes/pyphenology.yaml"
@@ -40,6 +40,8 @@ def test_main():
 def test_cli():
     runner = CliRunner()
     runner.invoke(cli, ["--help"])
-    runner.invoke(cli, ["--recipe", "tests/recipes/pyphenology.yaml"])
     subprocess.run("springtime --help", shell=True)
-    subprocess.run("springtime tests/recipes/pyphenology.yaml", shell=True)
+
+    # TODO after dropping pyphenology (#116) we need new sample data
+    # runner.invoke(cli, ["--recipe", "tests/recipes/pyphenology.yaml"])
+    # subprocess.run("springtime tests/recipes/pyphenology.yaml", shell=True)

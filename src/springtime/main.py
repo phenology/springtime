@@ -49,7 +49,7 @@ class Session(BaseModel):
     ) -> "Session":
         if output_dir is None:
             now = datetime.now().isoformat()
-            output_dir = config.output_root_dir / f"springtime-{now}-{recipe.name}"
+            output_dir = config.output_root_dir / f"springtime-{recipe.name}-{now}"
         return cls(output_dir=output_dir)
 
     class Config:
@@ -215,10 +215,10 @@ def main(recipe, output_dir: Optional[Path]):
 
 
 @click.command
-@click.argument("recipe", type=click.Path(exists=True))
-@click.option("--cache-dir", default=CONFIG.cache_dir, type=click.Path())
-@click.option("--output-dir", default=None, type=click.Path())
-@click.option("--output-root-dir", default=CONFIG.output_root_dir, type=click.Path())
+@click.argument("recipe", type=click.Path(exists=True, path_type=Path))
+@click.option("--cache-dir", default=CONFIG.cache_dir, type=click.Path(path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(path_type=Path))
+@click.option("--output-root-dir", default=CONFIG.output_root_dir, type=click.Path(path_type=Path))
 @click.option(
     "--pep725-credentials-file",
     default=CONFIG.pep725_credentials_file,

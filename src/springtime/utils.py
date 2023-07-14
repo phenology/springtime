@@ -278,7 +278,7 @@ def resample(df, freq="month", operator="mean", column="datetime"):
     return gpd.GeoDataFrame(new_df)
 
 
-def points_from_cube(ds: xr.Dataset, points: Points) -> pd.DataFrame:
+def points_from_cube(ds: xr.Dataset, points: Points) -> gpd.GeoDataFrame:
     """From a cube, extract the values at the given points.
 
     Args:
@@ -287,6 +287,7 @@ def points_from_cube(ds: xr.Dataset, points: Points) -> pd.DataFrame:
 
     Returns:
         Dataframe with columns for each point and each variable in the dataset.
+        The points are in the geometry column.
     """
     lons = xr.DataArray([p[0] for p in points], dims="points_index")
     lats = xr.DataArray([p[1] for p in points], dims="points_index")
@@ -302,4 +303,5 @@ def points_from_cube(ds: xr.Dataset, points: Points) -> pd.DataFrame:
         .to_dataframe()
         .reset_index()
     )
-    return df.merge(points_df, on="points_index", how="right")
+    df = df.merge(points_df, on="points_index", how="right").drop(['points_index', 'latitude', 'longitude'], axis=1)
+    return gpd.GeoDataFrame(df)

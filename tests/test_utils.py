@@ -1,15 +1,16 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import geopandas as gpd
+import pytest
+import xarray as xr
 from geopandas.testing import assert_geodataframe_equal
 from numpy.testing import assert_array_equal
-import pytest
 from shapely.geometry import Point
 
-from springtime.utils import rolling_mean, transponse_df, resample
+from springtime.utils import points_from_cube, resample, rolling_mean, transponse_df
 
 
 def test_join_spatiotemporal_same_geometry():
@@ -198,3 +199,46 @@ def test_resample_monthly(sample_df):
     assert len(resampled) == 24
     assert_array_equal(resampled.month.unique(), np.arange(12) + 1)
     assert_array_equal(resampled.year.unique(), np.array([2010, 2011]))
+
+
+def test_points_from_cube():
+    # create a test dataset
+    lons = np.arange(-180, 180, 20)
+    lats = np.arange(-90, 90, 20)
+    time = pd.date_range("2000-01-01", periods=2)
+    shape = (len(time), len(lats), len(lons))
+    data1 = np.arange(np.prod(shape)).reshape(shape)
+    data2 = np.arange(np.prod(shape), 2 * np.prod(shape)).reshape(shape) + .5
+    ds = xr.Dataset(
+        data_vars={
+            "var1": (["time", "latitude", "longitude"], data1),
+            "var2": (["time", "latitude", "longitude"], data2),
+        },
+        coords={"longitude": lons, "latitude": lats, "time": time},
+    )
+
+    # create some test points
+    points = [(0, 0), (10, 10), (-20, 30), (100, -50)]
+
+    result = points_from_cube(ds, points)
+
+    expected = gpd.GeoDataFrame(
+        {
+            "time": [pd.Timestamp("2000-01-01"), pd.Timestamp("2000-01-02")] * 4,
+            "var1": [99, 261, 100, 262, 116, 278, 50, 212],
+            "var2": [423.5, 585.5, 424.5, 586.5, 440.5, 602.5, 374.5, 536.5],
+            "geometry": gpd.GeoSeries(
+                [
+                    Point(0, 0),
+                    Point(0, 0),
+                    Point(10, 10),
+                    Point(10, 10),
+                    Point(-20, 30),
+                    Point(-20, 30),
+                    Point(100, -50),
+                    Point(100, -50),
+                ]
+            ),
+        }
+    )
+    pd.testing.assert_frame_equal(result, expected)

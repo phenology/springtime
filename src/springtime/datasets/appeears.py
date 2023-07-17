@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
-from datetime import datetime
+from datetime import datetime, timezone
 from hashlib import sha1
 import json
 from pathlib import Path
@@ -11,13 +11,13 @@ from typing import Literal, Optional, Sequence, Tuple, Union
 import requests
 import geopandas
 import pandas as pd
+from shapely import to_geojson
 import xarray as xr
 from pydantic import BaseModel, Field, conset
 import logging
-from springtime.config import CONFIG
+from springtime.config import CONFIG, CONFIG_DIR
 from springtime.datasets.abstract import Dataset
 from springtime.utils import (
-    BoundingBox,
     NamedArea,
     Points,
     PointsFromOther,
@@ -34,30 +34,53 @@ class TokenInfo(BaseModel):
     expiration: datetime
 
 
+# TODO add ability to load data from a task identifier,
+# now you need to run the dowlnoad() completely online
+# would be nice to submit tasks and once they are done,
+# download the data
+
+
 class Appeears(Dataset):
     product: str
-    """An AρρEEARS product name.
-
-    Use `products()` to get a list of currently available in AρρEEARS.
+    """An AppEEARS product name.
+    
+    Use `products()` to get a list of currently available in AppEEARS.
     """
+    # TODO make optional, if not given, use latest version
+    version: str
+    """An AppEEARS product version."""
     layers: conset(str, min_items=1)  # type: ignore
-    """Layers of a AρρEEARS product.
+    # TOD rename to variables or bands?
+    """Layers of a AppEEARS product.
 
     Use `layers(product)` to get list of available layers for a product.
     """
     _token: Optional[TokenInfo] = None
 
+    # TODO drop when pydantic v2 is used, as it will be default
+    class Config:
+        underscore_attrs_are_private = True
+
     def _check_token(self):
+        token_fn = CONFIG.cache_dir / "appeears" / "token.json"
+        if token_fn.exists():
+            body = json.loads(token_fn.read_text())
+            self._token = TokenInfo(**body)
         if self._token is None:
+            print("L:ogin")
             username, password = _read_credentials()
-            self._token = self._login(username, password)
-        if self._token.expiration < datetime.now():
-            self._token = self._login(username, password)
+            self._token = _login(username, password)
+            token_fn.write_text(self._token.json())
+        if self._token.expiration < datetime.now(timezone.utc):
+            username, password = _read_credentials()
+            self._token = _login(username, password)
+            logger.info("Token expired, logging in again")
+            token_fn.write_text(self._token.json())
 
     @property
     def output_dir(self):
         """Output directory for downloaded data."""
-        d = CONFIG.data_dir / "appeears"
+        d = CONFIG.cache_dir / "appeears"
         d.mkdir(exist_ok=True, parents=True)
         return d
 
@@ -71,19 +94,30 @@ class AppeearsArea(Appeears):
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 
-    dataset: Literal["appeears_area"] = "appeears_area"
+    dataset: str = "appeears_area"
     area: NamedArea
 
     @property
     def _path(self):
-        return f"{self.area.name}-results.nc"
+        # MCD15A2H.061_500m_aid0001.nc
+        resolution = list(self.layers)[0].split("_")[1]
+        return f"{self.product}.{self.version}_{resolution}_aid0001.nc"
+
+    @property
+    def output_dir(self):
+        d = super().output_dir / self.area.name
+        d.mkdir(exist_ok=True, parents=True)
+        return d
 
     def download(self):
-        self._check_token()
-        if (self.output_dir / self._path).exists():
+        fn = self.output_dir / self._path
+        if (fn).exists():
+            logger.warning(f"File {fn} exists, not downloading again")
             return
+        self._check_token()
         task = _submit_area_task(
             product=self.product,
+            version=self.version,
             area=self.area,
             layers=self.layers,
             years=self.years,
@@ -93,14 +127,15 @@ class AppeearsArea(Appeears):
         logger.warning(f"Task {task} completed")
         files = _list_files(task, token=self._token)
         for file in files:
-            if self.area.name == self._path:
+            if file.name == self._path:
                 file.download(task, self.output_dir, token=self._token)
 
     def load(self):
-        return xr.open_dataset(self.output_dir / self._path)
+        ds = xr.open_dataset(self.output_dir / self._path)
+        return ds
 
 
-class AppeearsPointsFromArea(Appeears):
+class AppeearsPointsFromArea(AppeearsArea):
     """MODIS land products subsets using AppEEARS by points from an area of interest.
 
     First the bounding box of area is downloaded and
@@ -116,38 +151,21 @@ class AppeearsPointsFromArea(Appeears):
     """
 
     dataset: Literal["appeears_points_from_area"] = "appeears_points_from_area"
+    # TODO when area is not given use bounding box of points
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
-    @property
-    def _points_hash(self):
-        return sha1(json.dumps(self.area.dict()).encode("utf-8")).hexdigest()
-
-    @property
-    def _area(self):
-        return NamedArea(
-            name=self._points_hash,
-            bbox=BoundingBox.from_points(self.points),
-        )
-
-    @property
-    def _path(self):
-        return f"{self._area.name}*-results.nc"
-
-    @property
-    def source(self):
-        return AppeearsArea(
-            product=self.product,
-            area=self._area,
-            layers=self.layers,
-            years=self.years,
-        )
-
-    def download(self):
-        self.source.download()
-
     def load(self):
-        ds = self.source.load()
-        return points_from_cube(ds, self.points)
+        ds = super().load()
+        # Convert cftime.DatetimeJulian to datetime.datetime
+        datetimeindex = ds.indexes["time"].to_datetimeindex()
+        ds["time"] = datetimeindex
+        # Coords are in geometric projection no need for crs variable
+        ds = ds.drop_vars(["crs"])
+        df = points_from_cube(ds, self.points)
+        # Drop QC variables
+        df = df.filter(regex="^(?!.*_QC$)")
+        df.rename({"time": "datetime"}, axis=1, inplace=True)
+        return df
 
 
 class AppeearsPoints(Appeears):
@@ -174,11 +192,10 @@ class AppeearsPoints(Appeears):
         )
 
     def _path(self, points: Points):
-        return f"{self._task_name(points)}-results.csv"
+        chunk = f"{self._task_name(points)}-{self.product}-{self.version}"
+        return f"{chunk}-results.csv".replace("_", "-")
 
     def download(self):
-        self._check_token()
-
         # api can not handle more than 500 points (of 1 product, 2 layers)
         # at once so we split the points into chunks
         points_chunks = [
@@ -195,10 +212,14 @@ class AppeearsPoints(Appeears):
             layers=self.layers,
             years=self.years,
         )
-        if (self.output_dir / self._path(points)).exists():
+        fn = self.output_dir / self._path(points)
+        if fn.exists():
+            logger.warning(f"File {fn} already downloaded")
             return
+        self._check_token()
         task = _submit_point_task(
             product=self.product,
+            version=self.version,
             points=points,
             layers=self.layers,
             years=self.years,
@@ -209,10 +230,11 @@ class AppeearsPoints(Appeears):
         _poll_task(task, token=self._token)
         logger.warning(f"Task {task} completed")
         files = _list_files(task, token=self._token)
-        logger.warning(f"Downloading {files} files")
 
+        logger.warning(f"Looking for file {self._path(points)}")
         for file in files:
-            if task_name in file.name and file.name.endswith("-results.csv"):
+            if file.name == self._path(points):
+                logger.warning(f"Downloading {file.name}")
                 file.download(task, self.output_dir, token=self._token)
 
     def load(self):
@@ -222,26 +244,41 @@ class AppeearsPoints(Appeears):
         ]
         dfs = []
         renames = {
-            "Latitude": "latitude",
-            "Longitude": "longitude",
+            "Date": "datetime",
         }
+        for layer in self.layers:
+            # Only keep requested layers
+            renames[f"{self.product}_{self.version}_{layer}"] = layer
+            # MCD12Q2.061 returned 2 columns per layer
+            renames[f"{self.product}_{self.version}_{layer}_0"] = f"{layer}_0"
+            renames[f"{self.product}_{self.version}_{layer}_1"] = f"{layer}_1"
+            # Handle when layer consists out of even more columns
+
+        raw_columns2keep = ["Latitude", "Longitude"] + list(renames.keys())
+
         for points_chunk in points_chunks:
             file = self.output_dir / self._path(points_chunk)
-            if file is None:
+            if not file.exists():
                 raise FileNotFoundError(file)
-            df = pd.read_csv(file)
-            df = df[df.renames.keys()]
+            df = pd.read_csv(file, parse_dates=["Date"])
+            columms2keep = filter(lambda x: x in raw_columns2keep, df.columns)
+            df = df[columms2keep]
             df = df.rename(columns=renames)
             dfs.append(df)
         df = pd.concat(dfs)
-        return geopandas.gpd.GeoDataFrame(
-            df, geometry=geopandas.points_from_xy(df.longitude, df.latitude)
+        gdf = geopandas.gpd.GeoDataFrame(
+            df,
+            geometry=geopandas.points_from_xy(
+                df.pop("Longitude"),
+                df.pop("Latitude"),
+            ),
         )
+        return gdf
 
 
 def _read_credentials():
     # TODO get config dir from session
-    config_dir = Path("~/.config/springtime").expanduser()
+    config_dir = CONFIG_DIR
     config_file = config_dir / "appeears.json"
     if not config_file.exists():
         raise FileNotFoundError(f"{config_file} config file not found")
@@ -255,7 +292,7 @@ def _login(username, password):
         auth=(username, password),
     )
     response.raise_for_status()
-    return TokenInfo(response.json())
+    return TokenInfo(**response.json())
 
 
 class ProductInfo(BaseModel):
@@ -359,11 +396,12 @@ def _generate_task_name(
     layers: Sequence[str],
     years: YearRange,
 ):
-    return f"{product}_{years.start}_{years.end}_{layers}_{points}"
+    return f"{product}_{years.start}_{years.end}_{'_'.join(sorted(layers))}_{points}"
 
 
 def _submit_point_task(
     product: str,
+    version: str,
     points: Points,
     layers: Sequence[str],
     years: YearRange,
@@ -376,13 +414,17 @@ def _submit_point_task(
         "task_type": "point",
         "task_name": name,
         "params": {
-            "dates": {
-                "startDate": "01-01",
-                "endDate": "12-31",
-                "recurring": True,
-                "yearRange": [years.start, years.end],
-            },
-            "layers": [{"product": product, "layer": layer} for layer in layers],
+            "dates": [
+                {
+                    "startDate": "01-01",
+                    "endDate": "12-31",
+                    "recurring": True,
+                    "yearRange": [years.start, years.end],
+                }
+            ],
+            "layers": [
+                {"product": f"{product}.{version}", "layer": layer} for layer in layers
+            ],
             "coordinates": [
                 {
                     "longitude": p[0],
@@ -396,7 +438,7 @@ def _submit_point_task(
     response = requests.post(
         "https://appeears.earthdatacloud.nasa.gov/api/task",
         json=task,
-        headers={"Authorization": "Bearer {0}".format(token)},
+        headers={"Authorization": "Bearer {0}".format(token.token)},
     )
     response.raise_for_status()
     task_response = response.json()
@@ -405,29 +447,36 @@ def _submit_point_task(
 
 def _submit_area_task(
     product: str,
+    version: str,
     area: NamedArea,
     layers: Sequence[str],
     years: YearRange,
     token: TokenInfo,
 ):
+    geometry = json.loads(to_geojson(area.polygon))
     task = {
         "task_type": "area",
         "task_name": area.name,
         "params": {
-            "dates": {
-                "startDate": "01-01",
-                "endDate": "12-31",
-                "recurring": True,
-                "yearRange": [years.start, years.end],
-            },
-            "layers": [{"product": product, "layer": layer} for layer in layers],
+            "dates": [
+                {
+                    "startDate": "01-01",
+                    "endDate": "12-31",
+                    "recurring": True,
+                    "yearRange": [years.start, years.end],
+                }
+            ],
+            "layers": [
+                {"product": f"{product}.{version}", "layer": layer} for layer in layers
+            ],
             "output": {"projection": "geographic", "format": {"type": "netcdf4"}},
             "geo": {
                 "type": "FeatureCollection",
                 "features": [
                     {
                         "type": "Feature",
-                        "geometry": {"type": "Polygon", "coordinates": area.polygon},
+                        "geometry": geometry,
+                        "properties": {},
                     }
                 ],
             },
@@ -436,10 +485,14 @@ def _submit_area_task(
     response = requests.post(
         "https://appeears.earthdatacloud.nasa.gov/api/task",
         json=task,
-        headers={"Authorization": "Bearer {0}".format(token)},
+        headers={"Authorization": "Bearer {0}".format(token.token)},
     )
     response.raise_for_status()
     task_response = response.json()
+    logger.warning(
+        "Submitted task https://appeears.earthdatacloud.nasa.gov/view/%s",
+        task_response["task_id"],
+    )
     return task_response["task_id"]
 
 
@@ -454,7 +507,9 @@ def _get_task(task: str, token: TokenInfo):
 
 
 def _get_task_status(task: str, token: TokenInfo):
-    _get_task(task, token)["status"]
+    # TODO get more detailed status
+    # from https://appeears.earthdatacloud.nasa.gov/api/#task-status
+    return _get_task(task, token)["status"]
 
 
 # TODO make interval and tries settable when called. From config?
@@ -465,13 +520,16 @@ def _poll_task(task: str, token: TokenInfo, interval=30, tries=2 * 60 * 24):
         task: task id
         token: The token.
         interval: Time between getting status in seconds. Defaults to 30.
-        tries: Maximum number of tries. Defaults to 2*60*24.
+        tries: Maximum number of tries.
+            Defaults to 2*60*24 aka every 30 seconds for 24 hours.
 
     Raises:
         TimeoutError: When task does not complete within tries*interval seconds.
     """
     for _i in range(tries):
+        # TODO check that token is still valid, refresh if not
         status = _get_task_status(task, token)
+        logging.warning("Task %s has status %s", task, status)
         if status == "done":
             return
         # TODO also bailout for error status
@@ -490,7 +548,7 @@ class _BundleFile(BaseModel):
 
     def download(self, task, output_dir: Path, token: TokenInfo):
         response = requests.get(
-            "https://appeears.earthdatacloud.nasa.gov/api/bundle/{0}/file/{1}".format(
+            "https://appeears.earthdatacloud.nasa.gov/api/bundle/{0}/{1}".format(
                 task, self.id
             ),
             headers={"Authorization": "Bearer {0}".format(token.token)},
@@ -505,7 +563,7 @@ class _BundleFile(BaseModel):
         logger.warning("Downloaded %s to %s", self.name, output_dir)
 
 
-def _list_files(task: str, token: TokenInfo):
+def _list_files(task: str, token: TokenInfo) -> list[_BundleFile]:
     response = requests.get(
         "https://appeears.earthdatacloud.nasa.gov/api/bundle/{0}".format(task),
         headers={"Authorization": "Bearer {0}".format(token.token)},

@@ -8,7 +8,7 @@ datasets:
     species: Syringa vulgaris
     bbch: 60
     years: [2000, 2016] # currently observations are available till 2016
-    area:
+    area: &area
       name: Germany # from https://gist.github.com/graydon/11198540#file-country-bounding-boxes-py-L45
       bbox:
         # Smaller bbox for testing purposes.
@@ -38,16 +38,18 @@ datasets:
     resample:
       frequency: month
       operator: median
-  # modis:
-  #   dataset: modis_multiple_points
-  #   points:
-  #     source: pep_obs
-  #   years: [2000, 2016] # TODO don't duplicate
-  #   product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
-  #   bands: [Fpar_500m, Lai_500m] #8 days
-  #   resample:
-  #     frequency: month
-  #     operator: mean
+  modis:
+    dataset: appeears_points_from_area
+    area: *area
+    points:
+      source: pep_obs
+    years: [2000, 2016] # TODO don't duplicate
+    product: MOD15A2H # https://lpdaac.usgs.gov/products/mod15a2hv006/
+    version: '061'
+    layers: [Fpar_500m, Lai_500m] #8 days
+    resample:
+      frequency: month
+      operator: mean
 # # TODO if extent is not zero we need an aggregation
 # preparation:
 #   dropna: True

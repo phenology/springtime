@@ -211,10 +211,10 @@ def test_points_from_cube():
     data2 = np.arange(np.prod(shape), 2 * np.prod(shape)).reshape(shape) + 0.5
     ds = xr.Dataset(
         data_vars={
-            "var1": (["time", "latitude", "longitude"], data1),
-            "var2": (["time", "latitude", "longitude"], data2),
+            "var1": (["time", "lat", "lon"], data1),
+            "var2": (["time", "lat", "lon"], data2),
         },
-        coords={"longitude": lons, "latitude": lats, "time": time},
+        coords={"lon": lons, "lat": lats, "time": time},
     )
 
     # create some test points

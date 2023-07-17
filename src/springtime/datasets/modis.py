@@ -68,7 +68,7 @@ class ModisSinglePoint(Dataset):
         for band in self.bands:
             product_band = f"{self.product}_{band}"
             path = (
-                CONFIG.data_dir
+                CONFIG.cache_dir
                 / f"modis_{location_name}_{product_band}_{time_stamp}.csv"
             )
             paths.append(path)
@@ -77,7 +77,7 @@ class ModisSinglePoint(Dataset):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         some_paths_missing = any(not p.exists() for p in self._paths)
@@ -122,7 +122,7 @@ class ModisSinglePoint(Dataset):
                 km_lr = {self.extent.horizontal},
                 km_ab = {self.extent.vertical},
                 site_name = "modis_{self.point[0]}_{self.point[1]}",
-                out_dir="{CONFIG.data_dir }",
+                out_dir="{CONFIG.cache_dir }",
                 internal = FALSE,
                 progress = FALSE)
         """
@@ -166,7 +166,7 @@ class ModisMultiplePoints(Dataset):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         for handler in self._handlers:

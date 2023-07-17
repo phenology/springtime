@@ -66,7 +66,7 @@ class NPNPhenor(Dataset):
 
     @property
     def directory(self):
-        return CONFIG.data_dir / "NPN"
+        return CONFIG.cache_dir / "NPN"
 
     def _filename(self, year):
         """Path where files will be downloaded to and loaded from.

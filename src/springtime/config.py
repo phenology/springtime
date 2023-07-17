@@ -13,7 +13,7 @@ CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 class Config(BaseModel):
     cache_dir: Path = xdg_cache_home() / "springtime"
     output_root_dir: Path = Path(".")
-    pep725_credentials_file: Path = CONFIG_DIR / "pep725_credentials.txt"
+    pep725_credentials_file: Path | None = CONFIG_DIR / "pep725_credentials.txt"
     force_override: bool = False
 
     @validator("cache_dir")

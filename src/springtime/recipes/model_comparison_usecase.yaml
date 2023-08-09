@@ -41,7 +41,10 @@ datasets:
       frequency: month
       operator: mean
 # TODO if extent is not zero we need an aggregation
-dropna: True
+preparation:
+  dropna: True
+  derived:
+    latitude: True
 experiment:
   experiment_type: regression  # --> pycaret.regression.RegressionExperiment
   setup:
@@ -55,6 +58,9 @@ experiment:
     fold_shuffle: true
     session_id: 123  # control randomness for reproducibility
     index: False # Exclude year and geomentry columns
+    # categorical_features:
+    #   - site_id
+    # max_encoding_ohe: 250
 
   # create_model:
   #   estimator: lr
@@ -78,14 +84,25 @@ experiment:
       - 'rf'  # random forest regressor
       - 'sklearn.svm.SVR'
       - 'interpret.glassbox.ExplainableBoostingRegressor'
-    #   - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
-    # fit_kwargs:
-    #   merf.MERF:   # This won't work out of the box
-    #     fixed_effects: None  # "the rest" after removing cluster, random effects, and target columns
-    #     random_effects: ['tmax_365','tmin_365', 'prcp_365', 'srad_365', 'swe_365']
-    #     clusters: "site_id"
+      - merf.MERF  # Must be instantiated before passing to pycaret; how to specify args?
+    # fit_kwargs are given to each estimator.fit method
+    # so if estimator does not understand it crashes and is skipped.
+    fit_kwargs:
+      MERF:
+        fixed_effects: []  # "the rest" after removing cluster, random effects, and target columns
+        random_effects: []
+        cluster_column: "latitude"
     cross_validation: true
-    n_select: 2
+    n_select: 5
+    # errors: 'ignore'
+    # errors: 'raise'
+
+  # create_model:
+  #   estimator: 'merf.MERF'
+  #   fit_kwargs:
+  #       fixed_effects: ['Lai_500m_12']  # "the rest" after removing cluster, random effects, and target columns
+  #       random_effects: [ "tmin_2", "tmin_3", "tmin_3"]
+  #       cluster_column: "latitude"
 
   plots:
     - error

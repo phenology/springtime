@@ -4,7 +4,7 @@
 
 name: Run test recipe
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       recipe:
@@ -24,7 +24,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Conda environment from environment.yml
-      uses: mamba-org/provision-with-micromamba@main
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: '1.4.6-0'  # 1.4.7 has a bug
+        cache-environment: true
+        environment-file: environment.yml
+        create-args: >-
+          python=3.10
     - name: Install R dependencies
       run: |
         Rscript -e 'install.packages(c("daymetr", "rnpn"), repos = "http://cran.us.r-project.org")'

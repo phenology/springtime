@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
 
+from pathlib import Path
 from typing import Literal, Optional
 
 import geopandas
@@ -51,12 +52,12 @@ class PEP725Phenor(Dataset):
     area: Optional[NamedArea]
     bbch: int = 60
     """60 === Beginning of flowering"""
-    credential_file: str = "~/.config/pep725_credentials.txt"
+    credential_file: Path = CONFIG.pep725_credentials_file
 
     @property
     def location(self):
         """Path where files will be downloaded to and loaded from."""
-        species_dir = CONFIG.data_dir / "PEP725" / self.species
+        species_dir = CONFIG.cache_dir / "PEP725" / self.species
         return species_dir
 
     def exists_locally(self) -> bool:
@@ -109,7 +110,7 @@ class PEP725Phenor(Dataset):
         library(phenor)
         species_id <- phenor::check_pep725_species(species = "{self.species}")
         phenor::pr_dl_pep725(
-            credentials = "~/.config/pep725_credentials.txt",
+            credentials = "{self.credential_file}",
             species = species_id,
             path = "{self.location}",
             internal = FALSE

@@ -5,7 +5,7 @@
 
 import logging
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Sequence
 
 import geopandas
 import pandas as pd
@@ -20,10 +20,103 @@ from springtime.utils import NamedArea
 
 logger = logging.getLogger(__file__)
 
-phenocam_data_dir = CONFIG.data_dir / "phenocam"
+phenocam_cache_dir = CONFIG.cache_dir / "phenocam"
+
+# variables with "flag" in their names are removed from the list below because
+# their values might be NaN.
+PhenocamVariables = Literal[
+    "midday_r",
+    "midday_g",
+    "midday_b",
+    "midday_gcc",
+    "midday_rcc",
+    "r_mean",
+    "r_std",
+    "g_mean",
+    "g_std",
+    "b_mean",
+    "b_std",
+    "gcc_mean",
+    "gcc_std",
+    "gcc_50",
+    "gcc_75",
+    "gcc_90",
+    "rcc_mean",
+    "rcc_std",
+    "rcc_50",
+    "rcc_75",
+    "rcc_90",
+    "max_solar_elev",
+    "smooth_gcc_mean",
+    "smooth_gcc_50",
+    "smooth_gcc_75",
+    "smooth_gcc_90",
+    "smooth_rcc_mean",
+    "smooth_rcc_50",
+    "smooth_rcc_75",
+    "smooth_rcc_90",
+    "smooth_ci_gcc_mean",
+    "smooth_ci_gcc_50",
+    "smooth_ci_gcc_75",
+    "smooth_ci_gcc_90",
+    "smooth_ci_rcc_mean",
+    "smooth_ci_rcc_50",
+    "smooth_ci_rcc_75",
+    "smooth_ci_rcc_90",
+]
 
 
-class PhenocamrSite(Dataset):
+class Phenocam(Dataset):
+    veg_type: Optional[str]
+    """Vegetation type (DB, EN). Default is all."""
+    frequency: Literal["1", "3", "roistats"] = "3"
+    """Frequency of the time series product."""
+    variables: Sequence[PhenocamVariables] = tuple()
+    """variables you want to download. When empty will download all the
+    variables.
+    """
+
+    def _location(self, row: pd.Series) -> Path:
+        freq = "roistats"
+        if self.frequency != "roistats":
+            freq = f"{self.frequency}day"
+        return (
+            phenocam_cache_dir
+            / f"{row.site}_{row.veg_type}_{row.roi_id_number:04}_{freq}.csv"
+        )
+
+    def _exists_locally(self, locations) -> bool:
+        return all([location.exists() for location in locations])
+
+    def _to_geopandas(self, df):
+        sites = list_sites()
+        site_locations = sites[["site", "geometry"]]
+        df = df.merge(site_locations, on="site")
+        df = geopandas.GeoDataFrame(df, geometry=df.geometry)
+        df.rename(columns={"date": "datetime"}, inplace=True)
+        # Do not return variables that are not derived from image data
+        # to get raw file see phenocam_cache_dir directory.
+        non_derived_variables = {
+            # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
+            "date",
+            "year",
+            "doy",
+            "image_count",
+            "midday_filename",
+            # Columns added by phenocamr
+            "site",
+            # Columns added by us
+            "datetime",
+            "geometry",
+        }
+        variables = [var for var in df.columns if var not in non_derived_variables]
+        if self.variables:
+            # Drop columns that are not in self.variables
+            variables = list(self.variables)
+        return df[["datetime", "geometry"] + variables]
+
+
+class PhenocamrSite(Phenocam):
     """PhenoCam time series for site.
 
     Fetch data from https://phenocam.nau.edu/webcam/
@@ -52,48 +145,32 @@ class PhenocamrSite(Dataset):
     dataset: Literal["phenocam"] = "phenocam"
     site: str
     """Name of site. Append `$` to get exact match."""
-    veg_type: Optional[str]
-    """Vegetation type (DB, EN). Default is all."""
-    frequency: Literal["1", "3", "roistats"] = "3"
-    """Frequency of the time series product."""
     rois: Optional[List[int]]
     """The id of the ROI to download. Default is all ROIs at site."""
 
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
-        phenocam_data_dir.mkdir(parents=True, exist_ok=True)
+        phenocam_cache_dir.mkdir(parents=True, exist_ok=True)
         optional_args = dict()
         if self.veg_type is not None:
             optional_args["veg_type"] = self.veg_type
         if self.rois is not None:
             optional_args["roi_id"] = self.rois
         phenocamr = importr("phenocamr")
-        if self._exists_locally() or CONFIG.force_override:
+        if self._exists_locally(self._locations()) or CONFIG.force_override:
             logger.info(f"Phenocam files already downloaded {self._locations()}")
         else:
             phenocamr.download_phenocam(
                 site=self.site,
                 frequency=self.frequency,
                 internal=False,
-                out_dir=str(phenocam_data_dir),
+                out_dir=str(phenocam_cache_dir),
                 **optional_args,
             )
-
-    def _exists_locally(self) -> bool:
-        return all([location.exists() for location in self._locations()])
-
-    def _location(self, row: pd.Series) -> Path:
-        freq = "roistats"
-        if self.frequency != "roistats":
-            freq = f"{self.frequency}day"
-        return (
-            phenocam_data_dir
-            / f"{row.site}_{row.veg_type}_{row.roi_id_number:04}_{freq}.csv"
-        )
 
     def _locations(self) -> List[Path]:
         rois_df = list_rois()
@@ -113,10 +190,10 @@ class PhenocamrSite(Dataset):
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return _to_geopandas(df)
+        return self._to_geopandas(df)
 
 
-class PhenocamrBoundingBox(Dataset):
+class PhenocamrBoundingBox(Phenocam):
     """PhenoCam time series for sites in a bounding box.
 
     Fetch data from https://phenocam.nau.edu/webcam/
@@ -147,20 +224,6 @@ class PhenocamrBoundingBox(Dataset):
 
     dataset: Literal["phenocambbox"] = "phenocambbox"
     area: NamedArea
-    veg_type: Optional[str]
-    """Vegetation type (DB, EN). Default is all."""
-    frequency: Literal["1", "3", "roistats"] = "3"
-    """Frequency of the time series product."""
-
-    def _location(self, row: pd.Series) -> Path:
-        # TODO dont duplicate code
-        freq = "roistats"
-        if self.frequency != "roistats":
-            freq = f"{self.frequency}day"
-        return (
-            phenocam_data_dir
-            / f"{row.site}_{row.veg_type}_{row.roi_id_number:04}_{freq}.csv"
-        )
 
     def _selection(self):
         rois_df = list_rois()
@@ -177,16 +240,13 @@ class PhenocamrBoundingBox(Dataset):
     def _locations(self):
         return self._selection().apply(self._location, axis="columns")
 
-    def _exists_locally(self) -> bool:
-        return all([location.exists() for location in self._locations()])
-
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
-        if self._exists_locally() or CONFIG.force_override:
+        if self._exists_locally(self._locations()) or CONFIG.force_override:
             logger.info(f"Phenocam files already downloaded {self._locations()}")
         for site in self._selection().site.unique():
             fetcher = PhenocamrSite(
@@ -205,27 +265,7 @@ class PhenocamrBoundingBox(Dataset):
         """
         df = pd.concat([_load_location(location) for location in self._locations()])
         df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return _to_geopandas(df)
-
-
-def _to_geopandas(df):
-    sites = list_sites()
-    site_locations = sites[["site", "geometry"]]
-    df = df.merge(site_locations, on="site")
-    df = geopandas.GeoDataFrame(df, geometry=df.geometry)
-    df.rename(columns={"date": "datetime"}, inplace=True)
-    # Do not return variables that are not derived from image data
-    # to get raw file see phenocam_data_dir directory.
-    non_derived_variables = {
-        # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
-        'date','year','doy','image_count','midday_filename',
-        # Columns added by phenocamr
-        'site',
-        # Columns added by us
-        'datetime', 'geometry'
-    }
-    variables = [var for var in df.columns if var not in non_derived_variables]
-    return df[["datetime", "geometry"] + variables]
+        return self._to_geopandas(df)
 
 
 def _load_location(location: Path) -> pd.DataFrame:
@@ -243,7 +283,7 @@ def _rdf2pandasdf(r_df) -> pd.DataFrame:
         return ro.conversion.get_conversion().rpy2py(r_df)
 
 
-sites_file = phenocam_data_dir / "site_meta_data.csv"
+sites_file = phenocam_cache_dir / "site_meta_data.csv"
 
 
 def list_sites() -> geopandas.GeoDataFrame:
@@ -269,7 +309,7 @@ def _download_sites():
     sites.to_csv(sites_file, index=False)
 
 
-rois_file = phenocam_data_dir / "roi_data.csv"
+rois_file = phenocam_cache_dir / "roi_data.csv"
 
 
 def list_rois():

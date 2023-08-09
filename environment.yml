@@ -9,8 +9,10 @@ channels:
   - r
 dependencies:
   - pip!=21.3
-  - python==3.10
+  # - python==3.10  # breaks docker build; rather set outside environment
   - hatch
+  - git
+  - rpy2
   # R dependencies
   - r-base >=4.2
   # - r-BayesianTools   # not in any anconda channel

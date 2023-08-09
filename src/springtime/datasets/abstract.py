@@ -40,7 +40,7 @@ class Dataset(BaseModel, ABC):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
 

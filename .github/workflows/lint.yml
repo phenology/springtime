@@ -12,7 +12,7 @@ on:
 
 defaults:
   run:
-    shell: bash -l {0}
+    shell: bash -el {0}
 
 jobs:
   build:
@@ -22,7 +22,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Conda environment from environment.yml
-      uses: mamba-org/provision-with-micromamba@main
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: '1.4.6-0'  # 1.4.7 has a bug
+        cache-environment: true
+        environment-file: environment.yml
+        create-args: >-
+          python=3.10
     - name: Install R dependencies
       run: |
         Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'

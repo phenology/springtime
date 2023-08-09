@@ -43,7 +43,7 @@ class TokenInfo(BaseModel):
 class Appeears(Dataset):
     product: str
     """An AppEEARS product name.
-    
+
     Use `products()` to get a list of currently available in AppEEARS.
     """
     # TODO make optional, if not given, use latest version
@@ -90,7 +90,7 @@ class AppeearsArea(Appeears):
 
     https://appeears.earthdatacloud.nasa.gov/
 
-    Credentials are read from `~/.config/springtime/credentials.json`.
+    Credentials are read from `~/.config/springtime/appeears.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 
@@ -146,7 +146,7 @@ class AppeearsPointsFromArea(AppeearsArea):
 
     https://appeears.earthdatacloud.nasa.gov/
 
-    Credentials are read from `~/.config/springtime/credentials.json`.
+    Credentials are read from `~/.config/springtime/appeears.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 
@@ -173,7 +173,7 @@ class AppeearsPoints(Appeears):
 
     https://appeears.earthdatacloud.nasa.gov/
 
-    Credentials are read from `~/.config/springtime/credentials.json`.
+    Credentials are read from `~/.config/springtime/appeears.json`.
     JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 

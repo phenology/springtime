@@ -1,9 +1,56 @@
-/* h3.doc-heading {
-    background-color: aquamarine;
-} */
+/* Don't show cell counts in notebooks */
+.jp-InputPrompt, .jp-OutputPrompt {
+    display: none !important;
+}
 
-/* .doc-class > .doc-contents > .doc-children > .doc-function */
-/*
-.highlight .gp, .highlight .go { /* Generic.Prompt, Generic.Output */
-    user-select: none;
-  } */
+/* Make headers in api docs more different */
+h1.doc-heading {
+    font-size: 1.5rem;
+}
+h2.doc-heading {
+    font-size: 1.2rem;
+}
+h3.doc-heading {
+    font-size: 1rem;
+}
+h4.doc-heading {
+    font-size: 0.8rem;
+}
+h5.doc-heading {
+    font-size: 0.7rem;
+}
+h6.doc-heading {
+    font-size: 0.5rem;
+}
+
+/* Don't format api headers as code block */
+h1 > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+}
+h2 > code {
+    background-color: white!important;
+    padding:0!important;
+    font-weight: bold;
+}
+h3 > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+}
+h4 > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+}
+h5 > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+}
+h6 > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+}

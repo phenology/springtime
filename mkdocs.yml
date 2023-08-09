@@ -78,6 +78,7 @@ plugins:
     handlers:
       python:
         options:
+          members_order: source
           show_source: false
           show_signature: true
           inherited-members: true  # https://github.com/mkdocstrings/python/issues/40

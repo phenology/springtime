@@ -9,19 +9,19 @@ from typing import Union
 from pydantic import Field
 from typing_extensions import Annotated
 
-from springtime.datasets.daymet import (
+from springtime.datasets.meteorology.daymet import (
     DaymetBoundingBox,
     DaymetMultiplePoints,
     DaymetSinglePoint,
 )
-from springtime.datasets.e_obs import (
+from springtime.datasets.meteorology.e_obs import (
     EOBS,
     EOBSBoundingBox,
     EOBSMultiplePoints,
     EOBSSinglePoint,
 )
 from springtime.datasets.modis import ModisMultiplePoints, ModisSinglePoint
-from springtime.datasets.NPNPhenor import NPNPhenor
+from springtime.datasets.meteorology.insitu.NPNPhenor import NPNPhenor
 from springtime.datasets.PEP725Phenor import PEP725Phenor
 from springtime.datasets.phenocam import PhenocamrBoundingBox, PhenocamrSite
 from springtime.datasets.ppo import RPPO

@@ -91,21 +91,21 @@ class NestedFitRegressionExperiment(regression.RegressionExperiment):
 
         # checking fold parameter
         if fold is not None and not (
-            type(fold) is int or is_sklearn_cv_generator(fold)
+            isinstance(fold, int) or is_sklearn_cv_generator(fold)
         ):
             raise TypeError(
                 "fold parameter must be either None, an integer or a scikit-learn compatible CV generator object."
             )
 
         # checking round parameter
-        if type(round) is not int:
+        if not isinstance(round, int):
             raise TypeError("Round parameter only accepts integer value.")
 
         # checking budget_time parameter
         if (
             budget_time
-            and type(budget_time) is not int
-            and type(budget_time) is not float
+            and not isinstance(budget_time, int)
+            and not isinstance(budget_time, float)
         ):
             raise TypeError(
                 "budget_time parameter only accepts integer or float values."

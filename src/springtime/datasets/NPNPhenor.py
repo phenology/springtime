@@ -2,7 +2,92 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
+"""
+The NPNPhenor module contains functionality to download and load data from NPN,
+using [phenor](https://bluegreen-labs.github.io/phenor/) as client.
 
+Requires phenor R package. Install with
+
+```R
+devtools::install_github("bluegreen-labs/phenor@v1.3.1")
+```
+
+It can be tricky to figure out which combinations of species/phenophases are
+available. This link may serve as a starting point:
+<https://data.usanpn.org/observations/get-started>.
+
+Example:
+
+    List IDs and names for available species
+    ```pycon
+    >>> from springtime.datasets.NPNPhenor import npn_species
+    >>> df = npn_species()
+    >>> df.head()
+       species_id         common_name  ...  family_name  family_common_name
+    1         120        'ohi'a lehua  ...    Myrtaceae       Myrtle Family
+    2        1436          absinthium  ...   Asteraceae        Aster Family
+    3        1227  Acadian flycatcher  ...   Tyrannidae  Tyrant Flycatchers
+    4        1229    acorn woodpecker  ...      Picidae         Woodpeckers
+    5        2110        Adam and Eve  ...  Orchidaceae       Orchid Family
+    <BLANKLINE>
+    [5 rows x 18 columns]
+
+    ```
+
+    List IDs and names for available phenophases
+    ```pycon
+    >>> from springtime.datasets.NPNPhenor import npn_phenophases
+    >>> npn_phenophases()  # prints a long list
+        phenophase_id                  phenophase_name phenophase_category  color
+    1              56                      First leaf               Leaves   <NA>
+    2              57             75% leaf elongation               Leaves   <NA>
+    3              58                    First flower              Flowers   <NA>
+    4              59                      Last flower             Flowers   <NA>
+    ...
+
+    ```
+
+    Load dataset
+    ```pycon
+    >>> from springtime.datasets.NPNPhenor import NPNPhenor
+    >>> dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
+    >>> dataset.download()
+    >>> gdf = dataset.load()
+    >>> gdf.head()
+       site_id  ...                    geometry
+    1    17967  ...  POINT (-91.37602 38.38862)
+    2    17994  ...  POINT (-79.97169 39.53892)
+    3    17999  ...  POINT (-85.60993 39.79147)
+    4    18032  ...  POINT (-76.62881 40.94780)
+    5    18051  ...  POINT (-91.69318 41.29201)
+    <BLANKLINE>
+    [5 rows x 24 columns]
+
+    ```
+
+    Or with area bounds:
+    ```pycon
+    >>> from springtime.datasets.NPNPhenor import NPNPhenor
+    >>> dataset = NPNPhenor(
+    ...     species = 3,
+    ...     phenophase = 371,
+    ...     years = [2010, 2011],
+    ...     area = {'name':'some', 'bbox':(4, 45, 8, 50)}
+    ... )
+    >>> dataset.download()
+    >>> gdf = dataset.load()
+    >>> gdf.head()
+       site_id  ...                    geometry
+    1        2  ...  POINT (-70.69133 43.08535)
+    2      459  ...  POINT (-92.75200 36.52450)
+    3      374  ...  POINT (-87.64120 38.05990)
+    4      950  ...  POINT (-81.75751 30.17840)
+    5     1068  ...  POINT (-75.15203 38.77611)
+    <BLANKLINE>
+    [5 rows x 24 columns]
+
+    ```
+"""
 from typing import Literal, Optional
 
 import geopandas as gpd
@@ -14,53 +99,19 @@ from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class NPNPhenor(Dataset):
     """Download and load data from NPN.
-
-    Uses phenor (https://bluegreen-labs.github.io/phenor/) as client.
-
-    Could use https://data.usanpn.org/observations/get-started to figure out
-    which species/phenophases combis are available.
 
     Attributes:
         dataset: lorem ipsum
         species: lorem ipsum
         phenophase: lorem ipsum
         area: lorem ipsum
-
-    Example:
-
-        ```python
-        from springtime.datasets.NPNPhenor import (
-            NPNPhenor,
-            npn_species,
-            npn_phenophases
-        )
-
-        # List IDs and names for available species, phenophases
-        species = npn_species()
-        phenophases = npn_phenophases()
-
-        # Load dataset
-        dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
-        dataset.download()
-        gdf = dataset.load()
-
-        # or with area bounds
-        dataset = NPNPhenor(
-            species = 3,
-            phenophase = 371,
-            years = [2010, 2011],
-            area = {'name':'some', 'bbox':(4, 45, 8, 50)}
-        )
-        ```
-
-    Requires phenor R package. Install with
-
-    ```R
-    devtools::install_github("bluegreen-labs/phenor@v1.3.1")
-    ```
 
     """
     dataset: Literal["NPNPhenor"] = "NPNPhenor"
@@ -93,9 +144,9 @@ class NPNPhenor(Dataset):
             filename = self._filename(year)
 
             if filename.exists():
-                print(f"{filename} already exists, skipping")
+                logger.info(f"{filename} already exists, skipping")
             else:
-                print(f"downloading {filename}")
+                logger.info(f"downloading {filename}")
                 self._r_download(year)
 
     def load(self):
@@ -136,24 +187,7 @@ class NPNPhenor(Dataset):
 
 
 def npn_species(species=ro.NULL, list=True):
-    """List the available species.
-
-    Examples:
-
-        # >>> pd.set_option('display.width', None)
-        # >>> pd.set_option("display.max_columns", 7)
-        # >>> pd.set_option("display.max_colwidth", 20)
-        >>> df = npn_species()
-        >>> df.head()
-           species_id         common_name         genus  ...  family_id  family_name  family_common_name
-        1         120        'ohi'a lehua  Metrosideros  ...        301    Myrtaceae       Myrtle Family
-        2        1436          absinthium     Artemisia  ...        242   Asteraceae        Aster Family
-        3        1227  Acadian flycatcher     Empidonax  ...        154   Tyrannidae  Tyrant Flycatchers
-        4        1229    acorn woodpecker    Melanerpes  ...        158      Picidae         Woodpeckers
-        5        2110        Adam and Eve     Aplectrum  ...        307  Orchidaceae       Orchid Family
-        <BLANKLINE>
-        [5 rows x 18 columns]
-    """
+    """List the available species."""
     phenor = importr("phenor")
     r_df = phenor.check_npn_species(species=species, list=list)
     return ro.pandas2ri.rpy2py_dataframe(r_df)
@@ -162,5 +196,4 @@ def npn_species(species=ro.NULL, list=True):
 def npn_phenophases(phenophase=ro.NULL, list=True):
     """List the available phenophases."""
     phenor = importr("phenor")
-    r_df = phenor.check_npn_phenophases(phenophase=phenophase, list=list)
-    return ro.pandas2ri.rpy2py_dataframe(r_df)
+    phenor.check_npn_phenophases(phenophase=phenophase, list=list)

@@ -24,9 +24,10 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
-      - API Reference: reference/springtime/datasets/
   - Models: models.md
   - Developer Guide: develop.md
+  - API Reference:
+    - Data sources: reference/springtime/datasets/
 
 theme:
   name: material
@@ -101,6 +102,10 @@ extra:
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      pygments_lang_class: true
+      line_spans: __span
+  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

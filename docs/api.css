@@ -3,3 +3,7 @@
 } */
 
 /* .doc-class > .doc-contents > .doc-children > .doc-function */
+/*
+.highlight .gp, .highlight .go { /* Generic.Prompt, Generic.Output */
+    user-select: none;
+  } */

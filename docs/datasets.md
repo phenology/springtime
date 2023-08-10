@@ -42,6 +42,7 @@ flowchart TD
     S2[MODIS]
     S3[Land products subsets]
     S4[ModisTools]
+    S5[AppEEARS]
     end
 
     %% packages
@@ -53,6 +54,7 @@ flowchart TD
     F1 & F2 & F3 --> F4
     F2 --> F8
     S2 --> S3 --> S4
+    S3 --> S5
     F6 --> F7
     F4 ---> F5
     S4 & M4 & F7 -.-> P1
@@ -60,6 +62,6 @@ flowchart TD
 
     %% Springtime
     S1[Springtime]
-    S4 & M4 & F7 & F5 & P1 --> S1
+    S4 & S5 & M4 & F7 & F5 & P1 --> S1
     F8 --> S1
 ```

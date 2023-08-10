@@ -10,9 +10,7 @@ import pytest
 from springtime.main import Workflow, cli, main
 
 
-@pytest.mark.skip(
-    reason="After dropping pyphenology (#116) we need new sample data"
-)
+@pytest.mark.skip(reason="After dropping pyphenology (#116) we need new sample data")
 def test_workflow():
     w = Workflow(
         datasets={
@@ -29,9 +27,7 @@ def test_workflow():
     w.execute()
 
 
-@pytest.mark.skip(
-    reason="After dropping pyphenology (#116) we need new sample data"
-)
+@pytest.mark.skip(reason="After dropping pyphenology (#116) we need new sample data")
 def test_main():
     file = "tests/recipes/pyphenology.yaml"
     main(file)

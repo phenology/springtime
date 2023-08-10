@@ -8,6 +8,7 @@ from typing import Union
 
 from pydantic import Field
 from typing_extensions import Annotated
+from springtime.datasets.appeears import AppeearsPoints, AppeearsPointsFromArea
 
 from springtime.datasets.meteorology.daymet import (
     DaymetBoundingBox,
@@ -37,6 +38,8 @@ Datasets = Annotated[
         NPNPhenor,
         ModisSinglePoint,
         ModisMultiplePoints,
+        AppeearsPoints,
+        AppeearsPointsFromArea,
         EOBS,
         EOBSSinglePoint,
         EOBSMultiplePoints,

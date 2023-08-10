@@ -25,6 +25,57 @@ install.packages("daymetr")
 | North America (na) | 82.91 | 14.07 | -53.06  | -178.13|
 | Puearto Rico (pr)  | 19.94 | 16.84 | -64.12  | -67.99 |
 
+Example: Example: Download data for 3 points
+
+    ```pycon
+    source = DaymetMultiplePoints(
+        points=[
+            [-84.2625, 36.0133],
+            [-86, 39.6],
+            [-85, 40],
+        ],
+        years=[2000,2002]
+    )
+    source.download()
+    df = source.load()
+    ```
+
+Example: Example: Download daily data
+
+    ```pycon
+    from springtime.datasets.daymet import DaymetBoundingBox
+
+    source = DaymetBoundingBox(
+        variables = ["tmin", "tmax"],
+        area = {
+            "name": "indianapolis",
+            "bbox": [-86.5, 39.5, -86, 40.1]
+            },
+        years=[2000, 2002]
+    )
+    source.download()
+    df = source.load()
+    ```
+
+Example: Example: download monthly data
+
+    ```pycon
+    from springtime.datasets.daymet import DaymetBoundingBox
+
+    source = DaymetBoundingBox(
+        variables = ["tmin", "tmax"],
+        area = {
+            "name": "indianapolis",
+            "bbox": [-86.5, 39.5, -86, 40.1]
+            },
+        years=[2000, 2002],
+        frequency = "monthly",
+    )
+    source.download()
+    df = source.load()
+    ```
+
+
 """
 
 from datetime import datetime
@@ -159,21 +210,6 @@ class DaymetMultiplePoints(Daymet):
         points: List of points as [[longitude, latitude], ...], in WGS84
             projection
 
-    Example:
-
-        To download data for 3 points:
-
-            source = DaymetMultiplePoints(
-                points=[
-                    [-84.2625, 36.0133],
-                    [-86, 39.6],
-                    [-85, 40],
-                ],
-                years=[2000,2002]
-            )
-            source.download()
-            df = source.load()
-
     """
 
     dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
@@ -228,40 +264,6 @@ class DaymetBoundingBox(Daymet):
         mosaic: Daymet tile mosaic. Defaults to “na” for North America. Use
             “pr” for Puerto Rico and “hi” for Hawaii.
         frequency: Choose from "daily", "monthly", or "annual"
-
-    Example:
-
-        To download daily data:
-
-            from springtime.datasets.daymet import DaymetBoundingBox
-
-            source = DaymetBoundingBox(
-                variables = ["tmin", "tmax"],
-                area = {
-                    "name": "indianapolis",
-                    "bbox": [-86.5, 39.5, -86, 40.1]
-                    },
-                years=[2000, 2002]
-            )
-            source.download()
-            df = source.load()
-
-        To download monthly data:
-
-            from springtime.datasets.daymet import DaymetBoundingBox
-
-            source = DaymetBoundingBox(
-                variables = ["tmin", "tmax"],
-                area = {
-                    "name": "indianapolis",
-                    "bbox": [-86.5, 39.5, -86, 40.1]
-                    },
-                years=[2000, 2002],
-                frequency = "monthly",
-            )
-            source.download()
-            df = source.load()
-
     """
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
     area: NamedArea
@@ -283,6 +285,11 @@ class DaymetBoundingBox(Daymet):
             run_r_script(self._r_download(), timeout=120)
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         files = list(self._box_dir.glob("*.nc"))
         df = xr.open_mfdataset(files).to_dataframe().reset_index()
         df.rename(columns={"time": "datetime"}, inplace=True)

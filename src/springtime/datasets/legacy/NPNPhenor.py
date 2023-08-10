@@ -16,9 +16,8 @@ It can be tricky to figure out which combinations of species/phenophases are
 available. This link may serve as a starting point:
 <https://data.usanpn.org/observations/get-started>.
 
-Example:
+Example: Example: List IDs and names for available species
 
-    List IDs and names for available species
     ```pycon
     >>> from springtime.datasets.NPNPhenor import npn_species
     >>> df = npn_species()
@@ -34,7 +33,8 @@ Example:
 
     ```
 
-    List IDs and names for available phenophases
+Example: Example: List IDs and names for available phenophases
+
     ```pycon
     >>> from springtime.datasets.NPNPhenor import npn_phenophases
     >>> npn_phenophases()  # prints a long list
@@ -47,7 +47,8 @@ Example:
 
     ```
 
-    Load dataset
+Example: Example: Load dataset
+
     ```pycon
     >>> from springtime.datasets.NPNPhenor import NPNPhenor
     >>> dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
@@ -65,7 +66,8 @@ Example:
 
     ```
 
-    Or with area bounds:
+Example: Example: Or with area bounds:
+
     ```pycon
     >>> from springtime.datasets.NPNPhenor import NPNPhenor
     >>> dataset = NPNPhenor(
@@ -85,7 +87,6 @@ Example:
     5     1068  ...  POINT (-75.15203 38.77611)
     <BLANKLINE>
     [5 rows x 24 columns]
-
     ```
 """
 from typing import Literal, Optional

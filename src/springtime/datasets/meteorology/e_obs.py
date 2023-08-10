@@ -1,6 +1,84 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+"""
+This module contains functionality to download and load E-OBS data.
+
+Fetches complete grid from
+<https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php>.
+
+Example: Example: Get elevantion of whole E-OBS grid
+
+    ```python
+    from springtime.datasets.e_obs import EOBS
+    datasource = EOBS(product_type='elevation',
+                    variables=['land_surface_elevation'],
+                    years=[2000, 2002]
+                    )
+    datasource.download()
+    ds = datasource.load()
+    ```
+
+
+Example: Example: Get all variables for a single point
+
+    ```python
+    from springtime.datasets.e_obs import EOBSSinglePoint
+    datasource = EOBSSinglePoint(point=[5, 50],
+                                product_type='ensemble_mean',
+                                grid_resolution='0.25deg',
+                                years=[2000,2002])
+    datasource.download()
+    df = datasource.load()
+    ```
+
+Example: Example: Get elevation
+
+    ```python
+    from springtime.datasets.e_obs import EOBSSinglePoint
+    datasource = EOBSSinglePoint(point=[5, 50],
+                                product_type='elevation',
+                                variables=['land_surface_elevation'],
+                                years=[2000, 2002]
+                                )
+    datasource.download()
+    df = datasource.load()
+    ```
+
+Examples: Example: Load all variables for a selection of points.
+
+    ```python
+    from springtime.datasets.e_obs import EOBSMultiplePoints
+    datasource = EOBSMultiplePoints(points=[
+                                        [5, 50],
+                                        [5, 55],
+                                    ],
+                                    product_type='ensemble_mean',
+                                    grid_resolution='0.25deg',
+                                    years=[2000,2002])
+    datasource.download()
+    df = datasource.load()
+    ```
+
+Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2002
+
+    ```python
+    from springtime.datasets.e_obs import EOBSBoundingBox
+
+    dataset = EOBSBoundingBox(
+        years=[2000,2002],
+        area={
+            'name': 'amsterdam',
+            'bbox': [4, 50, 5, 55]
+        },
+        grid_resolution='0.25deg'
+    )
+    dataset.download()
+    df = dataset.load()
+    ```
+
+"""
+
 
 from datetime import datetime
 import time
@@ -49,22 +127,11 @@ short_vars = {
 class EOBS(Dataset):
     """E-OBS dataset.
 
-    Fetches complete grid from
-    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
-
-    Examples:
-
-    To get elevation of whole E-OBS grid:
-
-    ```python
-    from springtime.datasets.e_obs import EOBS
-    datasource = EOBS(product_type='elevation',
-                      variables=['land_surface_elevation'],
-                      years=[2000, 2002]
-                      )
-    datasource.download()
-    ds = datasource.load()
-
+    Attributes:
+        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
     """
 
     dataset: Literal[
@@ -74,7 +141,6 @@ class EOBS(Dataset):
         "ensemble_mean", "ensemble_spread", "elevation"
     ] = "ensemble_mean"
     variables: Sequence[Variable] = ("mean_temperature",)
-    """Some variables are specific for a certain product type."""
     grid_resolution: Literal["0.25deg", "0.1deg"] = "0.1deg"
     version: Literal["26.0e"] = "26.0e"
 
@@ -135,6 +201,7 @@ class EOBS(Dataset):
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
     def download(self):
+        """Download the data."""
         self._root_dir.mkdir(exist_ok=True)
         for variable, period in product(self.variables, self._periods):
             url = self._url(variable, period)
@@ -146,6 +213,11 @@ class EOBS(Dataset):
                 urlretrieve(url, path)
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         paths = [
             self._path(variable, period)
             for variable, period in product(self.variables, self._periods)
@@ -169,70 +241,24 @@ class EOBS(Dataset):
 
 
 class EOBSSinglePoint(EOBS):
-    """E-OBS dataset for a single point.
-
-    Fetches complete grid from
-    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
-
-    Examples:
-
-        ```python
-        from springtime.datasets.e_obs import EOBSSinglePoint
-        datasource = EOBSSinglePoint(point=[5, 50],
-                                    product_type='ensemble_mean',
-                                    grid_resolution='0.25deg',
-                                    years=[2000,2002])
-        datasource.download()
-        df = datasource.load()
-        ```
-
-        To get elevation:
-
-        ```python
-        from springtime.datasets.e_obs import EOBSSinglePoint
-        datasource = EOBSSinglePoint(point=[5, 50],
-                                    product_type='elevation',
-                                    variables=['land_surface_elevation'],
-                                    years=[2000, 2002]
-                                    )
-        datasource.download()
-        df = datasource.load()
-
-    """
-
+    """E-OBS dataset for a single point."""
     dataset: Literal["EOBSSinglePoint"] = "EOBSSinglePoint"
     point: Tuple[float, float]
     """Point as longitude, latitude in WGS84 projection."""
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         ds = super().load()
         ds = ds.sel(longitude=self.point[0], latitude=self.point[1], method="nearest")
         return self._to_dataframe(ds)
 
 
 class EOBSMultiplePoints(EOBS):
-    """E-OBS dataset for a multiple points.
-
-    Fetches complete grid from
-    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
-
-    Examples:
-
-    ```python
-    from springtime.datasets.e_obs import EOBSMultiplePoints
-    datasource = EOBSMultiplePoints(points=[
-                                        [5, 50],
-                                        [5, 55],
-                                    ],
-                                    product_type='ensemble_mean',
-                                    grid_resolution='0.25deg',
-                                    years=[2000,2002])
-    datasource.download()
-    df = datasource.load()
-    df
-    ```
-
-    """
+    """E-OBS dataset for a multiple points."""
 
     dataset: Literal["EOBSMultiplePoints"] = "EOBSMultiplePoints"
     points: Points
@@ -242,6 +268,11 @@ class EOBSMultiplePoints(EOBS):
     If False, drop them."""
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         lons = xr.DataArray([p[0] for p in self.points], dims="points_index")
         lats = xr.DataArray([p[1] for p in self.points], dims="points_index")
         points_df = gpd.GeoDataFrame(
@@ -306,34 +337,17 @@ class EOBSMultiplePoints(EOBS):
 
 
 class EOBSBoundingBox(EOBS):
-    """E-OBS dataset for a multiple points.
-
-    Fetches complete grid from
-    https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php .
-
-    Example:
-
-        To load coarse mean temperature around amsterdam from 2002 till 2002::
-
-        from springtime.datasets.e_obs import EOBSBoundingBox
-
-        dataset = EOBSBoundingBox(
-            years=[2000,2002],
-            area={
-                'name': 'amsterdam',
-                'bbox': [4, 50, 5, 55]
-            },
-            grid_resolution='0.25deg'
-        )
-        dataset.download()
-        df = dataset.load()
-
-    """
+    """E-OBS dataset for a multiple points."""
 
     dataset: Literal["EOBSBoundingBox"] = "EOBSBoundingBox"
     area: NamedArea
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         ds = super().load()
         box = self.area.bbox
         ds = ds.sel(

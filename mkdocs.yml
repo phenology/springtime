@@ -21,6 +21,7 @@ nav:
         - Phenocam: notebooks/datasets_phenocam.ipynb
       - Satellites:
         - MODIS: notebooks/datasets_modis.ipynb
+        - AppEEARS: notebooks/datasets_modis_appeears.ipynb
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb

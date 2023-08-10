@@ -224,7 +224,7 @@ def main(recipe, output_dir: Optional[Path]):
 @click.option(
     "--pep725-credentials-file",
     default=CONFIG.pep725_credentials_file,
-    type=click.Path(exists=True),
+    type=click.Path(path_type=Path),
 )
 def cli(
     recipe: Path,

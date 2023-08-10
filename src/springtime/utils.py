@@ -6,8 +6,9 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence, Tuple
+from typing import NamedTuple, Sequence, Tuple, Union
 
+import xarray as xr
 import geopandas as gpd
 from pydantic import BaseModel, PositiveInt, validator, PrivateAttr
 from shapely.geometry import Polygon
@@ -22,6 +23,15 @@ class BoundingBox(NamedTuple):
     ymin: float
     xmax: float
     ymax: float
+
+    @classmethod
+    def from_points(cls, points: Sequence[Tuple[float, float]]):
+        return cls(
+            xmin=min(map(lambda p: p[0], points)),
+            ymin=min(map(lambda p: p[1], points)),
+            xmax=max(map(lambda p: p[0], points)),
+            ymax=max(map(lambda p: p[1], points)),
+        )
 
 
 class NamedArea(BaseModel):
@@ -62,6 +72,9 @@ class PointsFromOther(BaseModel):
 
     def __len__(self):
         return len(self._points)
+
+
+Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
 
 
 # date range of years
@@ -262,3 +275,35 @@ def resample(df, freq="month", operator="mean", column="datetime"):
     )
 
     return gpd.GeoDataFrame(new_df)
+
+
+def points_from_cube(
+    ds: xr.Dataset,
+    points: Points,
+    xdim: str = "lon",
+    ydim: str = "lat",
+) -> gpd.GeoDataFrame:
+    """From a cube, extract the values at the given points.
+
+    Args:
+        ds: Xarray datset with latitude and longitude dimensions
+        points: List of points as (lon, lat) tuples
+
+    Returns:
+        Dataframe with columns for each point and each variable in the dataset.
+        The points are in the geometry column.
+    """
+    lons = xr.DataArray([p[0] for p in points], dims="points_index")
+    lats = xr.DataArray([p[1] for p in points], dims="points_index")
+    points_df = gpd.GeoDataFrame(geometry=gpd.points_from_xy(lons, lats)).reset_index(
+        names="points_index"
+    )
+    df = (
+        ds.sel(**{xdim: lons, ydim: lats, "method": "nearest"})  # type: ignore
+        .to_dataframe()
+        .reset_index()
+    )
+    df = df.merge(points_df, on="points_index", how="right").drop(
+        ["points_index", xdim, ydim], axis=1
+    )
+    return gpd.GeoDataFrame(df, geometry=df.geometry)

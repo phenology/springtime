@@ -8,7 +8,7 @@ from typing import Union
 
 from pydantic import Field
 from typing_extensions import Annotated
-from springtime.datasets.appeears import AppeearsPoints, AppeearsPointsFromArea
+from springtime.datasets.satellite.appeears import AppeearsPoints, AppeearsPointsFromArea
 
 from springtime.datasets.meteorology.daymet import (
     DaymetBoundingBox,

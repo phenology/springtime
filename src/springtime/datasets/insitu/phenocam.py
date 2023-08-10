@@ -2,7 +2,51 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 # due to import of phenocamr
+"""
+This module contains functionality to download and load data from phenocam
+observations
+(<https://phenocam.nau.edu/webcam/>) using
+[phenocamr](https://cran.r-project.org/web/packages/phenocamr/index.html) as
+client.
 
+Requires phenocamr R package.
+Install with
+
+```R
+install.packages("phenocamr")
+```
+
+
+Example:
+
+    ```python
+    from springtime.datasets import PhenocamrSite
+
+    dataset = PhenocamrSite(
+        site="harvard$",
+        years=(2019, 2020),
+    )
+    dataset.download()
+    df = dataset.load()
+    ```
+
+Example:
+
+    ```python
+    from springtime.datasets import PhenocamrBoundingBox
+
+    dataset = PhenocamrBoundingBox(
+        area={
+            "name": "harvard",
+            "bbox": [-73, 42, -72, 43],
+        },
+        years=(2019, 2020),
+    )
+    dataset.download()
+    df = dataset.load()
+    ```
+
+"""
 import logging
 from pathlib import Path
 from typing import List, Literal, Optional, Sequence
@@ -67,14 +111,17 @@ PhenocamVariables = Literal[
 
 
 class Phenocam(Dataset):
-    veg_type: Optional[str]
-    """Vegetation type (DB, EN). Default is all."""
-    frequency: Literal["1", "3", "roistats"] = "3"
-    """Frequency of the time series product."""
-    variables: Sequence[PhenocamVariables] = tuple()
-    """variables you want to download. When empty will download all the
-    variables.
+    """Download and load data from phenocam
+
+    Attributes:
+        veg_type: Vegetation type (DB, EN). Default is "all".
+        frequency: Frequency of the time series product.
+        variables: Variables you want to download. When empty will download all
+            the variables.
     """
+    veg_type: Optional[str]
+    frequency: Literal["1", "3", "roistats"] = "3"
+    variables: Sequence[PhenocamVariables] = tuple()
 
     def _location(self, row: pd.Series) -> Path:
         freq = "roistats"
@@ -119,34 +166,19 @@ class Phenocam(Dataset):
 class PhenocamrSite(Phenocam):
     """PhenoCam time series for site.
 
-    Fetch data from https://phenocam.nau.edu/webcam/
+    Attributes:
+        veg_type: Vegetation type (DB, EN). Default is "all".
+        frequency: Frequency of the time series product.
+        variables: Variables you want to download. When empty will download all
+            the variables.
+        site: Name of site. Append `$` to get exact match.
+        rois: The id of the ROI to download. Default is all ROIs at site.
 
-    Requires phenocamr R package.
-    Install with
-    ```R
-    install.packages("phenocamr")
-    ```
-
-    Example:
-
-        ```python
-        from springtime.datasets import PhenocamrSite
-
-        dataset = PhenocamrSite(
-            site="harvard$",
-            years=(2019, 2020),
-        )
-        dataset.download()
-        df = dataset.load()
-        df
-        ```
     """
 
     dataset: Literal["phenocam"] = "phenocam"
     site: str
-    """Name of site. Append `$` to get exact match."""
     rois: Optional[List[int]]
-    """The id of the ROI to download. Default is all ROIs at site."""
 
     def download(self):
         """Download the data.
@@ -196,30 +228,13 @@ class PhenocamrSite(Phenocam):
 class PhenocamrBoundingBox(Phenocam):
     """PhenoCam time series for sites in a bounding box.
 
-    Fetch data from https://phenocam.nau.edu/webcam/
-
-    Requires phenocamr R package.
-    Install with
-    ```R
-    install.packages("phenocamr")
-    ```
-
-    Example:
-
-        ```python
-        from springtime.datasets import PhenocamrBoundingBox
-
-        dataset = PhenocamrBoundingBox(
-            area={
-                "name": "harvard",
-                "bbox": [-73, 42, -72, 43],
-            },
-            years=(2019, 2020),
-        )
-        dataset.download()
-        df = dataset.load()
-        df
-        ```
+    Attributes:
+        veg_type: Vegetation type (DB, EN). Default is "all".
+        frequency: Frequency of the time series product.
+        variables: Variables you want to download. When empty will download all
+            the variables.
+        area: A dictionary of the form
+            `{name: yourname, bbox: [xmin, ymin, xmax, ymax]}`.
     """
 
     dataset: Literal["phenocambbox"] = "phenocambbox"
@@ -290,7 +305,7 @@ def list_sites() -> geopandas.GeoDataFrame:
     """List of phenocam sites.
 
     Returns:
-        Data frame.
+        Data frame containing phenocam sites
     """
     if not sites_file.exists():
         logger.warning(f"Downloading phenocam sites to {sites_file}")
@@ -312,11 +327,11 @@ def _download_sites():
 rois_file = phenocam_cache_dir / "roi_data.csv"
 
 
-def list_rois():
+def list_rois() -> geopandas.GeoDataFrame:
     """List of phenocam regions of interest (ROI).
 
     Returns:
-        Data frame.
+        Data frame containing phenocam Regions of Interest.
     """
     if not rois_file.exists():
         logger.warning(f"Downloading phenocam rois to {rois_file}")

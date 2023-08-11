@@ -26,7 +26,6 @@ nav:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
       - API Reference: reference/springtime/datasets/
-        # - Data sources:
       - Recipe Reference: clireference/
   - Models: models.md
   - Developer Guide: develop.md

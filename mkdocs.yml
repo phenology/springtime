@@ -25,13 +25,11 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
+      - API Reference: reference/springtime/datasets/
+        # - Data sources:
+      - Recipe Reference: clireference/
   - Models: models.md
   - Developer Guide: develop.md
-  - API Reference:
-    - Data sources: reference/springtime/datasets/
-  - CLI Reference:
-    - Data sources: clireference/
-
 
 theme:
   name: material

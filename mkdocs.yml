@@ -29,6 +29,9 @@ nav:
   - Developer Guide: develop.md
   - API Reference:
     - Data sources: reference/springtime/datasets/
+  - CLI Reference:
+    - Data sources: clireference/
+
 
 theme:
   name: material
@@ -95,6 +98,7 @@ plugins:
 - gen-files:  # Auto-generate API reference files
     scripts:
         - docs/gen_apiref_datasets.py
+        - docs/gen_cliref_datasets.py
 - literate-nav:  # Create an index for the auto-generated api reference
     nav_file: SUMMARY.md
 - section-index

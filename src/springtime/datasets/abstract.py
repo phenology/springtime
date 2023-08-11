@@ -21,9 +21,12 @@ class Dataset(BaseModel, ABC):
 
     Attributes:
         dataset: The name of the dataset.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None, no resampling.
+        years: timerange. For example years=[2000, 2002] downloads data for
+            three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
     """
+
     dataset: str
     years: YearRange
     resample: Optional[ResampleConfig] = None
@@ -40,7 +43,8 @@ class Dataset(BaseModel, ABC):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or
+        CONFIG.force_override
         is TRUE.
         """
 
@@ -49,5 +53,6 @@ class Dataset(BaseModel, ABC):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
+        filter certain variables, remove data points with too many NaNs, reshape
+        data.
         """

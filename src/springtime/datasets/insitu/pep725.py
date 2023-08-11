@@ -20,7 +20,7 @@ Email adress on first line, password on second line.
 Example:
 
     ```python
-    from springtime.datasets.PEP725Phenor import PEP725Phenor
+    from springtime.datasets.insitu.pep725 import PEP725Phenor
     dataset = PEP725Phenor(species='Syringa vulgaris', years=[2000, 2000])
     dataset.download()
     df = dataset.load()
@@ -58,9 +58,12 @@ class PEP725Phenor(Dataset):
             <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
             'Beginning of flowering'.
         area: A dictionary of the form
-            `{name: yourname, bbox: [xmin, ymin, xmax, ymax]}`.
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         credential_file: Path to PEP725 credentials file. Email adress on first
             line, password on second line.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
     """
 

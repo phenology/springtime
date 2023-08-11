@@ -19,7 +19,7 @@ available. This link may serve as a starting point:
 Example: Example: List IDs and names for available species
 
     ```pycon
-    >>> from springtime.datasets.NPNPhenor import npn_species
+    >>> from springtime.datasets.insitu.npn.NPNPhenor import npn_species
     >>> df = npn_species()
     >>> df.head()
        species_id         common_name  ...  family_name  family_common_name
@@ -36,7 +36,7 @@ Example: Example: List IDs and names for available species
 Example: Example: List IDs and names for available phenophases
 
     ```pycon
-    >>> from springtime.datasets.NPNPhenor import npn_phenophases
+    >>> from springtime.datasets.insitu.npn.NPNPhenor import npn_phenophases
     >>> npn_phenophases()  # prints a long list
         phenophase_id                  phenophase_name phenophase_category  color
     1              56                      First leaf               Leaves   <NA>
@@ -50,7 +50,7 @@ Example: Example: List IDs and names for available phenophases
 Example: Example: Load dataset
 
     ```pycon
-    >>> from springtime.datasets.NPNPhenor import NPNPhenor
+    >>> from springtime.datasets.insitu.npn.NPNPhenor import NPNPhenor
     >>> dataset = NPNPhenor(species=36, phenophase=483, years=[2010, 2011])
     >>> dataset.download()
     >>> gdf = dataset.load()
@@ -69,7 +69,7 @@ Example: Example: Load dataset
 Example: Example: Or with area bounds:
 
     ```pycon
-    >>> from springtime.datasets.NPNPhenor import NPNPhenor
+    >>> from springtime.datasets.insitu.npn.NPNPhenor import NPNPhenor
     >>> dataset = NPNPhenor(
     ...     species = 3,
     ...     phenophase = 371,
@@ -109,12 +109,15 @@ class NPNPhenor(Dataset):
     """Download and load data from NPN.
 
     Attributes:
-        dataset: lorem ipsum
-        species: lorem ipsum
-        phenophase: lorem ipsum
-        area: lorem ipsum
-
+        species: npn species id
+        phenophase: npn phenophase id
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
     """
+
     dataset: Literal["NPNPhenor"] = "NPNPhenor"
     species: int
     phenophase: int

@@ -10,7 +10,7 @@ Fetches complete grid from
 Example: Example: Get elevantion of whole E-OBS grid
 
     ```python
-    from springtime.datasets.e_obs import EOBS
+    from springtime.datasets.meteo.eobs import EOBS
     datasource = EOBS(product_type='elevation',
                     variables=['land_surface_elevation'],
                     years=[2000, 2002]
@@ -23,7 +23,7 @@ Example: Example: Get elevantion of whole E-OBS grid
 Example: Example: Get all variables for a single point
 
     ```python
-    from springtime.datasets.e_obs import EOBSSinglePoint
+    from springtime.datasets.meteo.eobs import EOBSSinglePoint
     datasource = EOBSSinglePoint(point=[5, 50],
                                 product_type='ensemble_mean',
                                 grid_resolution='0.25deg',
@@ -35,7 +35,7 @@ Example: Example: Get all variables for a single point
 Example: Example: Get elevation
 
     ```python
-    from springtime.datasets.e_obs import EOBSSinglePoint
+    from springtime.datasets.meteo.eobs import EOBSSinglePoint
     datasource = EOBSSinglePoint(point=[5, 50],
                                 product_type='elevation',
                                 variables=['land_surface_elevation'],
@@ -48,7 +48,7 @@ Example: Example: Get elevation
 Examples: Example: Load all variables for a selection of points.
 
     ```python
-    from springtime.datasets.e_obs import EOBSMultiplePoints
+    from springtime.datasets.meteo.eobs import EOBSMultiplePoints
     datasource = EOBSMultiplePoints(points=[
                                         [5, 50],
                                         [5, 55],
@@ -63,7 +63,7 @@ Examples: Example: Load all variables for a selection of points.
 Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2002
 
     ```python
-    from springtime.datasets.e_obs import EOBSBoundingBox
+    from springtime.datasets.meteo.eobs import EOBSBoundingBox
 
     dataset = EOBSBoundingBox(
         years=[2000,2002],
@@ -132,6 +132,10 @@ class EOBS(Dataset):
         variables: Some variables are specific for a certain product type.
         grid_resolution: either "0.25deg" or "0.1deg"
         version: currently only possible value is "26.0e"
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
     """
 
     dataset: Literal[
@@ -241,10 +245,22 @@ class EOBS(Dataset):
 
 
 class EOBSSinglePoint(EOBS):
-    """E-OBS dataset for a single point."""
+    """E-OBS dataset for a single point.
+
+    Attributes:
+        point: Point as longitude, latitude in WGS84 projection.
+        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
+    """
+
     dataset: Literal["EOBSSinglePoint"] = "EOBSSinglePoint"
     point: Tuple[float, float]
-    """Point as longitude, latitude in WGS84 projection."""
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -258,14 +274,25 @@ class EOBSSinglePoint(EOBS):
 
 
 class EOBSMultiplePoints(EOBS):
-    """E-OBS dataset for a multiple points."""
+    """E-OBS dataset for a multiple points.
+
+    Attributes:
+        point: Points as longitude, latitude in WGS84 projection.
+        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
+        keep_grid_location: If True, keep the eobs_longitude and eobs_latitude
+            columns. If False, drop them.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
+    """
 
     dataset: Literal["EOBSMultiplePoints"] = "EOBSMultiplePoints"
     points: Points
-    """Points as longitude, latitude in WGS84 projection."""
     keep_grid_location: bool = False
-    """If True, keep the eobs_longitude and eobs_lantitude columns.
-    If False, drop them."""
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -337,7 +364,21 @@ class EOBSMultiplePoints(EOBS):
 
 
 class EOBSBoundingBox(EOBS):
-    """E-OBS dataset for a multiple points."""
+    """E-OBS dataset for a multiple points.
+
+    Attributes:
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
+
+    """
 
     dataset: Literal["EOBSBoundingBox"] = "EOBSBoundingBox"
     area: NamedArea

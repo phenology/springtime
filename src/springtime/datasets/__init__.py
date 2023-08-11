@@ -8,28 +8,39 @@ from typing import Union
 
 from pydantic import Field
 from typing_extensions import Annotated
-from springtime.datasets.satellite.appeears import AppeearsPoints, AppeearsPointsFromArea
 
-from springtime.datasets.meteorology.daymet import (
+from springtime.datasets.meteo.daymet import (
     DaymetBoundingBox,
     DaymetMultiplePoints,
     DaymetSinglePoint,
 )
-from springtime.datasets.meteorology.e_obs import (
+from springtime.datasets.meteo.eobs import (
     EOBS,
     EOBSBoundingBox,
     EOBSMultiplePoints,
     EOBSSinglePoint,
 )
-from springtime.datasets.modis import ModisMultiplePoints, ModisSinglePoint
-from springtime.datasets.meteorology.insitu.NPNPhenor import NPNPhenor
-from springtime.datasets.PEP725Phenor import PEP725Phenor
-from springtime.datasets.phenocam import PhenocamrBoundingBox, PhenocamrSite
-from springtime.datasets.ppo import RPPO
-from springtime.datasets.rnpn import RNPN
+from springtime.datasets.satellite.modis.appeears import (
+    AppeearsPoints,
+    AppeearsPointsFromArea,
+    AppeearsArea,
+)
+from springtime.datasets.satellite.modis.modistools import (
+    ModisMultiplePoints,
+    ModisSinglePoint,
+)
+from springtime.datasets.insitu.npn.NPNPhenor import NPNPhenor
+from springtime.datasets.insitu.pep725 import PEP725Phenor
+from springtime.datasets.insitu.phenocam import PhenocamrBoundingBox, PhenocamrSite
+from springtime.datasets.insitu.ppo import RPPO
+from springtime.datasets.insitu.npn.rnpn import RNPN
 
 Datasets = Annotated[
     Union[
+        EOBS,
+        EOBSBoundingBox,
+        EOBSMultiplePoints,
+        EOBSSinglePoint,
         RPPO,
         PEP725Phenor,
         DaymetSinglePoint,
@@ -39,6 +50,7 @@ Datasets = Annotated[
         ModisSinglePoint,
         ModisMultiplePoints,
         AppeearsPoints,
+        AppeearsArea,
         AppeearsPointsFromArea,
         EOBS,
         EOBSSinglePoint,

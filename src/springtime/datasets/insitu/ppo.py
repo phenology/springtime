@@ -12,7 +12,7 @@ Uses [rppo](https://docs.ropensci.org/rppo/) to get data from
 Example:
 
     ```python
-    from springtime.datasets.ppo import RPPO
+    from springtime.datasets.insitu.ppo import RPPO
     dataset = RPPO(
         genus="Quercus Pinus",
         termID="obo:PPO_0002313",
@@ -50,11 +50,16 @@ class RPPO(Dataset):
             leaves present". See [PPO
             documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
         area: A dictionary of the form
-            `{name: yourname, bbox: [xmin, ymin, xmax, ymax]}`.
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         limit: Maximum number of records to retreive
         timeLimit: Number of seconds to wait for the server to respond
         variables: Variables you want to load. When empty will load all the variables.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
     """
+
     dataset: Literal["rppo"] = "rppo"
     genus: str
     termID: str = "obo:PPO_0002313"
@@ -62,7 +67,6 @@ class RPPO(Dataset):
     limit: PositiveInt = 100000
     timeLimit: PositiveInt = 60
     variables: Sequence[PPOVariables] = tuple()
-
 
     @property
     def _path(self):

@@ -11,7 +11,7 @@ which species/phenophases combis are available.
 Example:
 
     ```python
-    from springtime.datasets.rnpn import (
+    from springtime.datasets.insitu.npn.rnpn import (
         RNPN,
         npn_species,
         npn_phenophases
@@ -91,13 +91,27 @@ class RNPN(Dataset):
             "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
             functional type as a string. Use
             [npn_species][springtime.datasets.insitu.rnpn.npn_species] or
-            [npn_species_ids_by_functional_type][springtime.datasets.insitu.rnpn.npn_species_ids_by_functional_type] to see options.
-        phenophase_ids: area: use_first: When true uses first_yes columns as
-        value, otherwise the last_yes columns. aggregation_operator:
+            [npn_species_ids_by_functional_type][springtime.datasets.insitu.rnpn.npn_species_ids_by_functional_type]
+            to see options.
+        phenophase_ids: formatted as a dictionary of the form `{"name": "myname",
+            "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
+            phenophase name as a string. Use
+            [npn_phenophases][springtime.datasets.insitu.rnpn.npn_phenophases] or
+            [npn_phenophase_ids_by_name][springtime.datasets.insitu.rnpn.npn_phenophase_ids_by_name]
+            to see options.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        use_first: When true uses first_yes columns as value, otherwise the last
+            "_yes"-columns.
+        aggregation_operator: "min", "max", "mean", or "median"
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
     """
+
     dataset: Literal["RNPN"] = "RNPN"
-    species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]]
+    species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]] = None
     phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
     area: Optional[NamedArea] = None
     use_first: bool = True

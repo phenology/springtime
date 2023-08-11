@@ -118,7 +118,12 @@ class Phenocam(Dataset):
         frequency: Frequency of the time series product.
         variables: Variables you want to download. When empty will download all
             the variables.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
     """
+
     veg_type: Optional[str]
     frequency: Literal["1", "3", "roistats"] = "3"
     variables: Sequence[PhenocamVariables] = tuple()
@@ -173,6 +178,9 @@ class PhenocamrSite(Phenocam):
             the variables.
         site: Name of site. Append `$` to get exact match.
         rois: The id of the ROI to download. Default is all ROIs at site.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
     """
 
@@ -234,7 +242,11 @@ class PhenocamrBoundingBox(Phenocam):
         variables: Variables you want to download. When empty will download all
             the variables.
         area: A dictionary of the form
-            `{name: yourname, bbox: [xmin, ymin, xmax, ymax]}`.
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
     """
 
     dataset: Literal["phenocambbox"] = "phenocambbox"

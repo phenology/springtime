@@ -43,7 +43,7 @@ Example: Example: Download data for 3 points
 Example: Example: Download daily data
 
     ```pycon
-    from springtime.datasets.daymet import DaymetBoundingBox
+    from springtime.datasets.meteo.daymet import DaymetBoundingBox
 
     source = DaymetBoundingBox(
         variables = ["tmin", "tmax"],
@@ -60,7 +60,7 @@ Example: Example: Download daily data
 Example: Example: download monthly data
 
     ```pycon
-    from springtime.datasets.daymet import DaymetBoundingBox
+    from springtime.datasets.meteo.daymet import DaymetBoundingBox
 
     source = DaymetBoundingBox(
         variables = ["tmin", "tmax"],
@@ -112,8 +112,13 @@ class Daymet(Dataset):
 
             When empty will download all the previously mentioned climate
             variables.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
 
     """
+
     variables: Sequence[DaymetVariables] = tuple()
 
     @validator("years")
@@ -134,8 +139,12 @@ class DaymetSinglePoint(Daymet):
         variables: List of variable you want to download. See
             [Daymet][springtime.datasets.meteorology.daymet.Daymet]
         point: Point as longitude, latitude in WGS84 projection.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
     """
+
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
     point: Tuple[float, float]
 
@@ -209,6 +218,10 @@ class DaymetMultiplePoints(Daymet):
             [Daymet][springtime.datasets.meteorology.daymet.Daymet]
         points: List of points as [[longitude, latitude], ...], in WGS84
             projection
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
 
     """
 
@@ -259,12 +272,17 @@ class DaymetBoundingBox(Daymet):
         variables: List of variable you want to download. See
             [Daymet][springtime.datasets.meteorology.daymet.Daymet]
         area: A dictionary of the form
-            `{name: yourname, bbox: [xmin, ymin, xmax, ymax]}`. Do not make
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`. Do not make
             bounding box too large as there is a 6Gb maximum download size.
         mosaic: Daymet tile mosaic. Defaults to “na” for North America. Use
             “pr” for Puerto Rico and “hi” for Hawaii.
         frequency: Choose from "daily", "monthly", or "annual"
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+
     """
+
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
     area: NamedArea
     mosaic: Literal["na", "hi", "pr"] = "na"
@@ -343,7 +361,6 @@ class DaymetBoundingBox(Daymet):
         return (
             CONFIG.cache_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
         )
-
 
 
 # regions = {

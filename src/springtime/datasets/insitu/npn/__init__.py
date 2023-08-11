@@ -3,6 +3,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of phenor
 """
-The in-situ module contains functionality for downloading and loading
-field observations of (plant) phenological traits.
+We have two different clients for retrieving NPN data:
+
+* rnpn
+* phenor
+
+rnpn should usually be preferred.
 """

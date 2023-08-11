@@ -2,11 +2,18 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of MODISTools
+"""Functionality for downloading MODIS land products subsets.
 
+Fetches data from <https://modis.ornl.gov/data/modis_webservice.html> using
+[MODISTools](https://cran.r-project.org/web/packages/MODISTools/index.html) as
+client.
 
-"""Datasets for downloading MODIS land products subsets.
+Requires MODISTools. Install with
+```R
+install.packages("MODISTools")
+```
 
-Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
+Use `modis_dates(product, lon, lat)` to get list of available years.
 """
 
 from typing import Literal, Sequence, Tuple, Union
@@ -26,38 +33,40 @@ logger = logging.getLogger(__name__)
 
 
 class Extent(BaseModel):
-    """Extent to sample."""
+    """Extent to sample.
+
+    Attributes:
+        horizontal: Left right extent to sample in kilometers.
+        vertical: Above below extent to sample in kilometers.
+    """
 
     horizontal: float = 0.0
-    """Left right extent to sample in kilometers."""
     vertical: float = 0.0
-    """Above below extent to sample in kilometers."""
 
 
 class ModisSinglePoint(Dataset):
-    """MODIS land products subsets for single point using MODISTools.
+    """MODIS land products subsets for single point.
 
-    Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
+    Attributes:
+        point: provided as a tuple of [longitude, latitude] in WGS84 projection.
+        product: A MODIS product. Use `modis_products()` to get list of
+            available products.
+        bands: MODIS product bands. Use `modis_bands(product)` to get list of
+            available bands for a product.
+        extent: By default a single pixel returned.
+            Give custom extend to get more pixels around point as dictionariy of
+            the form {"horizontal": 12, "vertical": 34}
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
-    Use `modis_dates(product, lon, lat)` to get list of available years.
-
-    Requires MODISTools. Install with
-    ```R
-    install.packages("MODISTools")
-    ```
     """
 
     dataset: Literal["modis_single_point"] = "modis_single_point"
     point: Tuple[float, float]
-    """Point as longitude, latitude in WGS84 projection."""
     product: str
-    """a MODIS product."""
     bands: conset(str, min_items=1)  # type: ignore
-    """MODIS product bands"""
     extent: Extent = Extent()
-    """By default a single pixel returned.
-    Give custom extend to get more pixels around point.
-    """
 
     @property
     def _paths(self):
@@ -129,28 +138,25 @@ class ModisSinglePoint(Dataset):
 
 
 class ModisMultiplePoints(Dataset):
-    """MODIS land products subsets for multiple points using MODISTools.
+    """MODIS land products subsets for multiple points.
 
-    Fetches data from https://modis.ornl.gov/data/modis_webservice.html.
+    Attributes:
+        points: provided as a list of points like so: `[[longitude, latitude],
+            ...]` in WGS84projection.
+        product: A MODIS product. Use `modis_products()` to get list of
+            available products.
+        bands: MODIS product bands. Use `modis_bands(product)` to get list of
+            available bands for a product.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
 
-    Use `modis_dates(product, lon, lat)` to get list of available years.
-
-    Requires MODISTools. Install with
-    ```R
-    install.packages("MODISTools")
-    ```
     """
 
     dataset: Literal["modis_multiple_points"] = "modis_multiple_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
-    """Points as longitude, latitude in WGS84 projection."""
     product: str
-    """a MODIS product. Use `modis_products()` to get list of available products."""
     bands: conset(str, min_items=1)  # type: ignore
-    """MODIS product bands.
-
-    Use `modis_bands(product)` to get list of available bands for a product.
-    """
     # TODO when no bands are given return all bands of product
 
     @property

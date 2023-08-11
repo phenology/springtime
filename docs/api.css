@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0 */
 /* Don't show cell counts in notebooks */
 .jp-InputPrompt, .jp-OutputPrompt {
     display: none !important;

@@ -116,7 +116,7 @@ hatch run pytest tests/test_main.py
 hatch run pytest tests/test_main.py::test_cli
 ```
 
-To test examples in docstring run the following command:
+To test examples in docstrings use:
 
 ```bash
 hatch run doctest <file to test>

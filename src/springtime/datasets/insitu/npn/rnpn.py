@@ -64,6 +64,8 @@ stations_file = cache_dir / "stations.csv"
 
 
 class SpeciesByFunctionalType(BaseModel):
+    """Species by functional type."""
+
     functional_type: str
 
     @property
@@ -76,6 +78,8 @@ class SpeciesByFunctionalType(BaseModel):
 
 
 class PhenophasesByName(BaseModel):
+    """Phenophases by name."""
+
     name: str
 
     @property
@@ -150,7 +154,7 @@ class RNPN(Dataset):
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return _reformat(self, gdf)
 
-    def download(self, timeout=30):
+    def download(self, timeout: int = 30):
         """Download the data.
 
         Args:

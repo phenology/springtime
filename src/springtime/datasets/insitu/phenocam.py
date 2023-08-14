@@ -108,6 +108,7 @@ PhenocamVariables = Literal[
     "smooth_ci_rcc_75",
     "smooth_ci_rcc_90",
 ]
+"""Variables available in phenocamr."""
 
 
 class Phenocam(Dataset):

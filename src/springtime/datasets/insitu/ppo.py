@@ -38,7 +38,7 @@ from springtime.utils import NamedArea, run_r_script
 
 # non-numerice variables are removed from the list below.
 PPOVariables = Literal["dayOfYear"]
-
+"""Variables available in the PPO dataset."""
 
 class RPPO(Dataset):
     """Download and load PPO data.

@@ -37,10 +37,6 @@ from springtime.datasets.insitu.npn.rnpn import RNPN
 
 Datasets = Annotated[
     Union[
-        EOBS,
-        EOBSBoundingBox,
-        EOBSMultiplePoints,
-        EOBSSinglePoint,
         RPPO,
         PEP725Phenor,
         DaymetSinglePoint,

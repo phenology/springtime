@@ -353,6 +353,8 @@ def _login(username, password):
 
 
 class ProductInfo(BaseModel):
+    """Product information"""
+
     Product: str
     Platform: str
     Description: str
@@ -385,6 +387,8 @@ def products() -> list[ProductInfo]:
 
 
 class LayerInfo(BaseModel):
+    """Layer information"""
+
     AddOffset: str
     Available: bool
     DataType: str

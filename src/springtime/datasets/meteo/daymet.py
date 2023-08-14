@@ -94,6 +94,7 @@ from springtime.utils import NamedArea, run_r_script
 logger = logging.getLogger(__name__)
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
+"""Daymet variables."""
 
 
 class Daymet(Dataset):

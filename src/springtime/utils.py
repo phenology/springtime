@@ -66,7 +66,7 @@ class NamedIdentifiers(BaseModel):
 class PointsFromOther(BaseModel):
     """Points from another dataset.
 
-    Args:
+    Attributes:
         source: Name of dataset to get points from.
     """
 
@@ -85,6 +85,7 @@ class PointsFromOther(BaseModel):
 
 
 Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
+"""Points can be a list of (lon, lat) tuples or a PointsFromOther object."""
 
 
 # date range of years
@@ -181,7 +182,7 @@ class TimeoutError(Exception):
     pass
 
 
-def run_r_script(script: str, timeout=30, max_tries=3):
+def run_r_script(script: str, timeout: int = 30, max_tries: int = 3):
     """Run R script with retries and timeout logic.
 
     Args:

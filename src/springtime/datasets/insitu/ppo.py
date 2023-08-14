@@ -40,6 +40,7 @@ from springtime.utils import NamedArea, run_r_script
 PPOVariables = Literal["dayOfYear"]
 """Variables available in the PPO dataset."""
 
+
 class RPPO(Dataset):
     """Download and load PPO data.
 

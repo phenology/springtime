@@ -94,8 +94,13 @@ plugins:
           show_symbol_type_heading: true  # currently only available for insiders
         import:
           - https://docs.python.org/3/objects.inv
-          - https://docs.pydantic.dev/latest/objects.inv
+          # We are still on Pydantic v1 which does not have intersphinx
+          # See https://github.com/phenology/springtime/issues/156
+          # Need to update to v2 to be able to use intersphinx link below
+          # - https://docs.pydantic.dev/latest/objects.inv
           - https://geopandas.org/en/stable/objects.inv
+          - https://pandas.pydata.org/pandas-docs/stable/objects.inv
+          - https://docs.xarray.dev/en/stable/objects.inv
 - gen-files:  # Auto-generate API reference files
     scripts:
         - docs/gen_apiref_datasets.py

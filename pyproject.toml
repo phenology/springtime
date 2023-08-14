@@ -97,7 +97,7 @@ quality-checks = [
   "mypy src tests",
   "reuse lint",
 ]
-doctest = "pytest --doctest-modules --doctest-report none src/springtime/datasets/NPNPhenor.py"
+doctest = "pytest --doctest-modules --doctest-report none {args}"
 
 [tool.mypy]
 ignore_missing_imports = true

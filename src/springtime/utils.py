@@ -84,8 +84,11 @@ class YearRange(NamedTuple):
     Example:
 
         >>> YearRange(2000, 2005)
-        >>> YearRange(start=2000, end=2005)
+        YearRange(start=2000, end=2005)
+        >>> YearRange(start=2000, end=2005).range
+        range(2000, 2006)
         >>> YearRange(2000, 2000)
+        YearRange(start=2000, end=2000)
 
     """
 

@@ -73,6 +73,7 @@ docs = [
   "mkdocs-include-markdown-plugin",
   "mkdocstrings[python]",
   "mkdocs-literate-nav",
+  "mkdocs-section-index",
 ]
 
 [project.urls]

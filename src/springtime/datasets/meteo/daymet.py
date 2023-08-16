@@ -138,7 +138,7 @@ class DaymetSinglePoint(Daymet):
 
     Attributes:
         variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteorology.daymet.Daymet]
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
         point: Point as longitude, latitude in WGS84 projection.
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
@@ -216,7 +216,7 @@ class DaymetMultiplePoints(Daymet):
 
     Attributes:
         variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteorology.daymet.Daymet]
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
         points: List of points as [[longitude, latitude], ...], in WGS84
             projection
         years: timerange. For example years=[2000, 2002] downloads data for three years.
@@ -271,7 +271,7 @@ class DaymetBoundingBox(Daymet):
 
     Attributes:
         variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteorology.daymet.Daymet]
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
         area: A dictionary of the form
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`. Do not make
             bounding box too large as there is a 6Gb maximum download size.

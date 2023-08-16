@@ -84,7 +84,7 @@ plugins:
           members_order: source
           show_source: false
           show_signature: true
-          inherited-members: true  # https://github.com/mkdocstrings/python/issues/40
+          inherited_members: true  # https://github.com/mkdocstrings/python/issues/40
           show_if_no_docstring: false
           signature_crossrefs: true
           docstring_section_style: table

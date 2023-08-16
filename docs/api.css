@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0 */
 }
 
 /* Make headers in api docs more different */
-h1.doc-heading {
+/* h1.doc-heading {
     font-size: 1.5rem;
 }
 h2.doc-heading {
@@ -24,36 +24,43 @@ h5.doc-heading {
 }
 h6.doc-heading {
     font-size: 0.5rem;
-}
+} */
 
 /* Don't format api headers as code block */
-h1 > code {
+/* .doc-heading > code {
     background-color: white!important;
     padding: 0!important;
     font-weight: bold;
+} */
+
+/* Fancy symbols */
+.doc-heading::before {
+    font-family: var(--md-code-font-family);
+    font-size: .85em;
+    /* font-weight: bold; */
+    padding-right: 0.2em;
+    padding-left: 0.2em;
+    margin-right: .1em;
+    border-radius: 10%;
 }
-h2 > code {
-    background-color: white!important;
-    padding:0!important;
-    font-weight: bold;
+
+.doc-class > .doc-heading::before {
+    content: "class";
+    color:  #0550ae;
+    background-color:  #0550ae1a;
 }
-h3 > code {
-    background-color: white!important;
-    padding: 0!important;
-    font-weight: bold;
+.doc-function > .doc-heading::before {
+    content: "func";
+    color: #8250df;
+    background-color: #8250df1a;
+  }
+.doc-module > .doc-heading::before {
+    content: "mod";
+    color: #5cad0f;
+    background-color: #5cad0f1a;
 }
-h4 > code {
-    background-color: white!important;
-    padding: 0!important;
-    font-weight: bold;
-}
-h5 > code {
-    background-color: white!important;
-    padding: 0!important;
-    font-weight: bold;
-}
-h6 > code {
-    background-color: white!important;
-    padding: 0!important;
-    font-weight: bold;
+.doc-attribute > .doc-heading::before {
+    content: "attr";
+    color: #953800;
+    background-color: #9538001a;
 }

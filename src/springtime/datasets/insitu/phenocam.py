@@ -115,13 +115,13 @@ class Phenocam(Dataset):
     """Download and load data from phenocam
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         veg_type: Vegetation type (DB, EN). Default is "all".
         frequency: Frequency of the time series product.
         variables: Variables you want to download. When empty will download all
             the variables.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

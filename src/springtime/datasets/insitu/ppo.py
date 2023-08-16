@@ -45,6 +45,9 @@ class RPPO(Dataset):
     """Download and load PPO data.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         genus: plant genus, e.g. "Quercus Pinus". See [PPO
             documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
         termID: plant development stage, e.g. "obo:PPO_0002313" means "true
@@ -55,9 +58,6 @@ class RPPO(Dataset):
         limit: Maximum number of records to retreive
         timeLimit: Number of seconds to wait for the server to respond
         variables: Variables you want to load. When empty will load all the variables.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

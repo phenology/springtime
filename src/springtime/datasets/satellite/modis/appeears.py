@@ -53,14 +53,14 @@ class Appeears(Dataset):
     """Download and load MODIS data using AppEEARS.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         product: An AppEEARSp product name. Use `products()` to get a list of
             currently available in AppEEARS.
         version: An AppEEARS product version.
         layers: Layers of a AppEEARS product. Use `layers(product)` to get list
             of available layers for a product.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 
@@ -102,8 +102,6 @@ class AppeearsArea(Appeears):
     """Download and load MODIS data using AppEEARS by an area of interest
 
     Attributes:
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         product: An AppEEARSp product name. Use `products()` to get a list of
             currently available in AppEEARS.
         version: An AppEEARS product version.
@@ -112,6 +110,8 @@ class AppeearsArea(Appeears):
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
             no resampling.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
 
     """
 
@@ -172,20 +172,18 @@ class AppeearsPointsFromArea(AppeearsArea):
     large and in a small area.
 
     Attributes:
-        points: List of points as [[longitude, latitude], ...], in WGS84
-            projection.
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         product: An AppEEARSp product name. Use `products()` to get a list of
             currently available in AppEEARS.
         version: An AppEEARS product version.
         layers: Layers of a AppEEARS product. Use `layers(product)` to get list
             of available layers for a product.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-
-
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection.
     """
 
     dataset: Literal["appeears_points_from_area"] = "appeears_points_from_area"
@@ -215,16 +213,16 @@ class AppeearsPoints(Appeears):
     """MODIS land products subsets using AppEEARS.
 
     Attributes:
-        points: List of points as [[longitude, latitude], ...], in WGS84
-            projection.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         product: An AppEEARSp product name. Use `products()` to get a list of
             currently available in AppEEARS.
         version: An AppEEARS product version.
         layers: Layers of a AppEEARS product. Use `layers(product)` to get list
             of available layers for a product.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection.
 
     """
 

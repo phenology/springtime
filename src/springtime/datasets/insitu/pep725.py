@@ -52,6 +52,9 @@ class PEP725Phenor(Dataset):
     """Download and load data from PEP725.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         species: Full species name, see <http://www.pep725.eu/pep725_gss.php>
             for options.
         bbch: Phenological development stage according to BBCH scale. See
@@ -61,9 +64,6 @@ class PEP725Phenor(Dataset):
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         credential_file: Path to PEP725 credentials file. Email adress on first
             line, password on second line.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

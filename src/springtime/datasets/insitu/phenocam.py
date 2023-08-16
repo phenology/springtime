@@ -238,15 +238,15 @@ class PhenocamrBoundingBox(Phenocam):
     """PhenoCam time series for sites in a bounding box.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         veg_type: Vegetation type (DB, EN). Default is "all".
         frequency: Frequency of the time series product.
         variables: Variables you want to download. When empty will download all
             the variables.
         area: A dictionary of the form
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

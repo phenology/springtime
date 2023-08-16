@@ -128,13 +128,13 @@ class EOBS(Dataset):
     """E-OBS dataset.
 
     Attributes:
-        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
-        variables: Some variables are specific for a certain product type.
-        grid_resolution: either "0.25deg" or "0.1deg"
-        version: currently only possible value is "26.0e"
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
             no resampling.
+        product_type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
 
     """
 
@@ -248,14 +248,14 @@ class EOBSSinglePoint(EOBS):
     """E-OBS dataset for a single point.
 
     Attributes:
-        point: Point as longitude, latitude in WGS84 projection.
-        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
-        variables: Some variables are specific for a certain product type.
-        grid_resolution: either "0.25deg" or "0.1deg"
-        version: currently only possible value is "26.0e"
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
             no resampling.
+        product_type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
+        point: Point as longitude, latitude in WGS84 projection.
 
     """
 
@@ -277,16 +277,16 @@ class EOBSMultiplePoints(EOBS):
     """E-OBS dataset for a multiple points.
 
     Attributes:
-        point: Points as longitude, latitude in WGS84 projection.
-        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        product_type: one of "ensemble_mean", "ensemble_spread", "elevation".
         variables: Some variables are specific for a certain product type.
         grid_resolution: either "0.25deg" or "0.1deg"
         version: currently only possible value is "26.0e"
         keep_grid_location: If True, keep the eobs_longitude and eobs_latitude
             columns. If False, drop them.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
+        points: Points as longitude, latitude in WGS84 projection.
 
     """
 
@@ -367,16 +367,15 @@ class EOBSBoundingBox(EOBS):
     """E-OBS dataset for a multiple points.
 
     Attributes:
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-        product type: one of "ensemble_mean", "ensemble_spread", "elevation".
-        variables: Some variables are specific for a certain product type.
-        grid_resolution: either "0.25deg" or "0.1deg"
-        version: currently only possible value is "26.0e"
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
             no resampling.
-
+        product_type: one of "ensemble_mean", "ensemble_spread", "elevation".
+        variables: Some variables are specific for a certain product type.
+        grid_resolution: either "0.25deg" or "0.1deg"
+        version: currently only possible value is "26.0e"
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
 
     """
 

@@ -101,6 +101,9 @@ class Daymet(Dataset):
     """Base class for common Daymet attributes.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         variables: List of variable you want to download. Options:
 
             * dayl: Duration of the daylight period (seconds/day)
@@ -113,11 +116,6 @@ class Daymet(Dataset):
 
             When empty will download all the previously mentioned climate
             variables.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-
-
     """
 
     variables: Sequence[DaymetVariables] = tuple()
@@ -137,12 +135,12 @@ class DaymetSinglePoint(Daymet):
     """Daymet data for single point.
 
     Attributes:
-        variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteo.daymet.Daymet]
-        point: Point as longitude, latitude in WGS84 projection.
         years: timerange. For example years=[2000, 2002] downloads data for three years.
         resample: Resample the dataset to a different time resolution. If None,
             no resampling.
+        variables: List of variable you want to download. See
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
+        point: Point as longitude, latitude in WGS84 projection.
 
     """
 
@@ -215,17 +213,15 @@ class DaymetMultiplePoints(Daymet):
     """Daymet data for multiple points.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         variables: List of variable you want to download. See
             [Daymet][springtime.datasets.meteo.daymet.Daymet]
         points: List of points as [[longitude, latitude], ...], in WGS84
             projection
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-
 
     """
-
     dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
@@ -270,6 +266,9 @@ class DaymetBoundingBox(Daymet):
     """Daymet data for a bounding box.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         variables: List of variable you want to download. See
             [Daymet][springtime.datasets.meteo.daymet.Daymet]
         area: A dictionary of the form
@@ -278,9 +277,6 @@ class DaymetBoundingBox(Daymet):
         mosaic: Daymet tile mosaic. Defaults to “na” for North America. Use
             “pr” for Puerto Rico and “hi” for Hawaii.
         frequency: Choose from "daily", "monthly", or "annual"
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

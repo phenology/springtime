@@ -91,6 +91,9 @@ class RNPN(Dataset):
     """Download and load data from NPN.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         species_ids: formatted as a dictionary of the form `{"name": "myname",
             "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
             functional type as a string. Use
@@ -108,9 +111,6 @@ class RNPN(Dataset):
         use_first: When true uses first_yes columns as value, otherwise the last
             "_yes"-columns.
         aggregation_operator: "min", "max", "mean", or "median"
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

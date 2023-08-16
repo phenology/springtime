@@ -48,6 +48,9 @@ class ModisSinglePoint(Dataset):
     """MODIS land products subsets for single point.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         point: provided as a tuple of [longitude, latitude] in WGS84 projection.
         product: A MODIS product. Use `modis_products()` to get list of
             available products.
@@ -56,10 +59,6 @@ class ModisSinglePoint(Dataset):
         extent: By default a single pixel returned.
             Give custom extend to get more pixels around point as dictionariy of
             the form {"horizontal": 12, "vertical": 34}
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-
     """
 
     dataset: Literal["modis_single_point"] = "modis_single_point"
@@ -141,15 +140,15 @@ class ModisMultiplePoints(Dataset):
     """MODIS land products subsets for multiple points.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         points: provided as a list of points like so: `[[longitude, latitude],
             ...]` in WGS84projection.
         product: A MODIS product. Use `modis_products()` to get list of
             available products.
         bands: MODIS product bands. Use `modis_bands(product)` to get list of
             available bands for a product.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
 
     """
 

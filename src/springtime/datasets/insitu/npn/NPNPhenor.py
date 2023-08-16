@@ -109,13 +109,13 @@ class NPNPhenor(Dataset):
     """Download and load data from NPN.
 
     Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
         species: npn species id
         phenophase: npn phenophase id
         area: A dictionary of the form
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
     """
 
     dataset: Literal["NPNPhenor"] = "NPNPhenor"

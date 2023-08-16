@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0 */
 }
 
 /* Make headers in api docs more different */
-/* h1.doc-heading {
+h1.doc-heading {
     font-size: 1.5rem;
 }
 h2.doc-heading {
@@ -24,7 +24,7 @@ h5.doc-heading {
 }
 h6.doc-heading {
     font-size: 0.5rem;
-} */
+}
 
 /* Don't format api headers as code block */
 /* .doc-heading > code {

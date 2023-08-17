@@ -3,34 +3,79 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # due to import of daymetR
 
-""""Daymet data from
-Daily Surface Weather Data on a 1-km Grid for North America, Version 4 R1
-https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2129
+"""
+Functionality to retrieve Daymet Daily Surface Weather Data for North
+America, Version 4 R1.
 
-temporal coverage: 1950-01-01 to 2021-12-31
-spatial coverage:
-    N:        S:       E:      W:
-hi 23.52	17.95	-154.77	-160.31
-na 82.91	14.07	-53.06	-178.13
-pr 19.94	16.84	-64.12	-67.99
+Source: <https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=2129>
 
-regions = {
-    "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},
-    "na": {"lon": [-178.13, -53.06], "lat": [14.07, 82.91]},
-    "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
-}
+Fetches data from https://daymet.ornl.gov/.
 
-dayl	Duration of the daylight period (seconds/day)
-prcp	Daily total precipitation (mm/day)
-srad	Incident shortwave radiation flux density(W/m2)
-swe	Snow water equivalent (kg/m2)
-tmax	Daily maximum 2-meter air temperature (°C)
-tmin	Daily minimum 2-meter air temperature (°C)
-vp	Water vapor pressure (Pa)
+Requires daymetr. Install with
+```R
+install.packages("daymetr")
+```
 
-requires:
-xarray + pydap
-pyproj
+* Temporal coverage: 1950-01-01 to 2021-12-31
+* Spatial coverage (1 km grid):
+
+|                    | North | South | East    | West   |
+| -------------------|-------|-------|---------|--------|
+| Hawaii (hi)        | 23.52 | 17.95 | -154.77 | -160.31|
+| North America (na) | 82.91 | 14.07 | -53.06  | -178.13|
+| Puearto Rico (pr)  | 19.94 | 16.84 | -64.12  | -67.99 |
+
+Example: Example: Download data for 3 points
+
+    ```pycon
+    source = DaymetMultiplePoints(
+        points=[
+            [-84.2625, 36.0133],
+            [-86, 39.6],
+            [-85, 40],
+        ],
+        years=[2000,2002]
+    )
+    source.download()
+    df = source.load()
+    ```
+
+Example: Example: Download daily data
+
+    ```pycon
+    from springtime.datasets.meteo.daymet import DaymetBoundingBox
+
+    source = DaymetBoundingBox(
+        variables = ["tmin", "tmax"],
+        area = {
+            "name": "indianapolis",
+            "bbox": [-86.5, 39.5, -86, 40.1]
+            },
+        years=[2000, 2002]
+    )
+    source.download()
+    df = source.load()
+    ```
+
+Example: Example: download monthly data
+
+    ```pycon
+    from springtime.datasets.meteo.daymet import DaymetBoundingBox
+
+    source = DaymetBoundingBox(
+        variables = ["tmin", "tmax"],
+        area = {
+            "name": "indianapolis",
+            "bbox": [-86.5, 39.5, -86, 40.1]
+            },
+        years=[2000, 2002],
+        frequency = "monthly",
+    )
+    source.download()
+    df = source.load()
+    ```
+
+
 """
 
 from datetime import datetime
@@ -49,15 +94,31 @@ from springtime.utils import NamedArea, run_r_script
 logger = logging.getLogger(__name__)
 
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
+"""Daymet variables."""
 
 
 class Daymet(Dataset):
-    variables: Sequence[DaymetVariables] = tuple()
-    """climate variable you want to download vapour pressure (vp),
-    minimum and maximum temperature (tmin,tmax), snow water equivalent (swe),
-    solar radiation (srad), precipitation (prcp) , day length (dayl).
-    When empty will download all the previously mentioned climate variables.
+    """Base class for common Daymet attributes.
+
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        variables: List of variable you want to download. Options:
+
+            * dayl: Duration of the daylight period (seconds/day)
+            * prcp: Daily total precipitation (mm/day)
+            * srad: Incident shortwave radiation flux density(W/m2)
+            * swe:  Snow water equivalent (kg/m2)
+            * tmax: Daily maximum 2-meter air temperature (°C)
+            * tmin: Daily minimum 2-meter air temperature (°C)
+            * vp:   Water vapor pressure (Pa)
+
+            When empty will download all the previously mentioned climate
+            variables.
     """
+
+    variables: Sequence[DaymetVariables] = tuple()
 
     @validator("years")
     def _valid_years(cls, years):
@@ -71,20 +132,20 @@ class Daymet(Dataset):
 
 
 class DaymetSinglePoint(Daymet):
-    """Daymet data for single point using daymetr.
+    """Daymet data for single point.
 
-    Fetches data from https://daymet.ornl.gov/.
-
-    Requires daymetr. Install with
-    ```R
-    install.packages("daymetr")
-    ```
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        variables: List of variable you want to download. See
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
+        point: Point as longitude, latitude in WGS84 projection.
 
     """
 
     dataset: Literal["daymet_single_point"] = "daymet_single_point"
     point: Tuple[float, float]
-    """Point as longitude, latitude in WGS84 projection."""
 
     @property
     def _path(self):
@@ -149,35 +210,20 @@ class DaymetSinglePoint(Daymet):
 
 
 class DaymetMultiplePoints(Daymet):
-    """Daymet data for multiple points using daymetr.
+    """Daymet data for multiple points.
 
-    Fetches data from https://daymet.ornl.gov/.
-
-    Requires daymetr. Install with
-    ```R
-    install.packages("daymetr")
-    ```
-
-    Example:
-
-        To download data for 3 points::
-
-            source = DaymetMultiplePoints(
-                points=[
-                    [-84.2625, 36.0133],
-                    [-86, 39.6],
-                    [-85, 40],
-                ],
-                years=[2000,2002]
-            )
-            source.download()
-            df = source.load()
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        variables: List of variable you want to download. See
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection
 
     """
-
     dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
-    """Points as longitude, latitude in WGS84 projection."""
 
     @property
     def _handlers(self):
@@ -217,60 +263,26 @@ class DaymetMultiplePoints(Daymet):
 
 
 class DaymetBoundingBox(Daymet):
-    """Daymet data for a bounding box using daymetr.
+    """Daymet data for a bounding box.
 
-    Fetches data from https://daymet.ornl.gov/.
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        variables: List of variable you want to download. See
+            [Daymet][springtime.datasets.meteo.daymet.Daymet]
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`. Do not make
+            bounding box too large as there is a 6Gb maximum download size.
+        mosaic: Daymet tile mosaic. Defaults to “na” for North America. Use
+            “pr” for Puerto Rico and “hi” for Hawaii.
+        frequency: Choose from "daily", "monthly", or "annual"
 
-    Requires daymetr. Install with
-    ```R
-    install.packages("daymetr")
-    ```
-
-    Example:
-
-        To download daily data:
-
-        from springtime.datasets.daymet import DaymetBoundingBox
-
-        source = DaymetBoundingBox(
-            variables = ["tmin", "tmax"],
-            area = {
-                "name": "indianapolis",
-                "bbox": [-86.5, 39.5, -86, 40.1]
-                },
-            years=[2000, 2002]
-        )
-        source.download()
-        df = source.load()
-
-        To download monthly data:
-
-        from springtime.datasets.daymet import DaymetBoundingBox
-
-        source = DaymetBoundingBox(
-            variables = ["tmin", "tmax"],
-            area = {
-                "name": "indianapolis",
-                "bbox": [-86.5, 39.5, -86, 40.1]
-                },
-            years=[2000, 2002],
-            frequency = "monthly",
-        )
-        source.download()
-        df = source.load()
-        df
-
-
-    Do not make bounding box too large as there is a 6Gb maximum download size.
     """
 
     dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
     area: NamedArea
     mosaic: Literal["na", "hi", "pr"] = "na"
-    """tile mosaic to use.
-
-    Defaults to “na” for North America (use “pr” for Puerto Rico and “hi” for Hawaii).
-    """
     frequency: Literal["daily", "monthly", "annual"] = "daily"
     # TODO monthly saves as *daily*.nc
 
@@ -288,6 +300,11 @@ class DaymetBoundingBox(Daymet):
             run_r_script(self._r_download(), timeout=120)
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         files = list(self._box_dir.glob("*.nc"))
         df = xr.open_mfdataset(files).to_dataframe().reset_index()
         df.rename(columns={"time": "datetime"}, inplace=True)
@@ -341,3 +358,10 @@ class DaymetBoundingBox(Daymet):
         return (
             CONFIG.cache_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
         )
+
+
+# regions = {
+#     "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},
+#     "na": {"lon": [-178.13, -53.06], "lat": [14.07, 82.91]},
+#     "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
+# }

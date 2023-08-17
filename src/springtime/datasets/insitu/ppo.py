@@ -2,7 +2,29 @@
 #
 # SPDX-License-Identifier: GPL-2.0-only
 # due to import of rppo
+"""
+This module contains functionality to download data from the Plant Phenology
+Ontology data portal.
 
+Uses [rppo](https://docs.ropensci.org/rppo/) to get data from
+<http://plantphenology.org/>
+
+Example:
+
+    ```python
+    from springtime.datasets.insitu.ppo import RPPO
+    dataset = RPPO(
+        genus="Quercus Pinus",
+        termID="obo:PPO_0002313",
+        limit=10,
+        years=[2019, 2020]
+        # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
+    )
+    dataset.download()
+    df = dataset.load()
+    df
+    ```
+"""
 from typing import Literal, Optional, Sequence
 
 import geopandas as gpd
@@ -16,55 +38,48 @@ from springtime.utils import NamedArea, run_r_script
 
 # non-numerice variables are removed from the list below.
 PPOVariables = Literal["dayOfYear"]
+"""Variables available in the PPO dataset."""
 
 
 class RPPO(Dataset):
-    """Data from the Plant Phenology Ontology data portal.
+    """Download and load PPO data.
 
-    Uses rppo (https://docs.ropensci.org/rppo/) to get data from
-    http://plantphenology.org/
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        genus: plant genus, e.g. "Quercus Pinus". See [PPO
+            documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
+        termID: plant development stage, e.g. "obo:PPO_0002313" means "true
+            leaves present". See [PPO
+            documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        limit: Maximum number of records to retreive
+        timeLimit: Number of seconds to wait for the server to respond
+        variables: Variables you want to load. When empty will load all the variables.
 
-    Example:
-
-        ```python
-        from springtime.datasets.ppo import RPPO
-        dataset = RPPO(
-            genus="Quercus Pinus",
-            termID="obo:PPO_0002313",
-            limit=10,
-            years=[2019, 2020]
-            # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
-        )
-        dataset.download()
-        df = dataset.load()
-        df
-        ```
     """
 
     dataset: Literal["rppo"] = "rppo"
     genus: str
     termID: str = "obo:PPO_0002313"
-    """true leaves present == obo:PPO_0002313"""
     area: Optional[NamedArea]
     limit: PositiveInt = 100000
-    """Maximum number of records to retreive"""
     timeLimit: PositiveInt = 60
-    """Number of seconds to wait for the server to respond"""
     variables: Sequence[PPOVariables] = tuple()
-    """variables you want to load. When empty will load all the
-    variables.
-    """
 
     @property
-    def path(self):
+    def _path(self):
         fn = self._build_filename()
         return CONFIG.cache_dir / "PPO" / fn
 
     def download(self):
-        if self.path.exists():
-            print("File already exists:", self.path)
+        """Download data."""
+        if self._path.exists():
+            print("File already exists:", self._path)
         else:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self._path.parent.mkdir(parents=True, exist_ok=True)
             run_r_script(self._r_download(), timeout=300)
 
     def _r_download(self):
@@ -81,13 +96,13 @@ class RPPO(Dataset):
             {box}
             {years}
             limit={self.limit}, timeLimit = {self.timeLimit})
-        saveRDS(response, file="{self.path}")
+        saveRDS(response, file="{self._path}")
         """
 
     def load(self):
         """Load data from disk."""
         readRDS = ro.r["readRDS"]
-        rdata = readRDS(str(self.path))
+        rdata = readRDS(str(self._path))
 
         data = dict(zip(rdata.names, list(rdata)))
         df = ro.pandas2ri.rpy2py_dataframe(data["data"])

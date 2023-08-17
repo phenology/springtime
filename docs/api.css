@@ -1,0 +1,66 @@
+/* SPDX-FileCopyrightText: 2023 Springtime authors
+
+SPDX-License-Identifier: Apache-2.0 */
+/* Don't show cell counts in notebooks */
+.jp-InputPrompt, .jp-OutputPrompt {
+    display: none !important;
+}
+
+/* Make headers in api docs more different */
+h1.doc-heading {
+    font-size: 1.5rem;
+}
+h2.doc-heading {
+    font-size: 1.2rem;
+}
+h3.doc-heading {
+    font-size: 1rem;
+}
+h4.doc-heading {
+    font-size: 0.8rem;
+}
+h5.doc-heading {
+    font-size: 0.7rem;
+}
+h6.doc-heading {
+    font-size: 0.5rem;
+}
+
+/* Don't format api headers as code block */
+/* .doc-heading > code {
+    background-color: white!important;
+    padding: 0!important;
+    font-weight: bold;
+} */
+
+/* Fancy symbols */
+.doc-heading::before {
+    font-family: var(--md-code-font-family);
+    font-size: .85em;
+    /* font-weight: bold; */
+    padding-right: 0.2em;
+    padding-left: 0.2em;
+    margin-right: .1em;
+    border-radius: 10%;
+}
+
+.doc-class > .doc-heading::before {
+    content: "class";
+    color:  #0550ae;
+    background-color:  #0550ae1a;
+}
+.doc-function > .doc-heading::before {
+    content: "func";
+    color: #8250df;
+    background-color: #8250df1a;
+  }
+.doc-module > .doc-heading::before {
+    content: "mod";
+    color: #5cad0f;
+    background-color: #5cad0f1a;
+}
+.doc-attribute > .doc-heading::before {
+    content: "attr";
+    color: #953800;
+    background-color: #9538001a;
+}

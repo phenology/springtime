@@ -87,16 +87,16 @@ def materialize_estimators(
     names: Sequence[str] | None,
     buildin_models: Sequence[str],
     init_kwargs: dict[str, dict[str, Any]] | None,
-):
+) -> Sequence[str] | None:
     """Materialize pycaret models from model names.
 
     Args:
-        model_names (list[str]): list of model names
-        buildin_models (list[str]): list of buildin pycaret models
-        init_kwargs (dict[str,dict[str,Any]]): init kwargs for models
+        names: list of model names
+        buildin_models: list of buildin pycaret models
+        init_kwargs: init kwargs for models
 
     Returns:
-        list[str]: list of model names that can be materialized
+        list of model names that can be materialized
     """
     if names is None:
         return None

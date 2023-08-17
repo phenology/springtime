@@ -1,7 +1,50 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+"""
+This module contains functionality to download and load data from NPN. It uses
+[rnpn](https://rdrr.io/cran/rnpn/) as client.
 
+Could use <https://data.usanpn.org/observations/get-started> to figure out
+which species/phenophases combis are available.
+
+Example:
+
+    ```python
+    from springtime.datasets.insitu.npn.rnpn import (
+        RNPN,
+        npn_species,
+        npn_phenophases
+    )
+
+    # List IDs and names for available species, phenophases
+    species = npn_species()
+    phenophases = npn_phenophases()
+
+    # Load dataset
+    dataset = RNPN(
+        # Syringa vulgaris / common lilac
+        species_ids={'name': 'lilac', 'items': [36]},
+        phenophase_ids={'name': 'Leaves', 'items': [483]},
+        years=[2010, 2012],
+    )
+    dataset.download()
+    gdf = dataset.load()
+
+    # or with area bounds
+    dataset = RNPN(
+        years = [2010, 2011],
+        area = {'name':'some', 'bbox':[-112, 30, -108, 35.0]}
+    )
+    ```
+
+Requires rnpn R package. Install with
+
+```R
+install.packages("rnpn")
+```
+
+"""
 from pathlib import Path
 from typing import Literal, Optional, Union
 
@@ -21,6 +64,8 @@ stations_file = cache_dir / "stations.csv"
 
 
 class SpeciesByFunctionalType(BaseModel):
+    """Species by functional type."""
+
     functional_type: str
 
     @property
@@ -33,6 +78,8 @@ class SpeciesByFunctionalType(BaseModel):
 
 
 class PhenophasesByName(BaseModel):
+    """Phenophases by name."""
+
     name: str
 
     @property
@@ -43,55 +90,35 @@ class PhenophasesByName(BaseModel):
 class RNPN(Dataset):
     """Download and load data from NPN.
 
-    Uses rnpn (https://rdrr.io/cran/rnpn/) as client.
-
-    Could use https://data.usanpn.org/observations/get-started to figure out
-    which species/phenophases combis are available.
-
-    Example:
-
-        ```python
-        from springtime.datasets.rnpn import (
-            RNPN,
-            npn_species,
-            npn_phenophases
-        )
-
-        # List IDs and names for available species, phenophases
-        species = npn_species()
-        phenophases = npn_phenophases()
-
-        # Load dataset
-        dataset = RNPN(
-            # Syringa vulgaris / common lilac
-            species_ids={'name': 'lilac', 'items': [36]},
-            phenophase_ids={'name': 'Leaves', 'items': [483]},
-            years=[2010, 2012],
-        )
-        dataset.download()
-        gdf = dataset.load()
-
-        # or with area bounds
-        dataset = RNPN(
-            years = [2010, 2011],
-            area = {'name':'some', 'bbox':[-112, 30, -108, 35.0]}
-        )
-        ```
-
-    Requires rnpn R package. Install with
-
-    ```R
-    install.packages("rnpn")
-    ```
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        species_ids: formatted as a dictionary of the form `{"name": "myname",
+            "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
+            functional type as a string. Use
+            [npn_species][springtime.datasets.insitu.rnpn.npn_species] or
+            [npn_species_ids_by_functional_type][springtime.datasets.insitu.rnpn.npn_species_ids_by_functional_type]
+            to see options.
+        phenophase_ids: formatted as a dictionary of the form `{"name": "myname",
+            "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
+            phenophase name as a string. Use
+            [npn_phenophases][springtime.datasets.insitu.rnpn.npn_phenophases] or
+            [npn_phenophase_ids_by_name][springtime.datasets.insitu.rnpn.npn_phenophase_ids_by_name]
+            to see options.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        use_first: When true uses first_yes columns as value, otherwise the last
+            "_yes"-columns.
+        aggregation_operator: "min", "max", "mean", or "median"
 
     """
 
     dataset: Literal["RNPN"] = "RNPN"
-    species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]]
+    species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]] = None
     phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
     area: Optional[NamedArea] = None
     use_first: bool = True
-    """When true uses first_yes columns as value, otherwise the last_yes columns."""
     aggregation_operator: Literal["min", "max", "mean", "median"] = "min"
 
     def _filename(self, year):
@@ -127,7 +154,7 @@ class RNPN(Dataset):
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return _reformat(self, gdf)
 
-    def download(self, timeout=30):
+    def download(self, timeout: int = 30):
         """Download the data.
 
         Args:
@@ -171,7 +198,7 @@ class RNPN(Dataset):
         """
 
 
-def npn_species():
+def npn_species() -> pd.DataFrame:
     """Get available species on npn.
 
     Returns:
@@ -190,7 +217,7 @@ def npn_species():
     return pd.read_csv(species_file)
 
 
-def npn_phenophases():
+def npn_phenophases() -> pd.DataFrame:
     """Get available phenophases on npn.
 
     Returns:
@@ -208,11 +235,11 @@ def npn_phenophases():
     return pd.read_csv(phenophases_file)
 
 
-def npn_stations():
+def npn_stations() -> gpd.GeoDataFrame:
     """Get available stations on npn.
 
     Returns:
-        Pandas dataframe with station_id and other station related fields.
+        Dataframe with station_id and other station related fields.
     """
     if not stations_file.exists() or CONFIG.force_override:
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -227,12 +254,14 @@ def npn_stations():
     return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
 
 
-def npn_species_ids_by_functional_type(functional_type):
+def npn_species_ids_by_functional_type(functional_type) -> NamedIdentifiers:
+    """Lookup species ids by functional type."""
     species = _lookup(npn_species(), "functional_type", functional_type)
     return NamedIdentifiers(name=functional_type, items=species.species_id.to_list())
 
 
-def npn_phenophase_ids_by_name(phenophase_name):
+def npn_phenophase_ids_by_name(phenophase_name) -> NamedIdentifiers:
+    """Lookup phenophase ids by name."""
     phenophases = _lookup(npn_phenophases(), "phenophase_name", phenophase_name)
     return NamedIdentifiers(
         name=phenophase_name, items=phenophases.phenophase_id.to_list()

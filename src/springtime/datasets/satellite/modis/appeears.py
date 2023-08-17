@@ -1,6 +1,15 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+"""
+This module contains functionality to download and load MODIS land products
+subsets from AppEEARS
+
+See <https://appeears.earthdatacloud.nasa.gov/>
+
+Credentials are read from `~/.config/springtime/appeears.json`.
+JSON file should look like `{"username": "foo", "password": "bar"}`.
+"""
 from datetime import datetime, timezone
 from hashlib import sha1
 import json
@@ -41,20 +50,24 @@ class TokenInfo(BaseModel):
 
 
 class Appeears(Dataset):
+    """Download and load MODIS data using AppEEARS.
+
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        product: An AppEEARSp product name. Use `products()` to get a list of
+            currently available in AppEEARS.
+        version: An AppEEARS product version.
+        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
+            of available layers for a product.
+
+    """
+
     product: str
-    """An AppEEARS product name.
-
-    Use `products()` to get a list of currently available in AppEEARS.
-    """
-    # TODO make optional, if not given, use latest version
-    version: str
-    """An AppEEARS product version."""
+    version: str  # TODO make optional, if not given, use latest version
     layers: conset(str, min_items=1)  # type: ignore
-    # TOD rename to variables or bands?
-    """Layers of a AppEEARS product.
-
-    Use `layers(product)` to get list of available layers for a product.
-    """
+    # TODO rename to variables or bands?
     _token: Optional[TokenInfo] = None
 
     # TODO drop when pydantic v2 is used, as it will be default
@@ -78,7 +91,7 @@ class Appeears(Dataset):
             token_fn.write_text(self._token.json())
 
     @property
-    def output_dir(self):
+    def _output_dir(self):
         """Output directory for downloaded data."""
         d = CONFIG.cache_dir / "appeears"
         d.mkdir(exist_ok=True, parents=True)
@@ -86,15 +99,23 @@ class Appeears(Dataset):
 
 
 class AppeearsArea(Appeears):
-    """MODIS land products subsets from AppEEARS by an area of interest.
+    """Download and load MODIS data using AppEEARS by an area of interest
 
-    https://appeears.earthdatacloud.nasa.gov/
+    Attributes:
+        product: An AppEEARSp product name. Use `products()` to get a list of
+            currently available in AppEEARS.
+        version: An AppEEARS product version.
+        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
+            of available layers for a product.
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
 
-    Credentials are read from `~/.config/springtime/appeears.json`.
-    JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 
-    dataset: str = "appeears_area"
+    dataset: Literal["appeears_area", "appeears_points_from_area"] = "appeears_area"
     area: NamedArea
 
     @property
@@ -104,13 +125,14 @@ class AppeearsArea(Appeears):
         return f"{self.product}.{self.version}_{resolution}_aid0001.nc"
 
     @property
-    def output_dir(self):
-        d = super().output_dir / self.area.name
+    def _output_dir(self):
+        d = super()._output_dir / self.area.name
         d.mkdir(exist_ok=True, parents=True)
         return d
 
     def download(self):
-        fn = self.output_dir / self._path
+        """Download the data."""
+        fn = self._output_dir / self._path
         if (fn).exists():
             logger.warning(f"File {fn} exists, not downloading again")
             return
@@ -128,26 +150,40 @@ class AppeearsArea(Appeears):
         files = _list_files(task, token=self._token)
         for file in files:
             if file.name == self._path:
-                file.download(task, self.output_dir, token=self._token)
+                file.download(task, self._output_dir, token=self._token)
 
     def load(self):
-        ds = xr.open_dataset(self.output_dir / self._path)
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
+        ds = xr.open_dataset(self._output_dir / self._path)
         return ds
 
 
 class AppeearsPointsFromArea(AppeearsArea):
     """MODIS land products subsets using AppEEARS by points from an area of interest.
 
-    First the bounding box of area is downloaded and
-    then points are selected from the area.
+    First the bounding box of area is downloaded and then points are selected
+    from the area.
 
-    This class could be quicker then AppeearsPoints
-    if the amount of points is large and in a small area.
+    This class could be quicker then AppeearsPoints if the amount of points is
+    large and in a small area.
 
-    https://appeears.earthdatacloud.nasa.gov/
-
-    Credentials are read from `~/.config/springtime/appeears.json`.
-    JSON file should look like `{"username": "foo", "password": "bar"}`.
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        product: An AppEEARSp product name. Use `products()` to get a list of
+            currently available in AppEEARS.
+        version: An AppEEARS product version.
+        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
+            of available layers for a product.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection.
     """
 
     dataset: Literal["appeears_points_from_area"] = "appeears_points_from_area"
@@ -155,6 +191,11 @@ class AppeearsPointsFromArea(AppeearsArea):
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         ds = super().load()
         # Convert cftime.DatetimeJulian to datetime.datetime
         datetimeindex = ds.indexes["time"].to_datetimeindex()
@@ -171,10 +212,18 @@ class AppeearsPointsFromArea(AppeearsArea):
 class AppeearsPoints(Appeears):
     """MODIS land products subsets using AppEEARS.
 
-    https://appeears.earthdatacloud.nasa.gov/
+    Attributes:
+        years: timerange. For example years=[2000, 2002] downloads data for three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+        product: An AppEEARSp product name. Use `products()` to get a list of
+            currently available in AppEEARS.
+        version: An AppEEARS product version.
+        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
+            of available layers for a product.
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection.
 
-    Credentials are read from `~/.config/springtime/appeears.json`.
-    JSON file should look like `{"username": "foo", "password": "bar"}`.
     """
 
     dataset: Literal["appeears_points"] = "appeears_points"
@@ -196,6 +245,7 @@ class AppeearsPoints(Appeears):
         return f"{chunk}-results.csv".replace("_", "-")
 
     def download(self):
+        """Download the data."""
         # api can not handle more than 500 points (of 1 product, 2 layers)
         # at once so we split the points into chunks
         points_chunks = [
@@ -212,7 +262,7 @@ class AppeearsPoints(Appeears):
             layers=self.layers,
             years=self.years,
         )
-        fn = self.output_dir / self._path(points)
+        fn = self._output_dir / self._path(points)
         if fn.exists():
             logger.warning(f"File {fn} already downloaded")
             return
@@ -235,9 +285,14 @@ class AppeearsPoints(Appeears):
         for file in files:
             if file.name == self._path(points):
                 logger.warning(f"Downloading {file.name}")
-                file.download(task, self.output_dir, token=self._token)
+                file.download(task, self._output_dir, token=self._token)
 
     def load(self):
+        """Load the dataset from disk into memory.
+
+        This may include pre-processing operations as specified by the context, e.g.
+        filter certain variables, remove data points with too many NaNs, reshape data.
+        """
         # TODO load all files in output_dir
         points_chunks = [
             self.points[i : i + 500] for i in range(0, len(self.points), 500)
@@ -257,7 +312,7 @@ class AppeearsPoints(Appeears):
         raw_columns2keep = ["Latitude", "Longitude"] + list(renames.keys())
 
         for points_chunk in points_chunks:
-            file = self.output_dir / self._path(points_chunk)
+            file = self._output_dir / self._path(points_chunk)
             if not file.exists():
                 raise FileNotFoundError(file)
             df = pd.read_csv(file, parse_dates=["Date"])
@@ -296,6 +351,8 @@ def _login(username, password):
 
 
 class ProductInfo(BaseModel):
+    """Product information"""
+
     Product: str
     Platform: str
     Description: str
@@ -328,6 +385,8 @@ def products() -> list[ProductInfo]:
 
 
 class LayerInfo(BaseModel):
+    """Layer information"""
+
     AddOffset: str
     Available: bool
     DataType: str

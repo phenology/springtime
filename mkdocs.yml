@@ -25,6 +25,8 @@ nav:
       - Meteorology:
         - Daymet: notebooks/datasets_daymet.ipynb
         - E-OBS: notebooks/datasets_eobs.ipynb
+      - API Reference: reference/springtime/datasets/
+      - Recipe Reference: clireference/datasets/
   - Models: models.md
   - Developer Guide: develop.md
 
@@ -70,17 +72,62 @@ plugins:
       "datasets_eobs.ipynb",
       "datasets_daymet.ipynb",
       "datasets_phenocam.ipynb",
+      "datasets_modis_appeears.ipynb",
       ]
 - include-markdown
 - search
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [src]
+        options:
+          members_order: source
+          show_source: false
+          show_signature: true
+          inherited_members: true  # https://github.com/mkdocstrings/python/issues/40
+          show_if_no_docstring: false
+          signature_crossrefs: true
+          docstring_section_style: table
+          show_submodules: false
+          show_root_heading: false
+          show_root_toc_entry: false
+          show_root_full_path: false
+          show_object_full_path: false
+          show_symbol_type_heading: true  # currently only available for insiders
+        import:
+          - https://docs.python.org/3/objects.inv
+          # We are still on Pydantic v1 which does not have intersphinx
+          # See https://github.com/phenology/springtime/issues/156
+          # Need to update to v2 to be able to use intersphinx link below
+          # - https://docs.pydantic.dev/latest/objects.inv
+          - https://geopandas.org/en/stable/objects.inv
+          - https://pandas.pydata.org/pandas-docs/stable/objects.inv
+          - https://docs.xarray.dev/en/stable/objects.inv
+- gen-files:  # Auto-generate API reference files
+    scripts:
+        - docs/gen_apiref_datasets.py
+        - docs/gen_cliref_datasets.py
+- literate-nav:  # Create an index for the auto-generated api reference
+    nav_file: SUMMARY.md
+- section-index
 extra:
   generator: false
 
 markdown_extensions:
   - admonition
   - pymdownx.details
+  - pymdownx.highlight:
+      pygments_lang_class: true
+      line_spans: __span
+  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+
+watch:
+- src
+
+extra_css:
+  - "api.css"

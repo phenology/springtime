@@ -116,6 +116,14 @@ hatch run pytest tests/test_main.py
 hatch run pytest tests/test_main.py::test_cli
 ```
 
+To test examples in docstrings use:
+
+```bash
+hatch run doctest <file to test>
+# For example
+hatch run doctest src/springtime/utils.py
+```
+
 ## Documentation
 
 Documentation is build with [mkdocs](https://www.mkdocs.org/)

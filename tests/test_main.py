@@ -5,32 +5,8 @@
 import subprocess
 
 from click.testing import CliRunner
-import pytest
 
-from springtime.main import Workflow, cli, main
-
-
-@pytest.mark.skip(reason="After dropping pyphenology (#116) we need new sample data")
-def test_workflow():
-    w = Workflow(
-        datasets={
-            "testds2": dict(
-                dataset="pyphenology",
-                name="aspen",
-                phenophase="budburst",
-                years=[2010, 2011],
-            ),
-        }
-    )
-    print(str(w))
-    print(repr(w))
-    w.execute()
-
-
-@pytest.mark.skip(reason="After dropping pyphenology (#116) we need new sample data")
-def test_main():
-    file = "tests/recipes/pyphenology.yaml"
-    main(file)
+from springtime.main import cli
 
 
 def test_cli():

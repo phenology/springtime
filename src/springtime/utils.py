@@ -35,6 +35,8 @@ class BoundingBox(NamedTuple):
 
 
 class NamedArea(BaseModel):
+    """Named area with bounding box."""
+
     # TODO generalize
     # perhaps use https://github.com/developmentseed/geojson-pydantic
     name: str
@@ -55,11 +57,19 @@ class NamedArea(BaseModel):
 
 
 class NamedIdentifiers(BaseModel):
+    """List of identifiers with a name."""
+
     name: str
     items: Sequence[int]
 
 
 class PointsFromOther(BaseModel):
+    """Points from another dataset.
+
+    Attributes:
+        source: Name of dataset to get points from.
+    """
+
     source: str
     _points: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
 
@@ -75,6 +85,7 @@ class PointsFromOther(BaseModel):
 
 
 Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
+"""Points can be a list of (lon, lat) tuples or a PointsFromOther object."""
 
 
 # date range of years
@@ -84,8 +95,11 @@ class YearRange(NamedTuple):
     Example:
 
         >>> YearRange(2000, 2005)
-        >>> YearRange(start=2000, end=2005)
+        YearRange(start=2000, end=2005)
+        >>> YearRange(start=2000, end=2005).range
+        range(2000, 2006)
         >>> YearRange(2000, 2000)
+        YearRange(start=2000, end=2000)
 
     """
 
@@ -103,7 +117,7 @@ class YearRange(NamedTuple):
 # Decorators copied from https://wiki.python.org/moin/PythonDecoratorLibrary
 
 
-def retry(timeout=10, max_tries=3, delay=1, backoff=2):
+def retry(timeout: int = 10, max_tries: int = 3, delay: int = 1, backoff: int = 2):
     """Decorator to retry function with timeout.
 
     The decorator will call the function up to max_tries times if it raises
@@ -168,7 +182,7 @@ class TimeoutError(Exception):
     pass
 
 
-def run_r_script(script: str, timeout=30, max_tries=3):
+def run_r_script(script: str, timeout: int = 30, max_tries: int = 3):
     """Run R script with retries and timeout logic.
 
     Args:

@@ -1,6 +1,14 @@
 # SPDX-FileCopyrightText: 2023 Springtime authors
 #
 # SPDX-License-Identifier: Apache-2.0
+
+"""
+Standard interface for springtime datasets.
+
+All springtime datasets should inherit from the abstract Dataset class and
+implement the basic functionality described here.
+"""
+
 from abc import ABC, abstractmethod
 from typing import Optional
 from pydantic import BaseModel, validator
@@ -9,13 +17,19 @@ from springtime.utils import ResampleConfig, YearRange
 
 
 class Dataset(BaseModel, ABC):
+    """Base class for springtime datasets.
+
+    Attributes:
+        dataset: The name of the dataset.
+        years: timerange. For example years=[2000, 2002] downloads data for
+            three years.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling.
+    """
+
     dataset: str
-    """The name of the dataset."""
     years: YearRange
-    """ years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
     resample: Optional[ResampleConfig] = None
-    """Resample the dataset to a different time resolution. If None, no resampling."""
     # TODO run multiple resamplings like weekly, monthly with min and max?
 
     @validator("years")
@@ -29,7 +43,8 @@ class Dataset(BaseModel, ABC):
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or
+        CONFIG.force_override
         is TRUE.
         """
 
@@ -38,5 +53,6 @@ class Dataset(BaseModel, ABC):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
+        filter certain variables, remove data points with too many NaNs, reshape
+        data.
         """

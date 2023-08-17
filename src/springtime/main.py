@@ -97,7 +97,7 @@ class Workflow(BaseModel):
     datasets: Dict[str, Datasets] = {}
     preparation: Preparation = Preparation()
     experiment: RegressionExperiment | TSForecastingExperiment | None = Field(
-        discriminator="experiment_type"
+        discriminator="experiment_type", default=None
     )
 
     @classmethod

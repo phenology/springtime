@@ -36,48 +36,35 @@ Example:
 """
 
 from pathlib import Path
-from typing import Literal, Optional
-
+from typing import List, Literal, Optional
+# from pydantic import validate_call
 import geopandas
 import pandas as pd
-import rpy2.robjects as ro
-from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import NamedArea, run_r_script
+from springtime.utils import NamedArea, YearRange, run_r_script
 
 
 class PEP725Phenor(Dataset):
     """Download and load data from PEP725.
 
     Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
         species: Full species name, see <http://www.pep725.eu/pep725_gss.php>
             for options.
-        bbch: Phenological development stage according to BBCH scale. See
-            <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
-            'Beginning of flowering'.
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         credential_file: Path to PEP725 credentials file. Email adress on first
             line, password on second line.
 
     """
-
     dataset: Literal["PEP725Phenor"] = "PEP725Phenor"
-    bbch: int = 60  # Beginning of flowering.
     species: str
-    area: Optional[NamedArea]
     credential_file: Path = CONFIG.pep725_credentials_file
 
     @property
     def _location(self):
         """Path where files will be downloaded to and loaded from."""
-        species_dir = CONFIG.cache_dir / "PEP725" / self.species
-        return species_dir
+        species_file = CONFIG.cache_dir / "PEP725" / self.species
+        return species_file.with_suffix('.csv')
 
     def _exists_locally(self) -> bool:
         """Tell if the data is already present on disk."""
@@ -88,54 +75,63 @@ class PEP725Phenor(Dataset):
         if self._location.exists():
             print("File already exists:", self._location)
         else:
-            self._location.mkdir(parents=True)
+            print("Downloading data: ", self._location)
             run_r_script(self._r_download())
 
-    def load(self):
-        """Load the dataset from disk into memory."""
-        phenor = importr("phenor")
-        # TODO: can we adapt phenor to write to csv and load that directly in Python?
-        r_df = phenor.pr_merge_pep725(str(self._location))
-        df = ro.pandas2ri.rpy2py_dataframe(r_df)
-        years_set = set(self.years.range)
-        df["species"] = df["species"].astype("category")
+    # @validate_call # TODO: upgrade pydantic version
+    def load(self,
+            select_phenophase: int | None = 60,
+            extract_area: NamedArea | None = None,
+            extract_years: list[int] | None = [2000, 2002],  # TODO: use YearRange
+            set_index: List[str] | None = ['year', 'geometry'],
+            include_cols: List[str] | Literal['all'] = ["day"],
+            ):
+        """Load the dataset from disk into memory.
 
+        select_phenophase: Phenological development stage according to BBCH scale. See
+            <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
+            'Beginning of flowering'.
+        """
+        if not self._location.exists():
+            self.download()
+
+        df = pd.read_csv(self._location)
+
+        if select_phenophase:
+            df = df[(df["bbch"] == select_phenophase)]
+            df.rename(columns={'day': f'DOY {select_phenophase}'})
+
+        if extract_years:
+            years_set = set(range(*extract_years))
+            df = df[df["year"].isin(years_set)]
+
+        if extract_area:
+            bbox = extract_area.bbox
+            df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+
+        # Convert to geodataframe, lat/lon to geometry
         df = geopandas.GeoDataFrame(
-            df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
-        )
+                        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
+                    )
 
-        # Filter on years
-        df = df[(df["year"].isin(years_set))]
+        if set_index:
+            df.set_index(set_index, inplace=True)
 
-
-        # TODO this seems counterproductive, why do we go from DOY to datetime while we need DOY in the end?
-        # Perhaps because of resampling needing datetime? But here we don't need to resample.
-        # Convert year and day to datetime
-        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
-            df["day"] - 1, unit="D"
-        )
-
-        # Filter on requested data
-        df = df[(df["bbch"] == self.bbch)]
-
-        # Re-order and excludes cols
-        df = df[["datetime", "geometry", "species", "bbch"]]
-
-        # Filter on bbox
-        if self.area is None:
-            return df
-        return df.cx[
-            self.area.bbox[0] : self.area.bbox[2], self.area.bbox[1] : self.area.bbox[3]
-        ]
+        if include_cols != 'all':
+            return df[include_cols]
+        return df
 
     def _r_download(self):
+        # Note: unpacking during download (internal=True) is more interoperable
+        # but at the expense of disk space (844K vs 14M for syringa vulgaris).
+        # TODO Recompress processed csv file?
         return f"""\
         library(phenor)
         species_id <- phenor::check_pep725_species(species = "{self.species}")
-        phenor::pr_dl_pep725(
+        tidy_pep_data <- phenor::pr_dl_pep725(
             credentials = "{self.credential_file}",
             species = species_id,
-            path = "{self._location}",
-            internal = FALSE
+            internal = TRUE
         )
+        write.csv(tidy_pep_data, "{self._location}", row.names=FALSE)
         """

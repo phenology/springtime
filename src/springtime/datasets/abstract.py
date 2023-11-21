@@ -28,7 +28,7 @@ class Dataset(BaseModel, ABC):
     """
 
     dataset: str
-    years: YearRange
+    years: YearRange | None
     resample: Optional[ResampleConfig] = None
     # TODO run multiple resamplings like weekly, monthly with min and max?
 

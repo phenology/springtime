@@ -94,6 +94,7 @@ class PEP725Phenor(Dataset):
     def load(self):
         """Load the dataset from disk into memory."""
         phenor = importr("phenor")
+        # TODO: can we adapt phenor to write to csv and load that directly in Python?
         r_df = phenor.pr_merge_pep725(str(self._location))
         df = ro.pandas2ri.rpy2py_dataframe(r_df)
         years_set = set(self.years.range)
@@ -106,6 +107,9 @@ class PEP725Phenor(Dataset):
         # Filter on years
         df = df[(df["year"].isin(years_set))]
 
+
+        # TODO this seems counterproductive, why do we go from DOY to datetime while we need DOY in the end?
+        # Perhaps because of resampling needing datetime? But here we don't need to resample.
         # Convert year and day to datetime
         df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
             df["day"] - 1, unit="D"

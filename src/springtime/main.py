@@ -128,6 +128,8 @@ class Workflow(BaseModel):
             dataset.download()
             ds = dataset.load()
             logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
+
+            # TODO: refactor to generic resample / extract feature functionality
             if dataset.resample:
                 if issubclass(ds.__class__, pd.DataFrame):
                     ds = resample(
@@ -152,6 +154,8 @@ class Workflow(BaseModel):
             # TODO add a check whether the combination of (year and geometry) is unique.
             dataframes[dataset_name] = ds
 
+
+        # TODO refactor to generic "join" utility
         others = []
         for ds in dataframes.values():
             if issubclass(ds.__class__, pd.DataFrame):
@@ -168,6 +172,8 @@ class Workflow(BaseModel):
             geometry = gpd.GeoSeries.from_wkt(df.pop("geometry"))
             df = gpd.GeoDataFrame(df, geometry=geometry)
             df.set_index(["year", "geometry"], inplace=True)
+
+            # TODO: refactor to generic "prepare" utility
             df = self.preparation.prepare(df)
 
         logger.warning(f"Datesets joined to shape: {df.shape}")
@@ -176,8 +182,10 @@ class Workflow(BaseModel):
         logger.warning(f"Data saved to: {data_fn}")
 
         # TODO do something with datacubes
+        # TODO remove running experiments from recipe functionality
         self.run_experiments(df)
 
+    # TODO: remove running experiments as part of the workflow.
     def run_experiments(self, df):
         """Train and evaluate ML models."""
         if self.experiment is None:

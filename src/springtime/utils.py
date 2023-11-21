@@ -74,6 +74,7 @@ class PointsFromOther(BaseModel):
     _points: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
 
     def get_points(self, other):
+        # TODO: refactor to generic utility function
         self._points = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
 
     def __iter__(self):
@@ -258,11 +259,11 @@ def rolling_mean(
 
 class ResampleConfig(BaseModel):
     frequency: str = "month"
-    """See 
+    """See
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.dt.html
     for allowed values."""
     operator: str = "mean"
-    """See 
+    """See
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html
     for allowed values."""
 

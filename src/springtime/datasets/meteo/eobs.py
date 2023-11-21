@@ -7,7 +7,7 @@ This module contains functionality to download and load E-OBS data.
 Fetches complete grid from
 <https://surfobs.climate.copernicus.eu/dataaccess/access_eobs.php>.
 
-Example: Example: Get elevantion of whole E-OBS grid
+Example: Example: Get elevation of whole E-OBS grid
 
     ```python
     from springtime.datasets.meteo.eobs import EOBS

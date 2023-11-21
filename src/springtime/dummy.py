@@ -20,7 +20,7 @@ def generate_predictor(n=365, name='temperature'):
 
 def generate_predictors(observations, name='temperature'):
     """Given a year and location, generate random temperatures for each DOY."""
-    predictors = observations.apply(lambda row: generate_predictor(row.year, row.geometry), axis=1)
+    predictors = observations.apply(lambda row: generate_predictor(), axis=1)
     return pd.concat([observations[['year', 'geometry']], predictors], axis=1)
     # return predictors.assign(year=observations.year, geometry=observations.geometry)
 

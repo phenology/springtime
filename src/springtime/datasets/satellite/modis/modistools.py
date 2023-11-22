@@ -64,7 +64,7 @@ class ModisSinglePoint(Dataset):
     dataset: Literal["modis_single_point"] = "modis_single_point"
     point: Tuple[float, float]
     product: str
-    bands: conset(str, min_items=1)  # type: ignore
+    bands: conset(str, min_length=1)  # type: ignore
     extent: Extent = Extent()
 
     @property
@@ -155,7 +155,7 @@ class ModisMultiplePoints(Dataset):
     dataset: Literal["modis_multiple_points"] = "modis_multiple_points"
     points: Union[Sequence[Tuple[float, float]], PointsFromOther]
     product: str
-    bands: conset(str, min_items=1)  # type: ignore
+    bands: conset(str, min_length=1)  # type: ignore
     # TODO when no bands are given return all bands of product
 
     @property

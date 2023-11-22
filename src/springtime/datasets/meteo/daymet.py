@@ -84,7 +84,7 @@ import logging
 import geopandas
 import pandas as pd
 import xarray as xr
-from pydantic import root_validator, validator
+from pydantic import model_validator, field_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
@@ -120,15 +120,16 @@ class Daymet(Dataset):
 
     variables: Sequence[DaymetVariables] = tuple()
 
-    @validator("years")
-    def _valid_years(cls, years):
+    @field_validator("years")
+    @classmethod
+    def _valid_years(cls, v):
         assert (
-            years.start >= 1980
-        ), f"Asked for year {years.start}, but no data before 1980"
+            v.start >= 1980
+        ), f"Asked for year {v.start}, but no data before 1980"
         last_year = datetime.now().year - 1
-        msg = f"Asked for year {years.end}, but no data till/after {last_year}"
-        assert years.end < last_year, msg
-        return years
+        msg = f"Asked for year {v.end}, but no data till/after {last_year}"
+        assert v.end < last_year, msg
+        return v
 
 
 class DaymetSinglePoint(Daymet):
@@ -312,16 +313,16 @@ class DaymetBoundingBox(Daymet):
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
-    @root_validator()
-    def _expand_variables(cls, values):
-        v = values["variables"]
+    @model_validator(mode='before')
+    def _expand_variables(cls, data):
+        v = data["variables"]
         if len(v) == 0:
-            if values.get("frequency", "daily") == "daily":
+            if v.get("frequency", "daily") == "daily":
                 v = ("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp")
             else:
                 v = ("prcp", "tmax", "tmin", "vp")
-        values["variables"] = v
-        return values
+        data["variables"] = v
+        return data
 
     def _r_download(self):
         param_list = ",".join([f"'{p}'" for p in self.variables])

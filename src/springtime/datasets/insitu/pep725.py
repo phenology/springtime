@@ -37,7 +37,6 @@ Example:
 
 from pathlib import Path
 from typing import List, Literal, Optional
-# from pydantic import validate_call
 import geopandas
 import pandas as pd
 
@@ -56,9 +55,20 @@ class PEP725Phenor(Dataset):
             line, password on second line.
 
     """
+    # Generic settings
     dataset: Literal["PEP725Phenor"] = "PEP725Phenor"
-    species: str
     credential_file: Path = CONFIG.pep725_credentials_file
+
+    # Download arguments
+    species: str
+
+    # Load arguments
+    select_phenophase: int | None = 60
+    extract_area: NamedArea | None = None
+    extract_years: list[int] | None = [2000, 2002]  # TODO: use YearRange
+    set_index: List[str] | None = ['year', 'geometry']
+    include_cols: List[str] | Literal['all'] = ["day"]
+
 
     @property
     def _location(self):
@@ -78,14 +88,7 @@ class PEP725Phenor(Dataset):
             print("Downloading data: ", self._location)
             run_r_script(self._r_download())
 
-    # @validate_call # TODO: upgrade pydantic version
-    def load(self,
-            select_phenophase: int | None = 60,
-            extract_area: NamedArea | None = None,
-            extract_years: list[int] | None = [2000, 2002],  # TODO: use YearRange
-            set_index: List[str] | None = ['year', 'geometry'],
-            include_cols: List[str] | Literal['all'] = ["day"],
-            ):
+    def load(self):
         """Load the dataset from disk into memory.
 
         select_phenophase: Phenological development stage according to BBCH scale. See
@@ -97,28 +100,28 @@ class PEP725Phenor(Dataset):
 
         df = pd.read_csv(self._location)
 
-        if select_phenophase:
-            df = df[(df["bbch"] == select_phenophase)]
-            df.rename(columns={'day': f'DOY {select_phenophase}'})
+        if self.select_phenophase:
+            df = df[(df["bbch"] == self.select_phenophase)]
+            df.rename(columns={'day': f'DOY {self.select_phenophase}'})
 
-        if extract_years:
-            years_set = set(range(*extract_years))
+        if self.extract_years:
+            years_set = set(range(*self.extract_years))
             df = df[df["year"].isin(years_set)]
-
-        if extract_area:
-            bbox = extract_area.bbox
-            df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
         # Convert to geodataframe, lat/lon to geometry
         df = geopandas.GeoDataFrame(
                         df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
                     )
 
-        if set_index:
-            df.set_index(set_index, inplace=True)
+        if self.extract_area:
+            bbox = self.extract_area.bbox
+            df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        if include_cols != 'all':
-            return df[include_cols]
+        if self.set_index:
+            df.set_index(self.set_index, inplace=True)
+
+        if self.include_cols != 'all':
+            return df[self.include_cols]
         return df
 
     def _r_download(self):

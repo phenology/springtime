@@ -10,7 +10,7 @@ from typing import NamedTuple, Sequence, Tuple, Union
 
 import xarray as xr
 import geopandas as gpd
-from pydantic import BaseModel, PositiveInt, validator, PrivateAttr
+from pydantic import BaseModel, PositiveInt, model_validator, field_validator, PrivateAttr
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
@@ -42,7 +42,7 @@ class NamedArea(BaseModel):
     name: str
     bbox: BoundingBox
 
-    @validator("bbox")
+    @field_validator("bbox")
     def _parse_bbox(cls, values):
         xmin, ymin, xmax, ymax = values
         assert xmax > xmin, "xmax should be larger than xmin"
@@ -107,6 +107,12 @@ class YearRange(NamedTuple):
     start: PositiveInt
     end: PositiveInt
     """The end year is inclusive."""
+
+    @model_validator(mode='after')
+    def _must_increase(self):
+        assert (
+            value.start <= values.end
+        ), f"start year ({values.start}) should be smaller than end year ({values.end})"
 
     @property
     def range(self) -> range:

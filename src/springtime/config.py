@@ -4,7 +4,7 @@
 
 from pathlib import Path
 from xdg_base_dirs import xdg_cache_home, xdg_config_home
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 CONFIG_DIR: Path = xdg_config_home() / "springtime"
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
@@ -16,7 +16,7 @@ class Config(BaseModel):
     pep725_credentials_file: Path = CONFIG_DIR / "pep725_credentials.txt"
     force_override: bool = False
 
-    @validator("cache_dir")
+    @field_validator("cache_dir")
     def _make_dir(cls, path):
         """Create dirs if they don't exist yet."""
         if not path.exists():
@@ -25,7 +25,7 @@ class Config(BaseModel):
         return path
 
     class Config:
-        validate_all = True
+        validate_default = True
 
 
 CONFIG = Config()

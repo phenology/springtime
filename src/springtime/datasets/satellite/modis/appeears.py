@@ -66,13 +66,9 @@ class Appeears(Dataset):
 
     product: str
     version: str  # TODO make optional, if not given, use latest version
-    layers: conset(str, min_items=1)  # type: ignore
+    layers: conset(str, min_length=1)  # type: ignore
     # TODO rename to variables or bands?
     _token: Optional[TokenInfo] = None
-
-    # TODO drop when pydantic v2 is used, as it will be default
-    class Config:
-        underscore_attrs_are_private = True
 
     def _check_token(self):
         token_fn = CONFIG.cache_dir / "appeears" / "token.json"

@@ -12,7 +12,7 @@ import click
 import pandas as pd
 import geopandas as gpd
 import yaml
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from springtime.config import CONFIG, Config as SpringtimeConfig
 
 from springtime.datasets import Datasets
@@ -32,7 +32,7 @@ class Session(BaseModel):
 
     output_dir: Path = Path(gettempdir()) / "output"
 
-    @validator("output_dir")
+    @field_validator("output_dir")
     def _make_dir(cls, path):
         """Create dirs if they don't exist yet."""
         if not path.exists():
@@ -53,7 +53,7 @@ class Session(BaseModel):
         return cls(output_dir=output_dir)
 
     class Config:
-        validate_all = True
+        validate_default = True
 
 
 class DerivedFeatures(BaseModel):

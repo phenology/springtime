@@ -91,7 +91,7 @@ from springtime.datasets.abstract import Dataset
 import geopandas as gpd
 import pandas as pd
 import xarray as xr
-from pydantic import validator
+from pydantic import field_validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
@@ -156,7 +156,7 @@ class EOBS(Dataset):
         base = f"{root}Grid_{self.grid_resolution}_reg_ensemble/"
         return base + self._filename(variable, period)
 
-    @validator("years")
+    @field_validator("years")
     def _valid_years(cls, years):
         assert (
             years.start >= 1950

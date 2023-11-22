@@ -11,7 +11,7 @@ implement the basic functionality described here.
 
 from abc import ABC, abstractmethod
 from typing import Optional
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 from springtime.utils import ResampleConfig, YearRange
 
@@ -28,16 +28,9 @@ class Dataset(BaseModel, ABC):
     """
 
     dataset: str
-    years: YearRange | None
+    years: YearRange | None = None
     resample: Optional[ResampleConfig] = None
     # TODO run multiple resamplings like weekly, monthly with min and max?
-
-    @validator("years")
-    def _validate_year_range(cls, values: YearRange):
-        assert (
-            values.start <= values.end
-        ), f"start year ({values.start}) should be smaller than end year ({values.end})"
-        return values
 
     @abstractmethod
     def download(self):

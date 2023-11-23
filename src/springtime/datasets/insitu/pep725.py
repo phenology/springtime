@@ -53,6 +53,9 @@ class PEP725Phenor(Dataset):
             for options.
         credential_file: Path to PEP725 credentials file. Email adress on first
             line, password on second line.
+        phenophase: Phenological development stage according to BBCH scale. See
+            <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
+            'Beginning of flowering'.
 
     """
     # Generic settings
@@ -63,12 +66,10 @@ class PEP725Phenor(Dataset):
     species: str
 
     # Load arguments
-    select_phenophase: int | None = 60
-    extract_area: NamedArea | None = None
-    extract_years: list[int] | None = [2000, 2002]  # TODO: use YearRange
-    set_index: List[str] | None = ['year', 'geometry']
+    phenophase: int | None = None
     include_cols: List[str] | Literal['all'] = ["day"]
-
+    area: NamedArea | None = None
+    years: YearRange | None = None
 
     @property
     def _location(self):
@@ -88,24 +89,22 @@ class PEP725Phenor(Dataset):
             print("Downloading data: ", self._location)
             run_r_script(self._r_download())
 
-    def load(self):
-        """Load the dataset from disk into memory.
+    def raw_load(self):
+        return pd.read_csv(self._location)
 
-        select_phenophase: Phenological development stage according to BBCH scale. See
-            <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
-            'Beginning of flowering'.
-        """
+    def load(self):
+        """Load the dataset from disk into memory."""
         if not self._location.exists():
             self.download()
 
-        df = pd.read_csv(self._location)
+        df = self.raw_load()
 
-        if self.select_phenophase:
-            df = df[(df["bbch"] == self.select_phenophase)]
-            df.rename(columns={'day': f'DOY {self.select_phenophase}'})
+        if self.phenophase:
+            df = df[(df["bbch"] == self.phenophase)]
+            df.rename(columns={'day': f'DOY {self.phenophase}'})
 
-        if self.extract_years:
-            years_set = set(range(*self.extract_years))
+        if self.years:
+            years_set = set(self.years.range)
             df = df[df["year"].isin(years_set)]
 
         # Convert to geodataframe, lat/lon to geometry
@@ -113,12 +112,11 @@ class PEP725Phenor(Dataset):
                         df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
                     )
 
-        if self.extract_area:
-            bbox = self.extract_area.bbox
+        if self.area:
+            bbox = self.area.bbox
             df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        if self.set_index:
-            df.set_index(self.set_index, inplace=True)
+        df.set_index(['year', 'geometry'], inplace=True)
 
         if self.include_cols != 'all':
             return df[self.include_cols]

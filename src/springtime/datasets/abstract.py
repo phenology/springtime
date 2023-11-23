@@ -10,10 +10,10 @@ implement the basic functionality described here.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 from pydantic import BaseModel
+import yaml
 
-from springtime.utils import ResampleConfig, YearRange
+from springtime.utils import YearRange
 
 
 class Dataset(BaseModel, ABC):
@@ -23,14 +23,9 @@ class Dataset(BaseModel, ABC):
         dataset: The name of the dataset.
         years: timerange. For example years=[2000, 2002] downloads data for
             three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
     """
-
     dataset: str
     years: YearRange | None = None
-    resample: Optional[ResampleConfig] = None
-    # TODO run multiple resamplings like weekly, monthly with min and max?
 
     @abstractmethod
     def download(self):
@@ -41,11 +36,26 @@ class Dataset(BaseModel, ABC):
         is TRUE.
         """
 
-    @abstractmethod
-    def load(self):
-        """Load the dataset from disk into memory.
+    def raw_load(self):
+        """Loads from disk with minimal modification.
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape
-        data.
+        Mostly intended to provide insight into the modifications made in the
+        load method.
         """
+        raise NotImplementedError("raw_load not implemented for this dataset.")
+
+    @abstractmethod
+    def load(self, **kwargs):
+        """Load, harmonize, and optionally pre-process the data.
+
+        Default output of load should be compatible with recipe execution.
+
+        kwargs can be used to control behaviour that is useful in API, but
+        breaks the recipe. For example, don't convert to geopandas.
+        """
+
+    def as_recipe(self):
+        """Print out a recipe to reproduce this dataset."""
+        recipe = {'dataset': self.__class__.__name__, **self.model_dump(exclude_defaults=True, mode='json')}
+        print(yaml.dump(recipe, sort_keys=False))
+

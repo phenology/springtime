@@ -67,7 +67,7 @@ class PEP725Phenor(Dataset):
 
     # Load arguments
     phenophase: int | None = None
-    include_cols: List[str] | Literal['all'] = ["day"]
+    include_cols: List[str] | Literal['all'] = ["year", "geometry", "day"]
     area: NamedArea | None = None
     years: YearRange | None = None
 
@@ -116,11 +116,13 @@ class PEP725Phenor(Dataset):
             bbox = self.area.bbox
             df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        df.set_index(['year', 'geometry'], inplace=True)
-
         if self.include_cols != 'all':
-            return df[self.include_cols]
-        return df
+            df = df[self.include_cols]
+
+        # TODO: do or don't?
+        # df.set_index(['year', 'geometry'], inplace=True)
+
+        return df.reset_index(drop=True)
 
     def _r_download(self):
         # Note: unpacking during download (internal=True) is more interoperable

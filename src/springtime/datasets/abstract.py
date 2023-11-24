@@ -54,7 +54,7 @@ class Dataset(BaseModel, ABC):
         breaks the recipe. For example, don't convert to geopandas.
         """
 
-    def as_recipe(self):
+    def to_recipe(self):
         """Print out a recipe to reproduce this dataset."""
         recipe = {'dataset': self.__class__.__name__, **self.model_dump(exclude_defaults=True, mode='json')}
         print(yaml.dump(recipe, sort_keys=False))

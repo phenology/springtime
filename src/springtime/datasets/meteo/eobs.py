@@ -124,6 +124,17 @@ short_vars = {
 }
 
 
+# TODO merge all EOBS classes into a single one with a different load method for
+# different geometries?
+# def load(self):
+#     if isinstance(self.geometry, Point):
+#         return self._load_single_point()
+#     if isinstance(self.geometry, Points):
+#         return self._load_multiple_points()
+#     if isinstance(self.geometry, NamedArea):
+#         return self._load_area()
+
+
 class EOBS(Dataset):
     """E-OBS dataset.
 
@@ -167,6 +178,7 @@ class EOBS(Dataset):
 
     @property
     def _periods(self):
+        # TODO these ranges are not inclusive, so edge years are excluded now.
         periods = [
             range(1950, 1964),
             range(1965, 1979),
@@ -215,6 +227,9 @@ class EOBS(Dataset):
                 msg = msg + f"for {period} period from {url} to {path}"
                 logger.warning(msg)
                 urlretrieve(url, path)
+            else:
+                msg = f"{path} already exists, skipping"
+                logger.warning(msg)
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -228,7 +243,7 @@ class EOBS(Dataset):
         ]
         ds = open_mfdataset(
             paths,
-            chunks={"latitude": 10, "longitude": 10},
+            chunks='auto',
             # For 0.1deg grid we saw the lat/longs are not exactly the same
             # the difference is very small (1e-10), but it causes problems when joining
             join="override",
@@ -310,6 +325,7 @@ class EOBSMultiplePoints(EOBS):
         for period in self._periods:
             period_df = None
             for variable in self.variables:
+                # TODO this is basically the same as super.load()
                 logger.warning(f"Loading {variable} for {period}")
                 start = time.time()
                 path = self._path(variable, period)

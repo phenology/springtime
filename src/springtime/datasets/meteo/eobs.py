@@ -149,9 +149,7 @@ class EOBS(Dataset):
 
     """
 
-    dataset: Literal[
-        "E-OBS", "EOBSSinglePoint", "EOBSMultiplePoints", "EOBSBoundingBox"
-    ] = "E-OBS"
+    dataset: Literal["E-OBS"] = "E-OBS"
     product_type: Literal[
         "ensemble_mean", "ensemble_spread", "elevation"
     ] = "ensemble_mean"

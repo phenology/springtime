@@ -111,7 +111,7 @@ class AppeearsArea(Appeears):
 
     """
 
-    dataset: Literal["appeears_area", "appeears_points_from_area"] = "appeears_area"
+    dataset: Literal["appeears_area"] = "appeears_area"
     area: NamedArea
 
     @property

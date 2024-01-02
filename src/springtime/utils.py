@@ -111,8 +111,9 @@ class YearRange(NamedTuple):
     @model_validator(mode='after')
     def _must_increase(self):
         assert (
-            value.start <= values.end
-        ), f"start year ({values.start}) should be smaller than end year ({values.end})"
+            self.start <= self.end
+        ), f"start year ({self.start}) should be smaller than end year ({self.end})"
+        return self
 
     @property
     def range(self) -> range:

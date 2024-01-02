@@ -56,6 +56,5 @@ class Dataset(BaseModel, ABC):
 
     def to_recipe(self):
         """Print out a recipe to reproduce this dataset."""
-        recipe = {'dataset': self.__class__.__name__, **self.model_dump(exclude_defaults=True, mode='json')}
-        print(yaml.dump(recipe, sort_keys=False))
-
+        recipe = self.model_dump(mode='json', exclude_none=True, exclude=["credential_file"])
+        return yaml.dump(recipe, sort_keys=False)

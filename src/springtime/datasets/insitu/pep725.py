@@ -36,7 +36,7 @@ Example:
 """
 
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import List, Literal
 import geopandas
 import pandas as pd
 
@@ -56,6 +56,9 @@ class PEP725Phenor(Dataset):
         phenophase: Phenological development stage according to BBCH scale. See
             <http://www.pep725.eu/pep725_phase.php> for options. Default is 60:
             'Beginning of flowering'.
+        include_cols: which columns to include in the final dataframe
+        area: bounding box for filtering observations
+        years: year range for filtering observations
 
     """
     # Generic settings
@@ -90,13 +93,12 @@ class PEP725Phenor(Dataset):
             run_r_script(self._r_download())
 
     def raw_load(self):
+        if not self._location.exists():
+            self.download()
         return pd.read_csv(self._location)
 
     def load(self):
         """Load the dataset from disk into memory."""
-        if not self._location.exists():
-            self.download()
-
         df = self.raw_load()
 
         if self.phenophase:
@@ -108,21 +110,20 @@ class PEP725Phenor(Dataset):
             df = df[df["year"].isin(years_set)]
 
         # Convert to geodataframe, lat/lon to geometry
-        df = geopandas.GeoDataFrame(
-                        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
-                    )
+        points = geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
+        gdf = geopandas.GeoDataFrame(data=df, geometry=points)
 
         if self.area:
             bbox = self.area.bbox
-            df = df.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+            gdf: geopandas.GeoDataFrame = gdf.cx[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        if self.include_cols != 'all':
-            df = df[self.include_cols]
+        if isinstance(self.include_cols, list):
+            gdf: geopandas.GeoDataFrame = gdf[self.include_cols]
 
         # TODO: do or don't?
-        # df.set_index(['year', 'geometry'], inplace=True)
+        # gdf.set_index(['year', 'geometry'], inplace=True)
 
-        return df.reset_index(drop=True)
+        return gdf.reset_index(drop=True)
 
     def _r_download(self):
         # Note: unpacking during download (internal=True) is more interoperable

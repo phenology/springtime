@@ -102,6 +102,7 @@ doctest = "pytest --doctest-modules --doctest-report none {args}"
 
 [tool.mypy]
 ignore_missing_imports = true
+plugins = "pydantic.mypy"
 
 [tool.hatch.metadata]
 allow-direct-references = true

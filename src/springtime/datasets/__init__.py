@@ -4,10 +4,13 @@
 # due to import of r dependencies
 """Functionality related to working with data sources."""
 
-from typing import Union
+from typing import Any, Union
 
-from pydantic import Field
+from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated
+
+import yaml
+from springtime.datasets.abstract import Dataset
 
 from springtime.datasets.meteo.daymet import (
     DaymetBoundingBox,
@@ -58,3 +61,17 @@ Datasets = Annotated[
     ],
     Field(discriminator="dataset"),
 ]
+
+
+def load_dataset(recipe: str) -> Dataset:
+    """Load a dataset formatted as (yaml) recipe.
+
+    Args:
+        recipe: the yaml representation of the dataset.
+
+    """
+    model_dict = yaml.safe_load(recipe)
+
+    dataset_loader = TypeAdapter(Datasets)
+    dataset = dataset_loader.validate_python(model_dict)
+    return dataset

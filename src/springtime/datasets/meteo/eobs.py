@@ -214,20 +214,25 @@ class EOBS(Dataset):
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
-    def download(self):
-        """Download the data."""
+    def _maybe_download(self, variable, period):
+        """Download the data and return the file path."""
         self._root_dir.mkdir(exist_ok=True)
+        url = self._url(variable, period)
+        path = self._path(variable, period)
+        if not path.exists() or CONFIG.force_override:
+            msg = f"Downloading E-OBS variable {variable} "
+            msg = msg + f"for {period} period from {url} to {path}"
+            logger.warning(msg)
+            urlretrieve(url, path)
+        else:
+            msg = f"{path} already exists, skipping"
+            logger.warning(msg)
+        return path
+
+    def download(self):
+        """Download all files in one go"""
         for variable, period in product(self.variables, self._periods):
-            url = self._url(variable, period)
-            path = self._path(variable, period)
-            if not path.exists() or CONFIG.force_override:
-                msg = f"Downloading E-OBS variable {variable} "
-                msg = msg + f"for {period} period from {url} to {path}"
-                logger.warning(msg)
-                urlretrieve(url, path)
-            else:
-                msg = f"{path} already exists, skipping"
-                logger.warning(msg)
+            self._maybe_download(variable, period)
 
     def load(self):
         """Load the dataset from disk into memory.
@@ -235,10 +240,11 @@ class EOBS(Dataset):
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        paths = [
-            self._path(variable, period)
-            for variable, period in product(self.variables, self._periods)
-        ]
+        paths = []
+        for variable, period in product(self.variables, self._periods):
+            path = self._maybe_download(variable, period)
+            paths.append(path)
+
         ds = open_mfdataset(
             paths,
             chunks='auto',

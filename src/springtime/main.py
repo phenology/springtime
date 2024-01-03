@@ -125,7 +125,7 @@ class Workflow(BaseModel):
             ):
                 dataset.points.get_points(dataframes[dataset.points.source])
             print("Downloading dataset: ", dataset_name)
-            dataset.download()
+            dataset._maybe_download()
             ds = dataset.load()
             logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
 

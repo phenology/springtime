@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 from textwrap import dedent
 
 import pandas as pd
@@ -7,13 +6,10 @@ from springtime.datasets import PEP725Phenor, load_dataset
 
 import pytest
 
+
 from springtime.config import CONFIG
 
-
-# Sample data for tests is shipped with the package
-TEST_CACHE = "tests/reference_data/"
-CONFIG.cache_dir = TEST_CACHE
-
+REFERENCE_DATA = CONFIG.cache_dir / "pep725_load_reference.geojson"
 REFERENCE_RECIPE = dedent(
     """\
         dataset: PEP725Phenor
@@ -35,39 +31,15 @@ def update_reference_data(redownload=False):
     if redownload:
         dataset._location.unlink()
     loaded_data = dataset.load()
-    loaded_data.to_file(TEST_CACHE + "pep725_load_reference.geojson")
-
-
-@pytest.fixture
-def area():
-    return {
-        "name": "Germany",
-        "bbox": [
-            5.98865807458,
-            47.3024876979,
-            15.0169958839,
-            54.983104153,
-        ],
-    }
-
-
-@contextmanager
-def temporary_cache_dir(directory):
-    """Temporarily change the cache dir in config."""
-    global CONFIG_DIR
-    old_cache_dir = CONFIG.cache_dir
-    CONFIG.cache_dir = directory
-    yield
-    CONFIG.cache_dir = old_cache_dir
-
+    loaded_data.to_file(REFERENCE_DATA)
 
 
 def test_instantiate_class():
     PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
 
 
-def test_instantiate_with_area(area):
-    PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002], area=area)
+def test_instantiate_with_area(germany):
+    PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002], area=germany)
 
 
 def test_to_recipe():
@@ -90,13 +62,14 @@ def test_export_reload():
 
 
 @pytest.mark.download
-def test_download(tmp_path):
+def test_download(temporary_cache_dir):
     """Check download hasn't changed; also uses raw_load"""
     dataset = PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
 
     # The reference data is shipped with the test suite, loaded from TEST_CACHE
     reference = dataset.raw_load()
-    with temporary_cache_dir(tmp_path):
+
+    with temporary_cache_dir():
         dataset.download()
         new_data = dataset.raw_load()
 
@@ -107,8 +80,10 @@ def test_load():
     """Compare loaded (i.e. processed) data with stored reference."""
     dataset = PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
     loaded_data = dataset.load()
-    reference = gpd.read_file(TEST_CACHE + "pep725_load_reference.geojson")
-    assert set(loaded_data.columns) == set(reference.columns), f"""
+    reference = gpd.read_file(REFERENCE_DATA)
+    assert set(loaded_data.columns) == set(
+        reference.columns
+    ), f"""
         Columns differ. New columns are {loaded_data.columns},
         vs reference {reference.columns}."""
 

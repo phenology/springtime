@@ -10,7 +10,7 @@ CONFIG_DIR: Path = xdg_config_home() / "springtime"
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 
-class Config(BaseModel):
+class Config(BaseModel, validate_assignment=True, validate_default=True):
     cache_dir: Path = xdg_cache_home() / "springtime"
     output_root_dir: Path = Path(".")
     pep725_credentials_file: Path = CONFIG_DIR / "pep725_credentials.txt"
@@ -23,9 +23,5 @@ class Config(BaseModel):
             print(f"Creating folder {path}")
             path.mkdir(parents=True)
         return path
-
-    class Config:
-        validate_default = True
-
 
 CONFIG = Config()

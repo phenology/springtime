@@ -90,6 +90,7 @@ class PEP725Phenor(Dataset):
             print("File already exists:", self._location)
         else:
             print("Downloading data: ", self._location)
+            self._location.parent.mkdir(exist_ok=True)
             run_r_script(self._r_download())
 
     def raw_load(self):

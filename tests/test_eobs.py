@@ -187,3 +187,15 @@ def test_load():
         vs reference {reference.columns}."""
 
     pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values])
+
+
+
+# load multiple points
+# import geopandas as gpd
+# from springtime.datasets.meteo.eobs import extract_points
+
+# points = gpd.GeoSeries(gpd.points_from_xy(x=[0, 5, 7], y=[5, 10, 12]), name="geometry")
+# extract_points(eobs_ds, points)
+
+# load single point
+# extract_points(eobs_ds, points[0:1])

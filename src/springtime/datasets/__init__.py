@@ -18,10 +18,7 @@ from springtime.datasets.meteo.daymet import (
     DaymetSinglePoint,
 )
 from springtime.datasets.meteo.eobs import (
-    EOBS,
-    EOBSBoundingBox,
-    EOBSMultiplePoints,
-    EOBSSinglePoint,
+    EOBS
 )
 from springtime.datasets.satellite.modis.appeears import (
     AppeearsPoints,
@@ -52,9 +49,6 @@ Datasets = Annotated[
         AppeearsArea,
         AppeearsPointsFromArea,
         EOBS,
-        EOBSSinglePoint,
-        EOBSMultiplePoints,
-        EOBSBoundingBox,
         RNPN,
         PhenocamrSite,
         PhenocamrBoundingBox,

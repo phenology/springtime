@@ -6,7 +6,7 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence, Tuple, Union
+from typing import NamedTuple, Sequence, Tuple
 
 import xarray as xr
 import geopandas as gpd
@@ -18,6 +18,41 @@ logger = getLogger(__name__)
 # TODO move the types to types.py
 
 
+class Point(NamedTuple):
+    """Single point with x and y coordinate."""
+    x: float
+    y: float
+
+
+class PointsFromOther(BaseModel):
+    """Points from another dataset.
+
+    Attributes:
+        source: Name of dataset to get points from.
+    """
+
+    source: str
+    _xy: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
+    _points: gpd.GeoSeries | None = PrivateAttr(default=None)
+    _records: gpd.GeoSeries | None = PrivateAttr(default=None)
+
+    def get_points(self, other):
+        # TODO: refactor to generic utility function
+        self._xy = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
+        self._points = other.geometry.unique()
+        self._records = other[['year', 'geometry']]
+
+    def __iter__(self):
+        for item in self._xy:
+            yield item
+
+    def __len__(self):
+        return len(self._xy)
+
+Points = Sequence[Point] | PointsFromOther
+"""Points can be a list of (lon, lat) tuples or a PointsFromOther object."""
+
+
 class BoundingBox(NamedTuple):
     xmin: float
     ymin: float
@@ -25,12 +60,12 @@ class BoundingBox(NamedTuple):
     ymax: float
 
     @classmethod
-    def from_points(cls, points: Sequence[Tuple[float, float]]):
+    def from_points(cls, points: Points):
         return cls(
-            xmin=min(map(lambda p: p[0], points)),
-            ymin=min(map(lambda p: p[1], points)),
-            xmax=max(map(lambda p: p[0], points)),
-            ymax=max(map(lambda p: p[1], points)),
+            xmin=min(map(lambda p: p.x, points)),
+            ymin=min(map(lambda p: p.y, points)),
+            xmax=max(map(lambda p: p.x, points)),
+            ymax=max(map(lambda p: p.y, points)),
         )
 
 
@@ -61,32 +96,6 @@ class NamedIdentifiers(BaseModel):
 
     name: str
     items: Sequence[int]
-
-
-class PointsFromOther(BaseModel):
-    """Points from another dataset.
-
-    Attributes:
-        source: Name of dataset to get points from.
-    """
-
-    source: str
-    _points: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
-
-    def get_points(self, other):
-        # TODO: refactor to generic utility function
-        self._points = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
-
-    def __iter__(self):
-        for item in self._points:
-            yield item
-
-    def __len__(self):
-        return len(self._points)
-
-
-Points = Union[Sequence[Tuple[float, float]], PointsFromOther]
-"""Points can be a list of (lon, lat) tuples or a PointsFromOther object."""
 
 
 # date range of years
@@ -329,3 +338,25 @@ def points_from_cube(
         ["points_index", xdim, ydim], axis=1
     )
     return gpd.GeoDataFrame(df, geometry=df.geometry)
+
+
+def join_dataframes(dfs, index_cols=["year", "geometry"]):
+    """Join dataframes by index cols.
+
+    Assumes incoming data is a geopandas dataframe with a geometry column. Not
+    as index.
+    """
+    others = []
+    for df in dfs:
+        df = gpd.GeoDataFrame(df)  # TODO should not be necessary
+        df = df.to_wkt()
+        df.set_index(index_cols, inplace=True)
+        others.append(df)
+
+    main_df = others.pop(0)
+
+    df = main_df.join(others, how="outer")
+    df.reset_index(inplace=True)
+    geometry = gpd.GeoSeries.from_wkt(df.pop("geometry"))
+
+    return gpd.GeoDataFrame(df, geometry=geometry).set_index(index_cols)

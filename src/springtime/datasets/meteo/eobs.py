@@ -81,10 +81,9 @@ Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2
 
 
 from datetime import datetime
-import time
 import logging
 from itertools import product
-from typing import Literal, Sequence, Tuple
+from typing import Literal, Sequence
 from urllib.request import urlretrieve
 from springtime.datasets.abstract import Dataset
 
@@ -95,7 +94,7 @@ from pydantic import field_validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, Points
+from springtime.utils import NamedArea, Point, Points
 
 logger = logging.getLogger(__name__)
 
@@ -124,17 +123,6 @@ short_vars = {
 }
 
 
-# TODO merge all EOBS classes into a single one with a different load method for
-# different geometries?
-# def load(self):
-#     if isinstance(self.geometry, Point):
-#         return self._load_single_point()
-#     if isinstance(self.geometry, Points):
-#         return self._load_multiple_points()
-#     if isinstance(self.geometry, NamedArea):
-#         return self._load_area()
-
-
 class EOBS(Dataset):
     """E-OBS dataset.
 
@@ -155,9 +143,10 @@ class EOBS(Dataset):
         version: currently only possible value is "26.0e"
         keep_grid_location: If True, keep the eobs_longitude and eobs_latitude
             columns. If False, keep input points instead.
-        use_area_for_cache: if True, the cached data is replaced with the
-            cropped area. This saves disk space, but it requires re-downloading
-            for new areas. Default is False, i.e. keep the full EOBS grid.
+        minimize_cache: if True, only store the data for the selected years and
+            optionally area. This saves disk space, but it requires
+            re-downloading for new years/areas. Default is False, i.e. keep the full
+            EOBS grid.
     """
 
     dataset: Literal["E-OBS"] = "E-OBS"
@@ -167,11 +156,11 @@ class EOBS(Dataset):
     variables: Sequence[Variable] = ("mean_temperature",)
     grid_resolution: Literal["0.25deg", "0.1deg"] = "0.1deg"
     version: Literal["26.0e"] = "26.0e"
-    points: Tuple[float, float] | Points | None = None
-    keep_grid_location = False
-    area: NamedArea
-    use_area_for_cache = False
-    # resample TODO implement
+    points: Point | Points | None = None
+    keep_grid_location: bool = False  # TODO implement
+    area: NamedArea | None = None
+    minimize_cache: bool = False
+    resample: bool = False  # TODO implement
 
     # TODO add root validator that use same valid combinations as on
     # https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe?tab=form
@@ -223,34 +212,27 @@ class EOBS(Dataset):
     def _path(self, variable: Variable, period: str):
         return self._root_dir / self._filename(variable, period)
 
-    def _to_dataframe(self, ds: xr.Dataset):
-        df = ds.to_dataframe()
-        df = df.reset_index().rename(columns={"time": "datetime"})
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return gdf[["datetime", "geometry"] + list(self.variables)]
-
-    def _maybe_download(self, variable, period):
-        """Download the data and return the file path."""
-        self._root_dir.mkdir(exist_ok=True)
-        url = self._url(variable, period)
-        path = self._path(variable, period)
-        if not path.exists() or CONFIG.force_override:
-            msg = f"Downloading E-OBS variable {variable} "
-            msg = msg + f"for {period} period from {url} to {path}"
-            logger.warning(msg)
-            urlretrieve(url, path)
-
-            # TODO process use_area_for_cache
-        else:
-            msg = f"{path} already exists, skipping"
-            logger.warning(msg)
-        return path
-
     def download(self):
-        """Download all files in one go"""
+        """Download the data if necessary and return the file paths."""
+        logger.info("Locating data")
+        self._root_dir.mkdir(exist_ok=True)
+
+        paths = []
         for variable, period in product(self.variables, self._periods):
-            self._maybe_download(variable, period)
+            path = self._path(variable, period)
+            if path.exists() and not CONFIG.force_override:
+                logger.info(f"Found {path}, skipping download")
+            else:
+                url = self._url(variable, period)
+                msg = f"""Downloading E-OBS variable {variable} for {period} period
+                    from {url} to {path}."""
+                logger.info(msg)
+                urlretrieve(url, path)
+            paths.append(path)
+
+        # TODO process minimize_cache
+
+        return paths
 
     def raw_load(self):
         """Load the dataset from disk into memory.
@@ -258,26 +240,24 @@ class EOBS(Dataset):
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        paths = []
-        for variable, period in product(self.variables, self._periods):
-            path = self._maybe_download(variable, period)
-            paths.append(path)
+        paths = self.download()
 
         ds = open_mfdataset(
             paths,
-            chunks='auto',
+            chunks="auto",
             # For 0.1deg grid we saw the lat/longs are not exactly the same
             # the difference is very small (1e-10), but it causes problems when joining
             join="override",
         )
+
+        # Rename vars
+        # TODO: discard this step, stick with defaults. NC files have good attrs.
+        short2long = {v: k for k, v in short_vars.items() if k in self.variables}
+        ds = ds.rename_vars(short2long)
         return ds
 
     def load(self):
         ds = self.raw_load()
-
-        # Rename vars
-        short2long = {v: k for k, v in short_vars.items() if k in self.variables}
-        ds = ds.rename_vars(short2long)
 
         # Select time
         ds = extract_time(ds, self.years.start, self.years.end)
@@ -286,82 +266,44 @@ class EOBS(Dataset):
         if self.area is not None:
             ds = extract_area(ds, self.area.bbox)
 
-        # Extract points
-        if isinstance(self.points, tuple):
-            ds = extract_single_point(ds, self.points)
-            return self._to_dataframe(ds)
-        elif isinstance(self.points, Points):
-            # Multiple points
-            lons = xr.DataArray([p[0] for p in self.points], dims="points_index")
-            lats = xr.DataArray([p[1] for p in self.points], dims="points_index")
-            points_df = gpd.GeoDataFrame(
-                geometry=gpd.points_from_xy(lons, lats)
-            ).reset_index(names="points_index")
-            logger.warning(f"Loading E-OBS for {len(self.points)} points for {self.years}")
-            period_dfs = []
-            for period in self._periods:
-                period_df = None
-                for variable in self.variables:
-                    # TODO this is basically the same as super.load()
-                    logger.warning(f"Loading {variable} for {period}")
-                    start = time.time()
-                    path = self._path(variable, period)
-                    var_ds = xr.open_dataset(path)
-                    var_ds = var_ds.rename_vars({short_vars[variable]: variable})
-                    if self.product_type == "elevation":
-                        dt = datetime(self.years.start, 1, 1)
-                        var_ds = var_ds.expand_dims({"time": [dt]}, axis=0)
-                    else:
-                        var_ds = var_ds.sel(
-                            time=slice(
-                                f"{self.years.start}-01-01", f"{self.years.end}-12-31"
-                            )
-                        )
-                    var_ds = var_ds.sel(
-                        longitude=lons,
-                        latitude=lats,
-                        method="nearest",
-                    )
-                    var_df = var_ds.to_dataframe()
-                    var_df.reset_index(inplace=True)
-                    if self.keep_grid_location:
-                        var_df.rename(
-                            columns={
-                                "longitude": "eobs_longitude",
-                                "latitude": "eobs_latitude",
-                            },
-                            inplace=True,
-                        )
-                    else:
-                        var_df.drop(columns=["longitude", "latitude"], inplace=True)
-                    var_df = pd.merge(points_df, var_df, on="points_index")
-                    var_df = var_df.drop(columns=["points_index"]).rename(
-                        columns={"time": "datetime"}
-                    )
-                    if period_df is None:
-                        period_df = var_df
-                    else:
-                        if self.keep_grid_location:
-                            # Having eobs_* one time is enough
-                            var_df = var_df.drop(
-                                columns=["eobs_longitude", "eobs_latitude"]
-                            )
-                        period_df = pd.merge(
-                            period_df, var_df, on=["datetime", "geometry"], how="outer"
-                        )
-                    end = time.time()
-                    logger.warning(f"Loaded {variable} for {period} in {end-start} seconds")
-                period_dfs.append(period_df)
-            df = pd.concat(period_dfs)
-            return gpd.GeoDataFrame(df).sort_values(by=["datetime", "geometry"])
-        else:
-            # TODO don't convert giant ds to dataframe?
-            return self._to_dataframe(ds)
+        # Extract points/records
+        if self.points is None:
+            logger.warning(
+                """No points selected; returning gridded data as
+                           xarray object. Useful for prediction, but cannot be
+                           used in a recipe."""
+            )
+            return ds
 
+        if isinstance(self.points, Point):
+            x = [self.points.x]
+            y = [self.points.y]
+            geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
+            ds = extract_records(ds, geometry)
+        elif isinstance(self.points, Sequence):
+            x = [p.x for p in self.points]
+            y = [p.y for p in self.points]
+            geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
+            ds = extract_records(ds, geometry)
+        else:
+            # only remaining option is PointsFromOther
+            records = self.points._records
+            ds = extract_records(ds, records)
+
+        return self._to_dataframe(ds)
+
+    def _to_dataframe(self, ds: xr.Dataset):
+        """Transform to dataframe and process to final format."""
+        df = ds.to_dataframe()
+        df = df.set_index(["year", "geometry"], append=True).unstack("doy")
+        df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+        df = df.reset_index("index", drop=True).reset_index()
+        df = gpd.GeoDataFrame(df)
+        return df
 
 def extract_time(ds, start, end):
     """Extract time range from xarray dataset."""
-    if 'time' not in ds.dims:
+    if "time" not in ds.dims:
         # elevation has no time dimension, so make it. (why??)
         return ds.expand_dims({"time": [datetime(start, 1, 1)]}, axis=0)
     return ds.sel(time=slice(f"{start}-01-01", f"{end}-12-31"))
@@ -374,7 +316,39 @@ def extract_area(ds, bbox):
         latitude=slice(bbox[1], bbox[3]),
     )
 
-def extract_single_point(ds, point, method='nearest'):
-    """Extract single point from xarray dataset."""
-    return ds.sel(longitude=point[0], latitude=point[1], method="method")
 
+def split_time(ds):
+    """Split datetime coordinate into year and dayofyear."""
+    year = ds.time.dt.year.values
+    doy = ds.time.dt.dayofyear.values
+    split_time = pd.MultiIndex.from_arrays(
+        [year, doy],
+        names=["year", "doy"],
+    )
+    return ds.assign_coords(time=split_time).unstack("time")
+
+
+def extract_points(ds, points: gpd.geoseries.GeoSeries, method="nearest"):
+    """Extract list of points from gridded dataset."""
+    x = xr.DataArray(points.unique().x, dims=["geometry"])
+    y = xr.DataArray(points.unique().y, dims=["geometry"])
+    geometry = xr.DataArray(points.unique(), dims=["geometry"])
+    return (
+        ds.sel(longitude=x, latitude=y, method=method)
+        .drop(["latitude", "longitude"])
+        .assign_coords(geometry=geometry)
+    )
+
+
+def extract_records(ds, records: gpd.geodataframe.GeoDataFrame):
+    """Extract list of year/geometry records from gridded dataset."""
+    x = records.geometry.x.to_xarray()
+    y = records.geometry.y.to_xarray()
+    year = records.year.to_xarray()
+    geometry = records.geometry.to_xarray()
+    # TODO ensure all years present before allowing 'nearest' on year
+    return (
+        ds.sel(longitude=x, latitude=y, year=year, method="nearest")
+        .drop(["latitude", "longitude"])
+        .assign_coords(year=year, geometry=geometry)
+    )

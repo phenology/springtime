@@ -16,7 +16,7 @@ import yaml
 from springtime.utils import YearRange
 
 
-class Dataset(BaseModel, ABC):
+class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
     """Base class for springtime datasets.
 
     Attributes:

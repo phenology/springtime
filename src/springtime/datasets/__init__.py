@@ -4,7 +4,7 @@
 # due to import of r dependencies
 """Functionality related to working with data sources."""
 
-from typing import Any, Union
+from typing import Union
 
 from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated

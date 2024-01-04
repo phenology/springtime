@@ -83,8 +83,10 @@ Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2
 from datetime import datetime
 import logging
 from itertools import product
-from typing import Literal, Sequence
+from typing import Any, Literal, Optional, Sequence
 from urllib.request import urlretrieve
+
+import numpy as np
 from springtime.datasets.abstract import Dataset
 
 import geopandas as gpd
@@ -122,6 +124,14 @@ short_vars = {
     "land_surface_elevation": "elevation",
 }
 
+operators = {
+    'mean': np.mean,
+    'min': np.min,
+    'max': np.max,
+    'sum': np.sum,
+    'median': np.median,
+}
+
 
 class EOBS(Dataset):
     """E-OBS dataset.
@@ -137,7 +147,11 @@ class EOBS(Dataset):
             None, will return the full dataset as xarray object; this cannot be
             joined with other datasets.
         resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
+            no resampling. Else, should be a dictonary of the form {frequency:
+            'M', operator: 'mean', **other_options}. Currently supported
+            operators are 'mean', 'min', 'max', 'sum', 'median'. For valid
+            frequencies see [1]. Other options will be passed directly to
+            xr.resample [2]
         product_type: one of "ensemble_mean", "ensemble_spread", "elevation".
         grid_resolution: either "0.25deg" or "0.1deg"
         version: currently only possible value is "26.0e"
@@ -147,6 +161,9 @@ class EOBS(Dataset):
             optionally area. This saves disk space, but it requires
             re-downloading for new years/areas. Default is False, i.e. keep the full
             EOBS grid.
+
+        [1] https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+        [2] https://docs.xarray.dev/en/stable/generated/xarray.Dataset.resample.html
     """
 
     dataset: Literal["E-OBS"] = "E-OBS"
@@ -160,7 +177,7 @@ class EOBS(Dataset):
     keep_grid_location: bool = False  # TODO implement
     area: NamedArea | None = None
     minimize_cache: bool = False
-    resample: bool = False  # TODO implement
+    resample: Optional[dict[str, Any]] = None
 
     # TODO add root validator that use same valid combinations as on
     # https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe?tab=form
@@ -228,9 +245,16 @@ class EOBS(Dataset):
                     from {url} to {path}."""
                 logger.info(msg)
                 urlretrieve(url, path)
-            paths.append(path)
 
-        # TODO process minimize_cache
+                if self.minimize_cache:
+                    with xr.open_dataarray(path) as da:
+                        da = extract_time(da, self.years.start, self.years.end)
+                        if self.area is not None:
+                            da = extract_area(da, self.area.bbox)
+                        da2 = da.copy().load()
+                    da2.to_netcdf(path)
+
+            paths.append(path)
 
         return paths
 
@@ -266,25 +290,37 @@ class EOBS(Dataset):
         if self.area is not None:
             ds = extract_area(ds, self.area.bbox)
 
-        # Extract points/records
+        # Resample
+        if self.resample is not None:
+            resample_kwargs = self.resample
+            frequency = resample_kwargs.pop('frequency', 'M')
+            operator_key = resample_kwargs.pop('operator', 'mean')
+            operator = operators[operator_key]
+            ds = ds.resample(time=frequency, **resample_kwargs).reduce(operator)
+
+        # Extract year and DOY columns
+        if 'time' in ds.dims:
+            ds = split_time(ds)
+
+        # Early return if no points are extracted
         if self.points is None:
-            logger.warning(
-                """No points selected; returning gridded data as
-                           xarray object. Useful for prediction, but cannot be
-                           used in a recipe."""
-            )
+            logger.warning("""
+                No points selected; returning gridded data as xarray object.
+                Useful for prediction, but cannot be used in a recipe.
+                """)
             return ds
 
+        # Extract points/records
         if isinstance(self.points, Point):
             x = [self.points.x]
             y = [self.points.y]
             geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
-            ds = extract_records(ds, geometry)
+            ds = extract_points(ds, geometry)
         elif isinstance(self.points, Sequence):
             x = [p.x for p in self.points]
             y = [p.y for p in self.points]
             geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
-            ds = extract_records(ds, geometry)
+            ds = extract_points(ds, geometry)
         else:
             # only remaining option is PointsFromOther
             records = self.points._records
@@ -294,17 +330,26 @@ class EOBS(Dataset):
 
     def _to_dataframe(self, ds: xr.Dataset):
         """Transform to dataframe and process to final format."""
-        df = ds.to_dataframe()
-        df = df.set_index(["year", "geometry"], append=True).unstack("doy")
-        df.columns = df.columns.map("{0[0]}|{0[1]}".format)
-        df = df.reset_index("index", drop=True).reset_index()
-        df = gpd.GeoDataFrame(df)
+        # TODO simplify; maybe add other option, to include data as list?
+        if 'index' in ds.coords:
+            df = ds.to_dataframe()
+            df = df.set_index(["year", "geometry"], append=True).unstack("doy")
+            df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+            df = df.reset_index("index", drop=True).reset_index()
+            df = gpd.GeoDataFrame(df)
+        else:
+            df = ds.to_dataframe().reset_index()
+            df = df.set_index(["year", "geometry", "doy"]).unstack("doy")
+            df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+            df = df.reset_index()
+            df = gpd.GeoDataFrame(df)
         return df
+
 
 def extract_time(ds, start, end):
     """Extract time range from xarray dataset."""
     if "time" not in ds.dims:
-        # elevation has no time dimension, so make it. (why??)
+        # elevation has no time dimension, so make it. TODO (why??)
         return ds.expand_dims({"time": [datetime(start, 1, 1)]}, axis=0)
     return ds.sel(time=slice(f"{start}-01-01", f"{end}-12-31"))
 
@@ -328,6 +373,27 @@ def split_time(ds):
     return ds.assign_coords(time=split_time).unstack("time")
 
 
+def monthly_agg(ds, operator=np.mean):
+    """Return monthly aggregates based on DOY dimension."""
+    bins = np.linspace(0, 366, 13, dtype=int)
+    grouped = ds.groupby_bins(group='doy', bins=bins, labels=bins[1:], precision=0)
+    aggregated = grouped.reduce(operator).rename(doy_bins="doy")
+    aggregated['doy'] = aggregated['doy'].values.astype(int)
+    return aggregated
+
+
+def monthly_gdd(ds, t_base = 5):
+    """Return monthly growing degree days based on DOY dimension."""
+    # TODO rename variable to GDD?
+    # only operate on data-arrays, not datasets?
+    bins = np.linspace(0, 366, 13, dtype=int)
+    gdd = (ds - t_base).cumsum('doy')
+    grouped = gdd.groupby_bins(group='doy', bins=bins, labels=bins[1:].astype(int), precision=0)
+    aggregated = grouped.max().rename(doy_bins="doy")
+    aggregated['doy'] = aggregated['doy'].values.astype(int)
+    return aggregated
+
+
 def extract_points(ds, points: gpd.geoseries.GeoSeries, method="nearest"):
     """Extract list of points from gridded dataset."""
     x = xr.DataArray(points.unique().x, dims=["geometry"])
@@ -335,7 +401,7 @@ def extract_points(ds, points: gpd.geoseries.GeoSeries, method="nearest"):
     geometry = xr.DataArray(points.unique(), dims=["geometry"])
     return (
         ds.sel(longitude=x, latitude=y, method=method)
-        .drop(["latitude", "longitude"])
+        .drop_vars(["latitude", "longitude"])
         .assign_coords(geometry=geometry)
     )
 
@@ -347,6 +413,7 @@ def extract_records(ds, records: gpd.geodataframe.GeoDataFrame):
     year = records.year.to_xarray()
     geometry = records.geometry.to_xarray()
     # TODO ensure all years present before allowing 'nearest' on year
+    # TODO also work when there is no year column (static variables)?
     return (
         ds.sel(longitude=x, latitude=y, year=year, method="nearest")
         .drop(["latitude", "longitude"])

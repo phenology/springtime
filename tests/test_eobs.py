@@ -10,6 +10,14 @@ import pytest
 from springtime.config import CONFIG
 from springtime.datasets.meteo.eobs import EOBS, extract_points
 
+"""
+To update reference data, run one of the following:
+
+    pytest tests/test_eobs.py --update-reference
+    pytest tests/test_eobs.py --update-reference --redownload
+
+"""
+
 REFERENCE_DATA = CONFIG.cache_dir / "eobs_load_reference.geojson"
 REFERENCE_RECIPE = dedent(
     """\
@@ -53,15 +61,6 @@ def reference_args(germany):
         area = germany,
         minimize_cache = True
     )
-
-
-def update_reference_data(redownload=False):
-    """Update the reference data for these tests."""
-    dataset = EOBS(**reference_args)
-    if redownload:
-        shutil.rmtree(dataset._root_dir)
-    loaded_data = dataset.load()
-    loaded_data.to_file(REFERENCE_DATA)
 
 
 def test_load_full_grid(reference_args):
@@ -138,3 +137,13 @@ def test_extract_points(reference_args):
 
     # Extract single point
     extract_points(ds, points[0:1])
+
+
+@pytest.mark.update
+def test_update_reference_data(reference_args, redownload):
+    """Update the reference data for these tests."""
+    dataset = EOBS(**reference_args)
+    if redownload:
+        shutil.rmtree(dataset._root_dir)
+    loaded_data = dataset.load()
+    loaded_data.to_file(REFERENCE_DATA)

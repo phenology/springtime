@@ -25,15 +25,6 @@ REFERENCE_RECIPE = dedent(
 )
 
 
-def update_reference_data(redownload=False):
-    """Update the reference data for these tests."""
-    dataset = PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
-    if redownload:
-        dataset._location.unlink()
-    loaded_data = dataset.load()
-    loaded_data.to_file(REFERENCE_DATA)
-
-
 def test_instantiate_class():
     PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
 
@@ -88,3 +79,13 @@ def test_load():
         vs reference {reference.columns}."""
 
     pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values])
+
+
+@pytest.mark.update
+def update_reference_data(redownload):
+    """Update the reference data for these tests."""
+    dataset = PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
+    if redownload:
+        dataset._location.unlink()
+    loaded_data = dataset.load()
+    loaded_data.to_file(REFERENCE_DATA)

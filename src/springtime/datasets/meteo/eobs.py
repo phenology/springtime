@@ -83,6 +83,8 @@ Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2
 from datetime import datetime
 import logging
 from itertools import product
+from pathlib import Path
+import re
 from typing import Any, Literal, Optional, Sequence
 from urllib.request import urlretrieve
 
@@ -181,12 +183,6 @@ class EOBS(Dataset):
 
     # TODO add root validator that use same valid combinations as on
     # https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe?tab=form
-
-    def _url(self, variable: Variable, period: str):
-        root = "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/"
-        base = f"{root}Grid_{self.grid_resolution}_reg_ensemble/"
-        return base + self._filename(variable, period)
-
     @field_validator("years")
     def _valid_years(cls, years):
         assert (
@@ -212,7 +208,11 @@ class EOBS(Dataset):
                 matched_periods.add(f"{period.start}-{period.stop}")
         return matched_periods
 
-    def _filename(self, variable: Variable, period: str):
+    @property
+    def _root_dir(self):
+        return CONFIG.cache_dir / "e-obs"
+
+    def _server_filename(self, variable: Variable, period: str):
         short_var = short_vars[variable]
         if self.product_type == "ensemble_mean":
             rpv = f"{self.grid_resolution}_reg_{period}_v{self.version}"
@@ -222,48 +222,78 @@ class EOBS(Dataset):
             return f"{short_var}_ens_spread_{rpv}.nc"
         return f"elev_ens_{self.grid_resolution}_reg_v{self.version}.nc"
 
-    @property
-    def _root_dir(self):
-        return CONFIG.cache_dir / "e-obs"
+    def _server_url(self, variable: Variable, period: str):
+        root = "https://knmi-ecad-assets-prd.s3.amazonaws.com/ensembles/data/"
+        base = f"{root}Grid_{self.grid_resolution}_reg_ensemble/"
+        return base + self._server_filename(variable, period)
 
-    def _path(self, variable: Variable, period: str):
-        return self._root_dir / self._filename(variable, period)
+    def _default_path(self, variable: Variable, period: str):
+        """Return default path with filename as downloaded from server."""
+        default_filename = self._server_filename(variable, period)
+        return self._root_dir / default_filename
+
+    def _minimized_path(self, variable: Variable):
+        """Return path with modified filename when minimize_cache is True."""
+        # Same pattern, custom period/region:
+        period = f"{self.years.start}-{self.years.end}"
+        minimized_filename = self._server_filename(variable, period)
+
+        if self.area is not None:
+            minimized_filename = minimized_filename.replace("reg", self.area.name)
+
+        return self._root_dir / minimized_filename
 
     def download(self):
         """Download the data if necessary and return the file paths."""
         logger.info("Locating data")
         self._root_dir.mkdir(exist_ok=True)
+        full_period = f"{self.years.start}-{self.years.end}"
 
         paths = []
-        for variable, period in product(self.variables, self._periods):
-            path = self._path(variable, period)
-            if path.exists() and not CONFIG.force_override:
-                logger.info(f"Found {path}, skipping download")
+        for variable in self.variables:
+            logger.info(f"Looking for variable {variable} in period {full_period}...")
+
+            # Check if we can skip because minized path exists
+            minimized_path = self._minimized_path(variable)
+            if self.minimize_cache and minimized_path.exists() and not CONFIG.force_override:
+                logger.info(f"Found {minimized_path}")
+                paths.append(minimized_path)
+                continue
+
+            # Check default paths
+            sub_paths = []
+            for sub_period in self._periods:
+                default_path = self._default_path(variable, sub_period)
+
+                if default_path.exists() and not CONFIG.force_override:
+                    logger.info(f"Found {default_path}")
+                else:
+                    logger.info(f"Downloading {default_path}.")
+                    url = self._server_url(variable, sub_period)
+                    urlretrieve(url, default_path)
+
+                sub_paths.append(default_path)
+
+            if self.minimize_cache:
+                arrays = [xr.open_dataarray(p) for p in sub_paths]
+                da = arrays[0] if len(arrays) == 1 else xr.concat(arrays, dim='time')
+
+                da = extract_time(da, self.years.start, self.years.end)
+
+                if self.area is not None:
+                    da = extract_area(da, self.area.bbox)
+
+                da.to_netcdf(minimized_path)
+                [p.unlink() for p in sub_paths]
+
+                paths.append(minimized_path)
             else:
-                url = self._url(variable, period)
-                msg = f"""Downloading E-OBS variable {variable} for {period} period
-                    from {url} to {path}."""
-                logger.info(msg)
-                urlretrieve(url, path)
-
-                if self.minimize_cache:
-                    with xr.open_dataarray(path) as da:
-                        da = extract_time(da, self.years.start, self.years.end)
-                        if self.area is not None:
-                            da = extract_area(da, self.area.bbox)
-                        da2 = da.copy().load()
-                    da2.to_netcdf(path)
-
-            paths.append(path)
+                paths.extend(sub_paths)
 
         return paths
 
     def raw_load(self):
-        """Load the dataset from disk into memory.
-
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
+        """Load the dataset from disk into memory without further processing."""
         paths = self.download()
 
         ds = open_mfdataset(
@@ -281,6 +311,7 @@ class EOBS(Dataset):
         return ds
 
     def load(self):
+        """Load and pre-process the data."""
         ds = self.raw_load()
 
         # Select time

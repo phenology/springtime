@@ -25,27 +25,48 @@ def temporary_cache_dir(tmp_path):
     return context_manager
 
 
-### Add marker to skip download tests
+### Add markers to skip download tests and for updating reference data
 ### https://docs.pytest.org/en/latest/example/simple.html#control-skipping-of-tests-according-to-command-line-option
 
 def pytest_addoption(parser):
+    # store_true sets option to True if options is passed, default is False
+    # https://stackoverflow.com/a/8203679
     parser.addoption(
-        "--include_downloads", action="store_true", default=False, help="Also test download functionality."
+        "--include-downloads", action="store_true", help="Also test download functionality."
+    )
+    parser.addoption(
+        "--update-reference", action="store_true", help="Regenerate reference data used in tests."
+    )
+    parser.addoption(
+        "--redownload", action="store_true", help="Remove test cache before updating reference data."
     )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "download: mark test as including downloads")
+    config.addinivalue_line("markers", "update: mark test as function to update reference data")
 
 
 def pytest_collection_modifyitems(config, items):
-    if config.getoption("--include_downloads"):
-        # --include_downloads given in cli: do not skip tests with downloads
+    if config.getoption("--update-reference"):
+        update_items = []
+        for item in items:
+            if "update" in item.keywords:
+                update_items.append(item)
+
+        items[:] = update_items
         return
-    skip_download = pytest.mark.skip(reason="need --include_downloads option to run")
-    for item in items:
-        if "download" in item.keywords:
-            item.add_marker(skip_download)
+
+    if not config.getoption("--include-downloads"):
+        skip_download = pytest.mark.skip(reason="need --include-downloads option to run")
+        for item in items:
+            if "download" in item.keywords:
+                item.add_marker(skip_download)
+
+@pytest.fixture()
+def redownload(pytestconfig):
+    """Return the value of redownload from command-line options."""
+    return pytestconfig.getoption("redownload")
 
 
 ### Test areas

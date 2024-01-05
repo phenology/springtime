@@ -10,81 +10,65 @@ Fetches complete grid from
 Example: Example: Get elevation of whole E-OBS grid
 
     ```python
-    from springtime.datasets.meteo.eobs import EOBS
+    from springtime.datasets import EOBS
     datasource = EOBS(product_type='elevation',
-                    variables=['land_surface_elevation'],
-                    years=[2000, 2002]
-                    )
-    datasource.download()
+                      variables=['land_surface_elevation'],
+                      years=[2000, 2002]
+                      )
     ds = datasource.load()
     ```
-
 
 Example: Example: Get all variables for a single point
 
     ```python
-    from springtime.datasets.meteo.eobs import EOBSSinglePoint
-    datasource = EOBSSinglePoint(point=[5, 50],
-                                product_type='ensemble_mean',
-                                grid_resolution='0.25deg',
-                                years=[2000,2002])
-    datasource.download()
+    from springtime.datasets import EOBS
+    datasource = EOBS(points=[5, 50],
+                      product_type='ensemble_mean',
+                      grid_resolution='0.25deg',
+                      years=[2000,2002])
     df = datasource.load()
     ```
 
 Example: Example: Get elevation
 
     ```python
-    from springtime.datasets.meteo.eobs import EOBSSinglePoint
-    datasource = EOBSSinglePoint(point=[5, 50],
-                                product_type='elevation',
-                                variables=['land_surface_elevation'],
-                                years=[2000, 2002]
-                                )
-    datasource.download()
+    from springtime.datasets import EOBS
+    datasource = EOBS(points=[5, 50],
+                      product_type='elevation',
+                      variables=['land_surface_elevation'],
+                      years=[2000, 2002]
+                      )
     df = datasource.load()
     ```
 
 Examples: Example: Load all variables for a selection of points.
 
     ```python
-    from springtime.datasets.meteo.eobs import EOBSMultiplePoints
-    datasource = EOBSMultiplePoints(points=[
-                                        [5, 50],
-                                        [5, 55],
-                                    ],
-                                    product_type='ensemble_mean',
-                                    grid_resolution='0.25deg',
-                                    years=[2000,2002])
-    datasource.download()
+    from springtime.datasets import EOBS
+    datasource = EOBS(points=[[5, 50], [5, 55]],
+                      product_type='ensemble_mean',
+                      grid_resolution='0.25deg',
+                      years=[2000,2002])
     df = datasource.load()
     ```
 
 Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2002
 
     ```python
-    from springtime.datasets.meteo.eobs import EOBSBoundingBox
-
-    dataset = EOBSBoundingBox(
-        years=[2000,2002],
-        area={
-            'name': 'amsterdam',
-            'bbox': [4, 50, 5, 55]
-        },
-        grid_resolution='0.25deg'
-    )
-    dataset.download()
+    from springtime.datasets import EOBS
+    dataset = EOBS(years=[2000,2002],
+                   area={
+                       'name': 'amsterdam',
+                       'bbox': [4, 50, 5, 55]
+                   },
+                   grid_resolution='0.25deg')
     df = dataset.load()
     ```
 
 """
 
-
 from datetime import datetime
 import logging
-from itertools import product
-from pathlib import Path
-import re
 from typing import Any, Literal, Optional, Sequence
 from urllib.request import urlretrieve
 
@@ -425,7 +409,7 @@ def monthly_gdd(ds, t_base = 5):
     return aggregated
 
 
-def extract_points(ds, points: gpd.geoseries.GeoSeries, method="nearest"):
+def extract_points(ds, points: gpd.GeoSeries, method="nearest"):
     """Extract list of points from gridded dataset."""
     x = xr.DataArray(points.unique().x, dims=["geometry"])
     y = xr.DataArray(points.unique().y, dims=["geometry"])
@@ -437,7 +421,7 @@ def extract_points(ds, points: gpd.geoseries.GeoSeries, method="nearest"):
     )
 
 
-def extract_records(ds, records: gpd.geodataframe.GeoDataFrame):
+def extract_records(ds, records: gpd.GeoDataFrame):
     """Extract list of year/geometry records from gridded dataset."""
     x = records.geometry.x.to_xarray()
     y = records.geometry.y.to_xarray()
@@ -450,3 +434,9 @@ def extract_records(ds, records: gpd.geodataframe.GeoDataFrame):
         .drop(["latitude", "longitude"])
         .assign_coords(year=year, geometry=geometry)
     )
+
+
+# TODO
+# - What to do with keep_grid_location?
+# - Fix elevation
+# - Different kind of transpose ds to df (keep time as series?)

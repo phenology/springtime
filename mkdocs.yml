@@ -7,28 +7,41 @@ repo_url: https://github.com/phenology/springtime
 repo_name: Springtime
 
 nav:
-  - Home:
-      - About: index.md
-      - Getting started: setup.md
-      - Usage: usage.md
-      - Example recipes: recipes.md
-  - Datasets:
-      - Data sources and existing tools: datasets.md
-      - Field observations:
-        - National Phenology Network: notebooks/datasets_npn.ipynb
-        - Plant Phenology Ontology: notebooks/datasets_ppo.ipynb
-        - Pan European Phenology: notebooks/datasets_pep725.ipynb
-        - Phenocam: notebooks/datasets_phenocam.ipynb
-      - Satellites:
-        - MODIS: notebooks/datasets_modis.ipynb
-        - AppEEARS: notebooks/datasets_modis_appeears.ipynb
-      - Meteorology:
-        - Daymet: notebooks/datasets_daymet.ipynb
-        - E-OBS: notebooks/datasets_eobs.ipynb
-      - API Reference: reference/springtime/datasets/
-      - Recipe Reference: clireference/datasets/
-  - Models: models.md
+  - Home: index.md
+  - Installation: setup.md
+  # - Usage: usage.md
+  - User guide:
+    - Intro: notebooks/user_guide/intro.ipynb
+    - Datasets:
+      - datasets.md
+      - PEP725: notebooks/user_guide/datasets/pep725.ipynb
+      - EOBS: notebooks/user_guide/datasets/eobs.ipynb
+    - Workflows: notebooks/user_guide/combining_data.ipynb
+    - Modelling:
+      - Pycaret & sklearn: placeholder.md
+      - Pyphenology: placeholder.md
+      - Mixed effects: placeholder.md
+    - Example use cases:
+      - Experiment 1: placeholder.md
+      - Experiment 2: placeholder.md
+      # - Example recipes: recipes.md
+  # - Datasets:
+  #     - Data sources and existing tools:
+  #     - Field observations:
+  #       - National Phenology Network: notebooks/datasets_npn.ipynb
+  #       - Plant Phenology Ontology: notebooks/datasets_ppo.ipynb
+  #       - Pan European Phenology: notebooks/datasets_pep725.ipynb
+  #       - Phenocam: notebooks/datasets_phenocam.ipynb
+  #     - Satellites:
+  #       - MODIS: notebooks/datasets_modis.ipynb
+  #       - AppEEARS: notebooks/datasets_modis_appeears.ipynb
+  #     - Meteorology:
+  #       - Daymet: notebooks/datasets_daymet.ipynb
+  #       - E-OBS: notebooks/datasets_eobs.ipynb
+  #     - Recipe Reference: clireference/datasets/
   - Developer Guide: develop.md
+  - API Reference: reference/springtime/datasets/
+  # - Models: models.md
 
 theme:
   name: material
@@ -36,8 +49,8 @@ theme:
   logo: lilac_cc0.jpg
   features:
     - navigation.instant
-    - navigation.tabs
-    - navigation.tabs.sticky
+    # - navigation.tabs
+    # - navigation.tabs.sticky
   icon:
     repo: fontawesome/brands/github-alt
     admonition:
@@ -63,16 +76,19 @@ theme:
 plugins:
 - mkdocs-jupyter:
     include_source: True
+    # TODO no need to specify each file.
     include: [
-      "pk_wishful_workflows.ipynb",
-      "datasets_npn.ipynb",
-      "datasets_ppo.ipynb",
-      "datasets_pep725.ipynb",
-      "datasets_modis.ipynb",
-      "datasets_eobs.ipynb",
-      "datasets_daymet.ipynb",
-      "datasets_phenocam.ipynb",
-      "datasets_modis_appeears.ipynb",
+      "intro.ipynb",
+      "pep725.ipynb",
+      "eobs.ipynb",
+      "combining_data.ipynb",
+      # "pk_wishful_workflows.ipynb",
+      # "datasets_npn.ipynb",
+      # "datasets_ppo.ipynb",
+      # "datasets_modis.ipynb",
+      # "datasets_daymet.ipynb",
+      # "datasets_phenocam.ipynb",
+      # "datasets_modis_appeears.ipynb",
       ]
 - include-markdown
 - search
@@ -106,7 +122,7 @@ plugins:
 - gen-files:  # Auto-generate API reference files
     scripts:
         - docs/gen_apiref_datasets.py
-        - docs/gen_cliref_datasets.py
+        # - docs/gen_cliref_datasets.py
 - literate-nav:  # Create an index for the auto-generated api reference
     nav_file: SUMMARY.md
 - section-index

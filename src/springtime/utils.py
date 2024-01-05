@@ -18,6 +18,16 @@ logger = getLogger(__name__)
 # TODO move the types to types.py
 
 
+germany = {
+    "name": "Germany",
+    "bbox": [
+        5.98865807458,
+        47.3024876979,
+        15.0169958839,
+        54.983104153,
+    ],
+}
+
 class Point(NamedTuple):
     """Single point with x and y coordinate."""
     x: float

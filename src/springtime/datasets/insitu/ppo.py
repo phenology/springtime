@@ -17,19 +17,19 @@ Example:
         genus="Quercus Pinus",
         termID="obo:PPO_0002313",
         limit=10,
-        years=[2019, 2020]
-        # area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
+        years=[2019, 2020],
+        area=dict(name="somewhere", bbox=[-83, 27,-82, 28])
     )
     dataset.download()
     df = dataset.load()
     df
     ```
 """
+import logging
 from typing import Literal, Optional, Sequence
 
 import geopandas as gpd
 import pandas as pd
-import rpy2.robjects as ro
 from pydantic.types import PositiveInt
 
 from springtime.config import CONFIG
@@ -37,8 +37,20 @@ from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, run_r_script
 
 # non-numerice variables are removed from the list below.
-PPOVariables = Literal["dayOfYear"]
+PPOVariables = Literal['dayOfYear',
+ 'genus',
+ 'specificEpithet',
+ 'eventRemarks',
+#  'latitude',  # required
+#  'longitude',  # required
+ 'termID',
+ 'source',
+ 'eventId']
 """Variables available in the PPO dataset."""
+
+
+logger = logging.getLogger(__name__)
+
 
 
 class RPPO(Dataset):
@@ -46,8 +58,6 @@ class RPPO(Dataset):
 
     Attributes:
         years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
         genus: plant genus, e.g. "Quercus Pinus". See [PPO
             documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
         termID: plant development stage, e.g. "obo:PPO_0002313" means "true
@@ -64,7 +74,7 @@ class RPPO(Dataset):
     dataset: Literal["rppo"] = "rppo"
     genus: str
     termID: str = "obo:PPO_0002313"
-    area: Optional[NamedArea]
+    area: Optional[NamedArea] = None
     limit: PositiveInt = 100000
     timeLimit: PositiveInt = 60
     variables: Sequence[PPOVariables] = tuple()
@@ -73,56 +83,6 @@ class RPPO(Dataset):
     def _path(self):
         fn = self._build_filename()
         return CONFIG.cache_dir / "PPO" / fn
-
-    def download(self):
-        """Download data."""
-        if self._path.exists():
-            print("File already exists:", self._path)
-        else:
-            self._path.parent.mkdir(parents=True, exist_ok=True)
-            run_r_script(self._r_download(), timeout=300)
-
-    def _r_download(self):
-        genus = ", ".join([f'"{p}"' for p in self.genus.split(" ")])
-        if self.area is None:
-            box = ""
-        else:
-            abox = self.area.bbox
-            box = f"bbox='{abox[1]},{abox[0]},{abox[3]},{abox[2]}',"
-        years = f"fromYear={self.years.start}, toYear={self.years.end},"
-        return f"""\
-        library(rppo)
-        response <- ppo_data(genus = c({genus}), termID='{self.termID}',
-            {box}
-            {years}
-            limit={self.limit}, timeLimit = {self.timeLimit})
-        saveRDS(response, file="{self._path}")
-        """
-
-    def load(self):
-        """Load data from disk."""
-        readRDS = ro.r["readRDS"]
-        rdata = readRDS(str(self._path))
-
-        data = dict(zip(rdata.names, list(rdata)))
-        df = ro.pandas2ri.rpy2py_dataframe(data["data"])
-
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        df = gpd.GeoDataFrame(df, geometry=geometry)
-        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
-            df["dayOfYear"] - 1, unit="D"
-        )
-
-        non_variables = {"geometry", "datetime", "year"}
-        variables = [v for v in df.columns if v not in non_variables]
-        if self.variables:
-            variables = list(self.variables)
-        df = df[["datetime", "geometry"] + variables]
-
-        df.attrs["readme"] = data["readme"][0]
-        df.attrs["citation"] = data["citation"][0]
-        df.attrs["number_possible"] = data["number_possible"][0]
-        return df
 
     def _build_filename(self):
         parts = [self.genus.replace(" ", "_"), self.termID]
@@ -134,5 +94,71 @@ class RPPO(Dataset):
             parts.append(self.area.name)
         else:
             parts.append("na")
-        parts.append("rds")
+        parts.append("csv")
         return ".".join(parts)
+
+    def download(self):
+        """Download data."""
+        logger.info(f"Downloading data to {self._path}")
+        logger.debug(f"R code:\n{self._r_download()}")
+
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        run_r_script(self._r_download(), timeout=300)
+        logger.info(f"""Download successful. Please see the readme
+                    and citation files in {self._path.parent}""")
+
+    def raw_load(self):
+        logger.info("Locating data...")
+        if self._path.exists():
+            print(f"Found {self._path}")
+        else:
+            self.download()
+
+        df = pd.read_csv(self._path)
+        return df
+
+    def load(self):
+        """Load data from disk."""
+        df = self.raw_load(self)
+
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        df = gpd.GeoDataFrame(df, geometry=geometry)
+
+        # TODO: don't do this?!
+        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
+            df["dayOfYear"] - 1, unit="D"
+        )
+
+        non_variables = {"geometry", "datetime", "year"}
+        variables = [v for v in df.columns if v not in non_variables]
+        if self.variables:
+            variables = list(self.variables)
+        df = df[["datetime", "geometry"] + variables]
+
+        # TODO extract first_yes_day or last_yes_day for state/event conversion?
+        # see rnpn for reference.
+
+        return df
+
+    def _r_download(self):
+        genus = ", ".join([f'"{p}"' for p in self.genus.split(" ")])
+        if self.area is None:
+            box = ""
+        else:
+            abox = self.area.bbox
+            box = f"bbox='{abox[1]},{abox[0]},{abox[3]},{abox[2]}',"
+        years = f"fromYear={self.years.start}, toYear={self.years.end},"
+        return f"""\
+        library(rppo)
+        response <- ppo_data(
+            genus = c({genus}),
+            termID='{self.termID}',
+            {box}
+            {years}
+            limit={self.limit},
+            timeLimit = {self.timeLimit})
+
+        write.csv(response$data, "{self._path}", row.names=FALSE)
+        write(response$readme, file="{str(self._path).replace('csv', 'readme')}")
+        write(response$citation, file="{str(self._path).replace('csv', 'citation')}")
+        """

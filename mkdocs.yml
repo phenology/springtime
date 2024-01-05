@@ -16,6 +16,7 @@ nav:
       - datasets.md
       - PEP725: notebooks/user_guide/datasets/pep725.ipynb
       - EOBS: notebooks/user_guide/datasets/eobs.ipynb
+      - PPO: notebooks/user_guide/datasets/ppo.ipynb
     - Workflows: notebooks/user_guide/combining_data.ipynb
     - Modelling:
       - Pycaret & sklearn: placeholder.md
@@ -81,10 +82,10 @@ plugins:
       "intro.ipynb",
       "pep725.ipynb",
       "eobs.ipynb",
+      "ppo.ipynb",
       "combining_data.ipynb",
       # "pk_wishful_workflows.ipynb",
       # "datasets_npn.ipynb",
-      # "datasets_ppo.ipynb",
       # "datasets_modis.ipynb",
       # "datasets_daymet.ipynb",
       # "datasets_phenocam.ipynb",

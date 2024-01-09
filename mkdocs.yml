@@ -91,6 +91,9 @@ plugins:
       # "datasets_phenocam.ipynb",
       # "datasets_modis_appeears.ipynb",
       ]
+    remove_tag_config:
+      remove_input_tags:
+        - hide_in_docs
 - include-markdown
 - search
 - mkdocstrings:

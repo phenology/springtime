@@ -36,18 +36,6 @@ from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, run_r_script
 
-# non-numerice variables are removed from the list below.
-PPOVariables = Literal['dayOfYear',
- 'genus',
- 'specificEpithet',
- 'eventRemarks',
-#  'latitude',  # required
-#  'longitude',  # required
- 'termID',
- 'source',
- 'eventId']
-"""Variables available in the PPO dataset."""
-
 
 logger = logging.getLogger(__name__)
 
@@ -67,78 +55,85 @@ class RPPO(Dataset):
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         limit: Maximum number of records to retreive
         timeLimit: Number of seconds to wait for the server to respond
-        variables: Variables you want to load. When empty will load all the variables.
+        exclude_terms: termIDs to exclude from the results
+        infer_event: whether to keep all (state-based) observations or infer the
+            phenological event by setting it to "first_yes_day" or "last_yes_day".
 
     """
 
     dataset: Literal["rppo"] = "rppo"
-    genus: str
+    genus: str | list[str]
     termID: str = "obo:PPO_0002313"
     area: Optional[NamedArea] = None
-    limit: PositiveInt = 100000
+    limit: Optional[PositiveInt] = None
     timeLimit: PositiveInt = 60
-    variables: Sequence[PPOVariables] = tuple()
+    exclude_terms: list[str] = []
+    infer_event: None | Literal["first_yes_day", "last_yes_day"] = None
 
-    @property
-    def _path(self):
-        fn = self._build_filename()
+    def _path(self, suffix="csv"):
+        fn = self._build_filename(suffix=suffix)
         return CONFIG.cache_dir / "PPO" / fn
 
-    def _build_filename(self):
-        parts = [self.genus.replace(" ", "_"), self.termID]
+    def _build_filename(self, suffix="csv"):
+
+        name = "-".join(self.genus) if isinstance(self.genus, list) else self.genus
+        name = name.replace(" ", "_")
+
+        parts = [name, self.termID]
+
         if self.years is not None:
             parts.append(f"{self.years.start}-{self.years.end}")
-        else:
-            parts.append("na")
+
         if self.area is not None:
             parts.append(self.area.name)
-        else:
-            parts.append("na")
-        parts.append("csv")
+
+        if self.limit is not None:
+            parts.append(f"0-{self.limit}")
+
+        parts.append(suffix)
         return ".".join(parts)
 
     def download(self):
         """Download data."""
-        logger.info(f"Downloading data to {self._path}")
+        logger.info(f"Downloading data to {self._path()}")
         logger.debug(f"R code:\n{self._r_download()}")
 
-        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path().parent.mkdir(parents=True, exist_ok=True)
         run_r_script(self._r_download(), timeout=300)
         logger.info(f"""Download successful. Please see the readme
-                    and citation files in {self._path.parent}""")
+                    and citation files in {self._path().parent}""")
 
     def raw_load(self):
         logger.info("Locating data...")
-        if self._path.exists():
-            print(f"Found {self._path}")
+        if self._path().exists():
+            print(f"Found {self._path()}")
         else:
             self.download()
 
-        df = pd.read_csv(self._path)
+        df = pd.read_csv(self._path())
         return df
 
     def load(self):
         """Load data from disk."""
-        df = self.raw_load(self)
+        df = self.raw_load()
 
+        # Filter terms
+        exclude_rows = df.termID.map(lambda x: any(term in x for term in self.exclude_terms))
+        df = df[~exclude_rows]
+
+        # Transform to events?
+        if self.infer_event == "first_yes_day":
+            df = df.groupby(["year", "latitude", "longitude"])["dayOfYear"].agg("min").reset_index()
+        elif self.infer_event == "last_yes_day":
+            df = df.groupby(["year", "latitude", "longitude"])["dayOfYear"].agg("max").reset_index()
+        else:
+            df = df[["year", "latitude", "longitude", "dayOfYear"]]
+
+        # Standardize
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        df = gpd.GeoDataFrame(df, geometry=geometry)
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
 
-        # TODO: don't do this?!
-        df["datetime"] = pd.to_datetime(df["year"], format="%Y") + pd.to_timedelta(
-            df["dayOfYear"] - 1, unit="D"
-        )
-
-        non_variables = {"geometry", "datetime", "year"}
-        variables = [v for v in df.columns if v not in non_variables]
-        if self.variables:
-            variables = list(self.variables)
-        df = df[["datetime", "geometry"] + variables]
-
-        # TODO extract first_yes_day or last_yes_day for state/event conversion?
-        # see rnpn for reference.
-
-        return df
+        return gdf
 
     def _r_download(self):
         genus = ", ".join([f'"{p}"' for p in self.genus.split(" ")])
@@ -148,6 +143,7 @@ class RPPO(Dataset):
             abox = self.area.bbox
             box = f"bbox='{abox[1]},{abox[0]},{abox[3]},{abox[2]}',"
         years = f"fromYear={self.years.start}, toYear={self.years.end},"
+        limit = f"limit={self.limit}L," if self.limit else ""
         return f"""\
         library(rppo)
         response <- ppo_data(
@@ -155,10 +151,28 @@ class RPPO(Dataset):
             termID='{self.termID}',
             {box}
             {years}
-            limit={self.limit},
+            {limit}
             timeLimit = {self.timeLimit})
 
-        write.csv(response$data, "{self._path}", row.names=FALSE)
-        write(response$readme, file="{str(self._path).replace('csv', 'readme')}")
-        write(response$citation, file="{str(self._path).replace('csv', 'citation')}")
+        write.csv(response$data, "{self._path()}", row.names=FALSE)
+        write(response$readme, file="{self._path(suffix="readme")}")
+        write(response$citation, file="{self._path(suffix="citation")}")
         """
+
+
+def ppo_get_terms():
+    """Call rppo:ppo_get_terms, save and load result."""
+    filename = CONFIG.cache_dir / "PPO" / "ppo_terms.csv"
+
+    script = f"""\
+        library(rppo)
+        terms = ppo_get_terms(present=TRUE, absent=TRUE)
+        write.csv(terms, "{filename}", row.names=FALSE)
+        """
+
+    logger.info("Downloading terms")
+    logger.debug(f"R code:\n{script}")
+
+    run_r_script(script, timeout=300)
+
+    return pd.read_csv(filename)

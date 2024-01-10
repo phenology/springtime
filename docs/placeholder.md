@@ -1,3 +1,0 @@
-## Placeholder
-
-TODO: write documentation

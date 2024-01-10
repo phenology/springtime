@@ -10,7 +10,7 @@ from typing import Any, Literal, Sequence
 from pydantic import BaseModel
 from pycaret import time_series
 
-from springtime.NestedFitRegressionExperiment import NestedFitRegressionExperiment
+from legacy.NestedFitRegressionExperiment import NestedFitRegressionExperiment
 
 logger = logging.getLogger(__name__)
 

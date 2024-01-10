@@ -8,7 +8,7 @@ import geopandas as gpd
 from shapely import Point
 from pandas.testing import assert_frame_equal
 
-from springtime.datasets.insitu.npn.rnpn import RNPN, _reformat
+from springtime.datasets.insitu.rnpn import RNPN, _reformat
 
 
 def test_reformat_given_phenophase_ids_and_side_first_and_single_row():

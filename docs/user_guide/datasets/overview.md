@@ -4,6 +4,8 @@ SPDX-FileCopyrightText: 2023 Springtime authors
 SPDX-License-Identifier: Apache-2.0
 -->
 
+# Overview
+
 Springtime brings together datasets from various sources. Where possible, we use
 existing tools to retrieve the data. The flowchart below illustrates the various
 sources. Note that there might be multiple ways/tools to get data from the same

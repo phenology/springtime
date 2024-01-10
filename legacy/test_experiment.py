@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 from sklearn.svm import SVR
-from springtime.experiment import materialize_estimator
+from legacy.experiment import materialize_estimator
 
 
 def test_materialize_estimator():

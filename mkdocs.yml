@@ -9,40 +9,30 @@ repo_name: Springtime
 nav:
   - Home: index.md
   - Installation: setup.md
-  # - Usage: usage.md
   - User guide:
-    - Intro: notebooks/user_guide/intro.ipynb
+    - Intro: user_guide/intro.ipynb
     - Datasets:
-      - datasets.md
-      - PEP725: notebooks/user_guide/datasets/pep725.ipynb
-      - EOBS: notebooks/user_guide/datasets/eobs.ipynb
-      - PPO: notebooks/user_guide/datasets/ppo.ipynb
-    - Workflows: notebooks/user_guide/combining_data.ipynb
+      - Overview: user_guide/datasets/overview.md
+      - PEP725: user_guide/datasets/pep725.ipynb
+      - NPN: user_guide/datasets/npn.ipynb
+      - PPO: user_guide/datasets/ppo.ipynb
+      - Phenocam: user_guide/datasets/phenocam.ipynb
+      - EOBS: user_guide/datasets/eobs.ipynb
+      - Daymet: user_guide/datasets/daymet.ipynb
+      - MODIS: user_guide/datasets/modis.ipynb
+    - Workflows: user_guide/combining_data.ipynb
     - Modelling:
-      - Pycaret & sklearn: placeholder.md
-      - Pyphenology: placeholder.md
-      - Mixed effects: placeholder.md
+      - Pycaret & sklearn: user_guide/models.md
+      - Pyphenology: user_guide/models.md
+      - Mixed effects: user_guide/models.md
     - Example use cases:
-      - Experiment 1: placeholder.md
-      - Experiment 2: placeholder.md
-      # - Example recipes: recipes.md
-  # - Datasets:
-  #     - Data sources and existing tools:
-  #     - Field observations:
-  #       - National Phenology Network: notebooks/datasets_npn.ipynb
-  #       - Plant Phenology Ontology: notebooks/datasets_ppo.ipynb
-  #       - Pan European Phenology: notebooks/datasets_pep725.ipynb
-  #       - Phenocam: notebooks/datasets_phenocam.ipynb
-  #     - Satellites:
-  #       - MODIS: notebooks/datasets_modis.ipynb
-  #       - AppEEARS: notebooks/datasets_modis_appeears.ipynb
-  #     - Meteorology:
-  #       - Daymet: notebooks/datasets_daymet.ipynb
-  #       - E-OBS: notebooks/datasets_eobs.ipynb
-  #     - Recipe Reference: clireference/datasets/
+      - Experiment 1: user_guide/examples/overview.md
+      - Experiment 2: user_guide/examples/overview.md
   - Developer Guide: develop.md
   - API Reference: reference/springtime/datasets/
-  # - Models: models.md
+  # - Usage: usage.md
+  # - Example recipes: recipes.md
+  # - Recipe Reference: clireference/datasets/
 
 theme:
   name: material
@@ -50,8 +40,6 @@ theme:
   logo: lilac_cc0.jpg
   features:
     - navigation.instant
-    # - navigation.tabs
-    # - navigation.tabs.sticky
   icon:
     repo: fontawesome/brands/github-alt
     admonition:
@@ -77,20 +65,6 @@ theme:
 plugins:
 - mkdocs-jupyter:
     include_source: True
-    # TODO no need to specify each file.
-    include: [
-      "intro.ipynb",
-      "pep725.ipynb",
-      "eobs.ipynb",
-      "ppo.ipynb",
-      "combining_data.ipynb",
-      # "pk_wishful_workflows.ipynb",
-      # "datasets_npn.ipynb",
-      # "datasets_modis.ipynb",
-      # "datasets_daymet.ipynb",
-      # "datasets_phenocam.ipynb",
-      # "datasets_modis_appeears.ipynb",
-      ]
     remove_tag_config:
       remove_input_tags:
         - hide_in_docs
@@ -116,10 +90,7 @@ plugins:
           show_symbol_type_heading: true  # currently only available for insiders
         import:
           - https://docs.python.org/3/objects.inv
-          # We are still on Pydantic v1 which does not have intersphinx
-          # See https://github.com/phenology/springtime/issues/156
-          # Need to update to v2 to be able to use intersphinx link below
-          # - https://docs.pydantic.dev/latest/objects.inv
+          - https://docs.pydantic.dev/latest/objects.inv
           - https://geopandas.org/en/stable/objects.inv
           - https://pandas.pydata.org/pandas-docs/stable/objects.inv
           - https://docs.xarray.dev/en/stable/objects.inv

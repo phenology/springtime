@@ -20,20 +20,20 @@ from springtime.datasets.meteo.daymet import (
 from springtime.datasets.meteo.eobs import (
     EOBS
 )
-from springtime.datasets.satellite.modis.appeears import (
+from springtime.datasets.appeears import (
     AppeearsPoints,
     AppeearsPointsFromArea,
     AppeearsArea,
 )
-from springtime.datasets.satellite.modis.modistools import (
+from legacy.modistools import (
     ModisMultiplePoints,
     ModisSinglePoint,
 )
-from springtime.datasets.insitu.npn.NPNPhenor import NPNPhenor
+from legacy.NPNPhenor import NPNPhenor
 from springtime.datasets.insitu.pep725 import PEP725Phenor
 from springtime.datasets.insitu.phenocam import PhenocamrBoundingBox, PhenocamrSite
 from springtime.datasets.insitu.ppo import RPPO
-from springtime.datasets.insitu.npn.rnpn import RNPN
+from springtime.datasets.insitu.rnpn import RNPN
 
 Datasets = Annotated[
     Union[

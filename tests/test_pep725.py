@@ -9,6 +9,19 @@ import pytest
 
 from springtime.config import CONFIG
 
+
+"""
+To update reference data, run one of the following:
+
+    pytest tests/test_pep725.py --update-reference
+    pytest tests/test_pep725.py --update-reference --redownload
+
+
+To include download, run:
+
+    pytest tests/test_pep725.py --include-downloads
+"""
+
 REFERENCE_DATA = CONFIG.cache_dir / "pep725_load_reference.geojson"
 REFERENCE_RECIPE = dedent(
     """\
@@ -82,7 +95,7 @@ def test_load():
 
 
 @pytest.mark.update
-def update_reference_data(redownload):
+def test_update_reference_data(redownload):
     """Update the reference data for these tests."""
     dataset = PEP725Phenor(species="Syringa vulgaris", years=[2000, 2002])
     if redownload:

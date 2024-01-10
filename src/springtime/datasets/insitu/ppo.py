@@ -131,7 +131,7 @@ class RPPO(Dataset):
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
 
-        return gdf.set_index(['year', 'geometry'])
+        return gdf
 
     def _r_download(self):
         if self.area is None:

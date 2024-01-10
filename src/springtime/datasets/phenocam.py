@@ -17,6 +17,7 @@ install.packages("phenocamr")
 ```
 
 
+
 Example:
 
     ```python
@@ -49,22 +50,20 @@ Example:
 """
 import logging
 from pathlib import Path
-from typing import List, Literal, Optional, Sequence
+from typing import Literal, Optional, Sequence
 
-import geopandas
+import geopandas as gpd
 import pandas as pd
-import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri
-from rpy2.robjects.conversion import localconverter
-from rpy2.robjects.packages import importr
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import NamedArea
+from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__file__)
 
 phenocam_cache_dir = CONFIG.cache_dir / "phenocam"
+rois_file = phenocam_cache_dir / "roi_data.csv"
+sites_file = phenocam_cache_dir / "site_meta_data.csv"
 
 # variables with "flag" in their names are removed from the list below because
 # their values might be NaN.
@@ -116,27 +115,64 @@ class Phenocam(Dataset):
 
     Attributes:
         years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
         veg_type: Vegetation type (DB, EN). Default is "all".
         frequency: Frequency of the time series product.
         variables: Variables you want to download. When empty will download all
             the variables.
+        site: Download a single site, specified by the name of site. Append `$`
+            to get exact match.
+        rois: The id of the ROI to download. Default is all ROIs at site.
+        area: Download all sites in an area. A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
 
     """
-
-    veg_type: Optional[str]
+    # TODO: resample?
+    dataset: Literal["phenocam"] = "phenocam"
+    veg_type: Optional[str] = None
     frequency: Literal["1", "3", "roistats"] = "3"
     variables: Sequence[PhenocamVariables] = tuple()
+    site: Optional[str] = None
+    roi_id: Optional[str] = None
+    area: Optional[NamedArea] = None
+    # TODO specify either a site (and rois) or area, not both
 
-    def _location(self, row: pd.Series) -> Path:
-        freq = "roistats"
-        if self.frequency != "roistats":
-            freq = f"{self.frequency}day"
+    def _filter_rois(self):
+        """Reduce the full ROI listing to the applicable records."""
+        rois_df = list_rois()
+
+        # First narrow down on area
+        if self.area is not None:
+            box = self.area.bbox
+            rois_df = rois_df.cx[
+                # xmin:xmax, ymin:ymax
+                box[0] : box[2],
+                box[1] : box[3],
+            ]
+
+        # Narrow to site?
+        if self.site is not None:
+            rois_df = rois_df.loc(rois_df.site == self.site)
+
+        # Narrow to single ROI?
+        if self.roi_id is not None:
+            rois_df = rois_df.loc[rois_df.roi_id_number == self.roi_id]
+
+        # Narrow to vegetation type?
+        if self.veg_type is not None:
+            rois_df = rois_df.loc[rois_df.veg_type == self.veg_type]
+
+        return rois_df
+
+    def _derive_path(self, roi: pd.Series) -> Path:
+        freq = "roistats" if self.frequency == "roistats" else f"{self.frequency}day"
         return (
             phenocam_cache_dir
-            / f"{row.site}_{row.veg_type}_{row.roi_id_number:04}_{freq}.csv"
+            / f"{roi.site}_{roi.veg_type}_{roi.roi_id_number:04}_{freq}.csv"
         )
+
+    def _locations(self):
+        unique_rois = self._filter_rois()
+        return unique_rois.apply(self._derive_path, axis="columns")
 
     def _exists_locally(self, locations) -> bool:
         return all([location.exists() for location in locations])
@@ -145,7 +181,7 @@ class Phenocam(Dataset):
         sites = list_sites()
         site_locations = sites[["site", "geometry"]]
         df = df.merge(site_locations, on="site")
-        df = geopandas.GeoDataFrame(df, geometry=df.geometry)
+        df = gpd.GeoDataFrame(df, geometry=df.geometry)
         df.rename(columns={"date": "datetime"}, inplace=True)
         # Do not return variables that are not derived from image data
         # to get raw file see phenocam_cache_dir directory.
@@ -169,131 +205,56 @@ class Phenocam(Dataset):
         return df[["datetime", "geometry"] + variables]
 
 
-class PhenocamrSite(Phenocam):
-    """PhenoCam time series for site.
-
-    Attributes:
-        veg_type: Vegetation type (DB, EN). Default is "all".
-        frequency: Frequency of the time series product.
-        variables: Variables you want to download. When empty will download all
-            the variables.
-        site: Name of site. Append `$` to get exact match.
-        rois: The id of the ROI to download. Default is all ROIs at site.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-
-    """
-
-    dataset: Literal["phenocam"] = "phenocam"
-    site: str
-    rois: Optional[List[int]]
-
-    def download(self):
+    def find_or_download(self):
         """Download the data.
 
         Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
+        logger.info("Looking for data")
         phenocam_cache_dir.mkdir(parents=True, exist_ok=True)
-        optional_args = dict()
-        if self.veg_type is not None:
-            optional_args["veg_type"] = self.veg_type
-        if self.rois is not None:
-            optional_args["roi_id"] = self.rois
-        phenocamr = importr("phenocamr")
-        if self._exists_locally(self._locations()) or CONFIG.force_override:
-            logger.info(f"Phenocam files already downloaded {self._locations()}")
-        else:
-            phenocamr.download_phenocam(
-                site=self.site,
-                frequency=self.frequency,
-                internal=False,
-                out_dir=str(phenocam_cache_dir),
-                **optional_args,
-            )
+        paths = []
 
-    def _locations(self) -> List[Path]:
-        rois_df = list_rois()
-        rois_df = rois_df.loc[rois_df.site.str.contains(self.site)]
-        if self.veg_type is not None:
-            rois_df = rois_df.loc[rois_df.veg_type == self.veg_type]
-        if self.rois is not None:
-            rois_df = rois_df.loc[rois_df.roi_id_number.isin(self.rois)]
+        # Default roi_id in phenocamr is "ALL", then it loops over all ROIs in R.
+        # Might as well loop here --> more readable code.
+        for _, row in self._filter_rois().iterrows():
+            path = self._derive_path(roi=row)
+            if path.exists() and not CONFIG.force_override:
+                logger.info(f"Found {path}")
+            else:
+                _r_download_data(
+                    site=row.site,
+                    frequency=self.frequency,
+                    output_dir = phenocam_cache_dir,
+                    veg_type = row["veg_type"],
+                    roi_id = row["roi_id_number"])
 
-        return rois_df.apply(self._location, axis="columns")
+            paths.append(path)
 
-    def load(self):
+        return paths
+
+    def raw_load(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        df = pd.concat([_load_location(location) for location in self._locations()])
-        df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return self._to_geopandas(df)
-
-
-class PhenocamrBoundingBox(Phenocam):
-    """PhenoCam time series for sites in a bounding box.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        veg_type: Vegetation type (DB, EN). Default is "all".
-        frequency: Frequency of the time series product.
-        variables: Variables you want to download. When empty will download all
-            the variables.
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-
-    """
-
-    dataset: Literal["phenocambbox"] = "phenocambbox"
-    area: NamedArea
-
-    def _selection(self):
-        rois_df = list_rois()
-        if self.veg_type is not None:
-            rois_df = rois_df.loc[rois_df.veg_type == self.veg_type]
-        box = self.area.bbox
-        rois_df = rois_df.cx[
-            # xmin:xmax, ymin:ymax
-            box[0] : box[2],
-            box[1] : box[3],
-        ]
-        return rois_df
-
-    def _locations(self):
-        return self._selection().apply(self._location, axis="columns")
-
-    def download(self):
-        """Download the data.
-
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
-        is TRUE.
-        """
-        if self._exists_locally(self._locations()) or CONFIG.force_override:
-            logger.info(f"Phenocam files already downloaded {self._locations()}")
-        for site in self._selection().site.unique():
-            fetcher = PhenocamrSite(
-                site=f"{site}$",
-                veg_type=self.veg_type,
-                frequency=self.frequency,
-                years=self.years,
-            )
-            fetcher.download()
+        paths = self.find_or_download()
+        df = pd.concat([_load_location(path) for path in paths])
+        return df
 
     def load(self):
-        """Load the dataset from disk into memory.
+        raw_df = self.raw_load
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
-        df = pd.concat([_load_location(location) for location in self._locations()])
-        df = df.loc[(self.years.start <= df.year) & (df.year <= self.years.end)]
-        return self._to_geopandas(df)
+        # Select years
+        df = raw_df.loc[(self.years.start <= raw_df.year) & (raw_df.year <= self.years.end)]
+
+        # Convert to gpd
+        self._to_geopandas(df)
+
+        # TODO: infer event?
+
+        return df
 
 
 def _load_location(location: Path) -> pd.DataFrame:
@@ -306,58 +267,84 @@ def _load_location(location: Path) -> pd.DataFrame:
     return df
 
 
-def _rdf2pandasdf(r_df) -> pd.DataFrame:
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        return ro.conversion.get_conversion().rpy2py(r_df)
-
-
-sites_file = phenocam_cache_dir / "site_meta_data.csv"
-
-
-def list_sites() -> geopandas.GeoDataFrame:
+def list_sites() -> gpd.GeoDataFrame:
     """List of phenocam sites.
 
     Returns:
         Data frame containing phenocam sites
     """
     if not sites_file.exists():
-        logger.warning(f"Downloading phenocam sites to {sites_file}")
-        _download_sites()
+        _r_download_sites()
+
     df = pd.read_csv(sites_file)
-    return geopandas.GeoDataFrame(
-        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
-    )
+
+    lon = df.pop("lon")
+    lat = df.pop("lat")
+    geometry = gpd.points_from_xy(lon, lat)
+    return gpd.GeoDataFrame(df, geometry=geometry)
 
 
-def _download_sites():
-    phenocamr = importr("phenocamr")
-    r_sites = phenocamr.list_sites(internal=True)
-    sites = _rdf2pandasdf(r_sites)
-    sites_file.parent.mkdir(parents=True, exist_ok=True)
-    sites.to_csv(sites_file, index=False)
 
-
-rois_file = phenocam_cache_dir / "roi_data.csv"
-
-
-def list_rois() -> geopandas.GeoDataFrame:
+def list_rois() -> gpd.GeoDataFrame:
     """List of phenocam regions of interest (ROI).
 
     Returns:
         Data frame containing phenocam Regions of Interest.
     """
     if not rois_file.exists():
-        logger.warning(f"Downloading phenocam rois to {rois_file}")
-        _download_rois()
+        _r_download_rois()
+
     df = pd.read_csv(rois_file)
-    return geopandas.GeoDataFrame(
-        df, geometry=geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
-    )
+
+    lon = df.pop("lon")
+    lat = df.pop("lat")
+    geometry = gpd.points_from_xy(lon, lat)
+    return gpd.GeoDataFrame(df, geometry=geometry)
 
 
-def _download_rois():
-    phenocamr = importr("phenocamr")
-    r_rois = phenocamr.list_rois(internal=True)
-    rois = _rdf2pandasdf(r_rois)
-    rois_file.parent.mkdir(parents=True, exist_ok=True)
-    rois.to_csv(rois_file, index=False)
+
+def _r_download_sites():
+    script = f"""\
+        library(phenocamr)
+        df = list_sites(internal=TRUE)
+        write.csv(df, "{sites_file}", row.names=FALSE)
+        """
+
+    logger.info("Downloading sites")
+    logger.debug(f"R code:\n{script}")
+
+    run_r_script(script, timeout=300)
+
+
+def _r_download_rois():
+    script = f"""\
+        library(phenocamr)
+        df = list_rois(internal=TRUE)
+        write.csv(df, "{rois_file}", row.names=FALSE)
+        """
+
+    logger.info("Downloading rois")
+    logger.debug(f"R code:\n{script}")
+
+    run_r_script(script, timeout=300)
+
+
+def _r_download_data(site, frequency, output_dir, veg_type, roi_id):
+    veg_type = "NULL" if veg_type is None else f"'{veg_type}'"
+    roi_id = "NULL" if roi_id is None else f"'{roi_id} '"
+    script = f"""\
+        library(phenocamr)
+        download_phenocam(
+            site={site},
+            frequency={frequency}
+            internal=FALSE,
+            output_dir={output_dir},
+            veg_type={veg_type}
+            roi_id={roi_id}
+        )
+        """
+
+    logger.info(f"Downloading data for {site}, roi_id {roi_id}, veg_type {veg_type}")
+    logger.debug(f"R code:\n{script}")
+
+    run_r_script(script, timeout=300)

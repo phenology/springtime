@@ -12,12 +12,12 @@ from typing_extensions import Annotated
 import yaml
 from springtime.datasets.abstract import Dataset
 
-from springtime.datasets.meteo.daymet import (
+from springtime.datasets.daymet import (
     DaymetBoundingBox,
     DaymetMultiplePoints,
     DaymetSinglePoint,
 )
-from springtime.datasets.meteo.eobs import (
+from springtime.datasets.eobs import (
     EOBS
 )
 from springtime.datasets.appeears import (
@@ -30,10 +30,10 @@ from legacy.modistools import (
     ModisSinglePoint,
 )
 from legacy.NPNPhenor import NPNPhenor
-from springtime.datasets.insitu.pep725 import PEP725Phenor
-from springtime.datasets.insitu.phenocam import PhenocamrBoundingBox, PhenocamrSite
-from springtime.datasets.insitu.ppo import RPPO
-from springtime.datasets.insitu.rnpn import RNPN
+from springtime.datasets.pep725 import PEP725Phenor
+from springtime.datasets.phenocam import Phenocam
+from springtime.datasets.ppo import RPPO
+from springtime.datasets.rnpn import RNPN
 
 Datasets = Annotated[
     Union[
@@ -50,8 +50,7 @@ Datasets = Annotated[
         AppeearsPointsFromArea,
         EOBS,
         RNPN,
-        PhenocamrSite,
-        PhenocamrBoundingBox,
+        Phenocam,
     ],
     Field(discriminator="dataset"),
 ]

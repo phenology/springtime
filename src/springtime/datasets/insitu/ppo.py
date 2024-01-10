@@ -26,7 +26,7 @@ Example:
     ```
 """
 import logging
-from typing import Literal, Optional, Sequence
+from typing import Literal, Optional
 
 import geopandas as gpd
 import pandas as pd
@@ -46,7 +46,7 @@ class RPPO(Dataset):
 
     Attributes:
         years: timerange. For example years=[2000, 2002] downloads data for three years.
-        genus: plant genus, e.g. "Quercus Pinus". See [PPO
+        genus: plant genus, e.g. "Quercus". See [PPO
             documentation](https://github.com/PlantPhenoOntology/ppo/blob/master/documentation/ppo.pdf).
         termID: plant development stage, e.g. "obo:PPO_0002313" means "true
             leaves present". See [PPO
@@ -60,9 +60,10 @@ class RPPO(Dataset):
             phenological event by setting it to "first_yes_day" or "last_yes_day".
 
     """
-
+    # TODO years not required?
+    # TODO rppo support more keywords, like scientific name. Also support those?
     dataset: Literal["rppo"] = "rppo"
-    genus: str | list[str]
+    genus: str  # TODO support list of geni?
     termID: str = "obo:PPO_0002313"
     area: Optional[NamedArea] = None
     limit: Optional[PositiveInt] = None
@@ -76,10 +77,7 @@ class RPPO(Dataset):
 
     def _build_filename(self, suffix="csv"):
 
-        name = "-".join(self.genus) if isinstance(self.genus, list) else self.genus
-        name = name.replace(" ", "_")
-
-        parts = [name, self.termID]
+        parts = [self.genus, self.termID]
 
         if self.years is not None:
             parts.append(f"{self.years.start}-{self.years.end}")
@@ -133,21 +131,22 @@ class RPPO(Dataset):
         geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
         gdf = gpd.GeoDataFrame(df, geometry=geometry)
 
-        return gdf
+        return gdf.set_index(['year', 'geometry'])
 
     def _r_download(self):
-        genus = ", ".join([f'"{p}"' for p in self.genus.split(" ")])
         if self.area is None:
             box = ""
         else:
             abox = self.area.bbox
             box = f"bbox='{abox[1]},{abox[0]},{abox[3]},{abox[2]}',"
+
         years = f"fromYear={self.years.start}, toYear={self.years.end},"
         limit = f"limit={self.limit}L," if self.limit else ""
+
         return f"""\
         library(rppo)
         response <- ppo_data(
-            genus = c({genus}),
+            genus = c('{self.genus}'),
             termID='{self.termID}',
             {box}
             {years}

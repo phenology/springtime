@@ -63,6 +63,7 @@ def pytest_collection_modifyitems(config, items):
             if "download" in item.keywords:
                 item.add_marker(skip_download)
 
+
 @pytest.fixture()
 def redownload(pytestconfig):
     """Return the value of redownload from command-line options."""

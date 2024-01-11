@@ -94,7 +94,6 @@ class RPPO(Dataset):
     def download(self):
         """Download data."""
         logger.info(f"Downloading data to {self._path()}")
-        logger.debug(f"R code:\n{self._r_download()}")
 
         self._path().parent.mkdir(parents=True, exist_ok=True)
         run_r_script(self._r_download(), timeout=300)
@@ -170,7 +169,6 @@ def ppo_get_terms():
         """
 
     logger.info("Downloading terms")
-    logger.debug(f"R code:\n{script}")
 
     run_r_script(script, timeout=300)
 

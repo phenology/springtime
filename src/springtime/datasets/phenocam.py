@@ -311,7 +311,6 @@ def _r_download_sites():
         """
 
     logger.info("Downloading sites")
-    logger.debug(f"R code:\n{script}")
 
     run_r_script(script, timeout=300)
 
@@ -324,7 +323,6 @@ def _r_download_rois():
         """
 
     logger.info("Downloading rois")
-    logger.debug(f"R code:\n{script}")
 
     run_r_script(script, timeout=300)
 
@@ -345,6 +343,5 @@ def _r_download_data(site, frequency, output_dir, veg_type, roi_id):
         """
 
     logger.info(f"Downloading data for {site}, roi_id {roi_id}, veg_type {veg_type}")
-    logger.debug(f"R code:\n{script}")
 
     run_r_script(script, timeout=300)

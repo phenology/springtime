@@ -28,7 +28,7 @@ install.packages("daymetr")
 Example: Example: Download data for 3 points
 
     ```pycon
-    source = DaymetMultiplePoints(
+    source = Daymet(
         points=[
             [-84.2625, 36.0133],
             [-86, 39.6],
@@ -79,16 +79,17 @@ Example: Example: download monthly data
 """
 
 from datetime import datetime
+from itertools import product
 from typing import Literal, Sequence, Tuple, Union
 import logging
-import geopandas
+import geopandas as gpd
 import pandas as pd
 import xarray as xr
 from pydantic import model_validator, field_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import Point, Points, PointsFromOther
+from springtime.utils import Point, Points, PointsFromOther, YearRange
 from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__name__)
@@ -129,23 +130,24 @@ class Daymet(Dataset):
 
     """
     dataset: Literal["daymet"] = "daymet"
+    years: YearRange
     points: Point | Points | None = None
     area: NamedArea | None = None
     variables: Sequence[DaymetVariables] = tuple()
-    resample: str  # TODO implement
+    # resample: str  # TODO implement
     mosaic: Literal["na", "hi", "pr"] = "na"
     frequency: Literal["daily", "monthly", "annual"] = "daily"
     # TODO monthly saves as *daily*.nc
 
     @model_validator(mode='before')
     def _expand_variables(cls, data):
-        v = data["variables"]
-        if len(v) == 0:
-            if v.get("frequency", "daily") == "daily":
+        if data.get("variables") is None:
+            if data.get("frequency", "daily") == "daily":
                 v = ("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp")
             else:
                 v = ("prcp", "tmax", "tmin", "vp")
-        data["variables"] = v
+            data["variables"] = v
+
         return data
 
     @field_validator("years")
@@ -159,51 +161,83 @@ class Daymet(Dataset):
         assert v.end < last_year, msg
         return v
 
-    def _point_path(self, point):
-        """Path to downloaded file."""
-        location_name = f"{point[0]}_{point[1]}"
-        time_stamp = f"{self.years.start}_{self.years.end}"
-        return (
-            CONFIG.cache_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
-        )
-
-    def _missing_files(self):
-        n_years = self.years.end - self.years.start + 1
-        n_files = len(list(self._box_dir.glob("*.nc")))
-        # TODO make smarter as box_dir can have files
-        # which are not part of this instance
-        return n_files != n_years * len(self.variables)
+    @property
+    def _root_dir(self):
+        return CONFIG.cache_dir / "daymet"
 
     @property
     def _box_dir(self):
-        """Directory in which download_daymet_ncss writes nc file.
+        """Directory in which download_daymet_ncss writes nc file."""
+        return self._root_dir / f"bbox_{self.area.name}_{self.frequency}"
 
-        For each variable/year combination."""
-        return (
-            CONFIG.cache_dir / f"daymet_bbox_{self.area.name}_{self.frequency}"
-        )
+    def _box_paths(self, variable, year):
+        """Get path for netcdf subsets.
+
+        Monthly and annual data are accumulated.
+        Precipitation is totalled, others are averaged.
+
+        Filenames are abbreviated as:
+
+        monthly total -> monttl
+        annual average --> annavg
+
+        """
+        frequency = self.frequency
+
+        if frequency == "daily":
+            path = f"{variable}_daily_{year}_ncss.nc"
+        elif variable == "prcp":
+            path = f"{variable}_{frequency[:3]}ttl_{year}_ncss.nc"
+        else:
+            path = f"{variable}_{frequency[:3]}avg_{year}_ncss.nc"
+
+        return self._box_dir / path
+
+    def _point_path(self, point):
+        """Path to downloaded file for single point."""
+        location_name = f"{point.x}_{point.y}"
+        time_stamp = f"{self.years.start}_{self.years.end}"
+        filename = f"daymet_single_point_{location_name}_{time_stamp}.csv"
+        return self._root_dir / filename
 
     def download(self):
-
+        """Download data for dataset."""
         if self.area is not None:
-            dir = self.box_dir
-            if not dir.exists() or CONFIG.force_override or self._missing_files():
-                self._box_dir.mkdir(exist_ok=True, parents=True)
-                # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
-                # took more than 30s so upped timeout
-                run_r_script(self._r_download_ncss(), timeout=120)
-            return list(self._box_dir.glob("*.nc"))
+            return self.download_bbox()
+
+        if isinstance(self.points, Point):
+            return [self.download_point(self.points)]
+
+        return [self.download_point(point) for point in self.points]
+
+    def download_point(self, point):
+        """Download data for a single point."""
+        path = self._point_path(point)
+
+        if path.exists() and not CONFIG.force_override:
+            logger.info(f"Found {path}")
+        else:
+            logger.info(f"Downloading data to {self._point_path}")
+            run_r_script(self._r_download_point(point))
+        return path
+
+    def download_bbox(self):
+        """Download data for area in bbox as netcdf subset."""
+        dir = self._box_dir
+        dir.mkdir(exist_ok=True, parents=True)
 
         paths = []
-        point = [self.points] if isinstance(self.points, Point) else self.points
-        for point in self.points:
-            path = self._point_path(point)
+        for variable, year in product(self.variables, self.years.range):
+            path = self._box_paths(variable, year)
+
             if path.exists() and not CONFIG.force_override:
-                logger.info(f"Found {path}")
+                logger.info("Found {path}")
             else:
-                logger.info(f"Downloading data to {self._point_path}")
-                logger.debug(f"R script:\n{script}")  # TODO move this to run_r_script
-                run_r_script(self._r_download_point(point))
+                logger.info(f"Downloading variable {variable} for year {year}")
+                # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
+                # took more than 30s so upped timeout
+                run_r_script(self._r_download_ncss(variable, year), timeout=120)
+
             paths.append(path)
 
         return paths
@@ -216,6 +250,13 @@ class Daymet(Dataset):
 
         return self.load_points()
 
+    def load(self):
+        df = self.raw_load()
+
+        # Do stuff
+
+        return df
+
     def load_points(self):
         if isinstance(self.points, Point):
             return self.load_point(self.points)
@@ -223,9 +264,9 @@ class Daymet(Dataset):
         dataframes = []
         headers = {}
         for point in self.points:
-            gdf = handler.load_point(point)
+            gdf = self.load_point(point)
             dataframes.append(gdf)
-            headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
+            headers[f"headers_{point.x}_{point.y}"] = gdf.attrs["headers"]
 
         all = pd.concat(dataframes)
         all.attrs = headers
@@ -237,19 +278,22 @@ class Daymet(Dataset):
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        with open(self._point_path(self.points)) as file:
+        with open(self._point_path(point)) as file:
             nr_of_metadata_lines = 7
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
 
-        geometry = geopandas.points_from_xy(
-            [point[0]] * len(df), [point[1]] * len(df)
+        geometry = gpd.points_from_xy(
+            [point.x] * len(df), [point.y] * len(df)
         )
-        gdf = geopandas.GeoDataFrame(df, geometry=geometry)
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+
         gdf.attrs["headers"] = "\n".join(headers)
+
         # Remove unit from column names
         gdf.attrs["units"] = gdf.columns.values
         gdf.columns = [col.split(" (")[0] for col in gdf.columns]
+
         # Convert year and yday to datetime
         gdf["datetime"] = pd.to_datetime(gdf["year"], format="%Y") + pd.to_timedelta(
             gdf["yday"] - 1, unit="D"
@@ -269,8 +313,8 @@ class Daymet(Dataset):
         files = self.download()
         df = xr.open_mfdataset(files).to_dataframe().reset_index()
         df.rename(columns={"time": "datetime"}, inplace=True)
-        geometry = geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
-        gdf = geopandas.GeoDataFrame(df, geometry=geometry)
+        geometry = gpd.points_from_xy(df.pop("lon"), df.pop("lat"))
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
     def _r_download_point(self, point):
@@ -278,19 +322,17 @@ class Daymet(Dataset):
         return f"""\
         library(daymetr)
         daymetr::download_daymet(
-            site = "daymet_single_point_{point[0]}_{point[1]}",
-            lat = {point[1]},
-            lon = {point[0]},
+            site = "daymet_single_point_{point.x}_{point.y}",
+            lat = {point.y},
+            lon = {point.x},
             start = {self.years.start},
             end =  {self.years.end},
             path="{CONFIG.cache_dir}",
             internal = FALSE)
         """
 
-    def _r_download_ncss(self):
+    def _r_download_ncss(self, variable, year):
         """Download netcdf subset using daymetR."""
-        param_list = ",".join([f"'{p}'" for p in self.variables])
-        params = f"c({param_list})"
         # daymet wants bbox as top left / bottom right pair (lat,lon,lat,lon).
         # Aka north,west,south,east in WGS84 projection.
         # while self.area.bbox is xmin, ymin, xmax, ymax
@@ -300,10 +342,10 @@ class Daymet(Dataset):
         library(daymetr)
         daymetr::download_daymet_ncss(
             location = c({box[3]},{box[0]},{box[1]},{box[2]}),
-            start = {self.years.start},
-            end =  {self.years.end},
+            start = {year},
+            end =  {year},
             frequency = "{self.frequency}",
-            param = {params},
+            param = {variable},
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """

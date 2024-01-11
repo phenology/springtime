@@ -25,7 +25,7 @@ class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
             three years.
     """
     dataset: str
-    years: YearRange | None = None
+    years: YearRange | None = None  # TODO not optional or not in abstract
 
     @abstractmethod
     def download(self):

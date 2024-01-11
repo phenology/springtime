@@ -217,6 +217,8 @@ def run_r_script(script: str, timeout: int = 30, max_tries: int = 3):
         timeout: Maximum mumber of seconds the function may take.
         max_tries: Maximum number of times to execute the function.
     """
+    logger.debug(f"Executing R code:\n{script}")
+
     result = retry(timeout=timeout, max_tries=max_tries)(subprocess.run)(
         ["R", "--vanilla", "--no-echo"],
         input=script.encode(),

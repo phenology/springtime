@@ -12,11 +12,7 @@ from typing_extensions import Annotated
 import yaml
 from springtime.datasets.abstract import Dataset
 
-from springtime.datasets.daymet import (
-    DaymetBoundingBox,
-    DaymetMultiplePoints,
-    DaymetSinglePoint,
-)
+from springtime.datasets.daymet import Daymet
 from springtime.datasets.eobs import (
     EOBS
 )
@@ -25,11 +21,6 @@ from springtime.datasets.appeears import (
     AppeearsPointsFromArea,
     AppeearsArea,
 )
-from legacy.modistools import (
-    ModisMultiplePoints,
-    ModisSinglePoint,
-)
-from legacy.NPNPhenor import NPNPhenor
 from springtime.datasets.pep725 import PEP725Phenor
 from springtime.datasets.phenocam import Phenocam
 from springtime.datasets.ppo import RPPO
@@ -39,12 +30,7 @@ Datasets = Annotated[
     Union[
         RPPO,
         PEP725Phenor,
-        DaymetSinglePoint,
-        DaymetMultiplePoints,
-        DaymetBoundingBox,
-        NPNPhenor,
-        ModisSinglePoint,
-        ModisMultiplePoints,
+        Daymet,
         AppeearsPoints,
         AppeearsArea,
         AppeearsPointsFromArea,

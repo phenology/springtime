@@ -88,7 +88,7 @@ from pydantic import model_validator, field_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import PointsFromOther
+from springtime.utils import Point, Points, PointsFromOther
 from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__name__)
@@ -102,8 +102,6 @@ class Daymet(Dataset):
 
     Attributes:
         years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
         variables: List of variable you want to download. Options:
 
             * dayl: Duration of the daylight period (seconds/day)
@@ -116,9 +114,39 @@ class Daymet(Dataset):
 
             When empty will download all the previously mentioned climate
             variables.
-    """
+        points: (Sequence of) point(s) as (longitude, latitude) in WGS84 projection.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+            If both area and points are defined, will first crop the area before
+            extracting points, so points outside area will be lost. If points is
+            None, will return the full dataset as xarray object; this cannot be
+            joined with other datasets.
+        mosaic: Daymet tile mosaic; required when using `area`. Defaults to “na”
+            for North America. Use “pr” for Puerto Rico and “hi” for Hawaii.
+        frequency: required when using `area`. Choose from "daily", "monthly",
+            or "annual"
 
+
+    """
+    dataset: Literal["daymet"] = "daymet"
+    points: Point | Points | None = None
+    area: NamedArea | None = None
     variables: Sequence[DaymetVariables] = tuple()
+    resample: str  # TODO implement
+    mosaic: Literal["na", "hi", "pr"] = "na"
+    frequency: Literal["daily", "monthly", "annual"] = "daily"
+    # TODO monthly saves as *daily*.nc
+
+    @model_validator(mode='before')
+    def _expand_variables(cls, data):
+        v = data["variables"]
+        if len(v) == 0:
+            if v.get("frequency", "daily") == "daily":
+                v = ("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp")
+            else:
+                v = ("prcp", "tmax", "tmin", "vp")
+        data["variables"] = v
+        return data
 
     @field_validator("years")
     @classmethod
@@ -131,54 +159,91 @@ class Daymet(Dataset):
         assert v.end < last_year, msg
         return v
 
-
-class DaymetSinglePoint(Daymet):
-    """Daymet data for single point.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteo.daymet.Daymet]
-        point: Point as longitude, latitude in WGS84 projection.
-
-    """
-
-    dataset: Literal["daymet_single_point"] = "daymet_single_point"
-    point: Tuple[float, float]
-
-    @property
-    def _path(self):
+    def _point_path(self, point):
         """Path to downloaded file."""
-        location_name = f"{self.point[0]}_{self.point[1]}"
+        location_name = f"{point[0]}_{point[1]}"
         time_stamp = f"{self.years.start}_{self.years.end}"
         return (
             CONFIG.cache_dir / f"daymet_single_point_{location_name}_{time_stamp}.csv"
         )
 
+    def _missing_files(self):
+        n_years = self.years.end - self.years.start + 1
+        n_files = len(list(self._box_dir.glob("*.nc")))
+        # TODO make smarter as box_dir can have files
+        # which are not part of this instance
+        return n_files != n_years * len(self.variables)
+
+    @property
+    def _box_dir(self):
+        """Directory in which download_daymet_ncss writes nc file.
+
+        For each variable/year combination."""
+        return (
+            CONFIG.cache_dir / f"daymet_bbox_{self.area.name}_{self.frequency}"
+        )
+
     def download(self):
-        """Download the data.
 
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
-        is TRUE.
-        """
-        if not self._path.exists() or CONFIG.force_override:
-            run_r_script(self._r_download())
+        if self.area is not None:
+            dir = self.box_dir
+            if not dir.exists() or CONFIG.force_override or self._missing_files():
+                self._box_dir.mkdir(exist_ok=True, parents=True)
+                # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
+                # took more than 30s so upped timeout
+                run_r_script(self._r_download_ncss(), timeout=120)
+            return list(self._box_dir.glob("*.nc"))
 
-    def load(self):
+        paths = []
+        point = [self.points] if isinstance(self.points, Point) else self.points
+        for point in self.points:
+            path = self._point_path(point)
+            if path.exists() and not CONFIG.force_override:
+                logger.info(f"Found {path}")
+            else:
+                logger.info(f"Downloading data to {self._point_path}")
+                logger.debug(f"R script:\n{script}")  # TODO move this to run_r_script
+                run_r_script(self._r_download_point(point))
+            paths.append(path)
+
+        return paths
+
+    def raw_load(self):
+        paths = self.download()
+
+        if self.area is not None:
+            return self.load_bbox()
+
+        return self.load_points()
+
+    def load_points(self):
+        if isinstance(self.points, Point):
+            return self.load_point(self.points)
+
+        dataframes = []
+        headers = {}
+        for point in self.points:
+            gdf = handler.load_point(point)
+            dataframes.append(gdf)
+            headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
+
+        all = pd.concat(dataframes)
+        all.attrs = headers
+        return all
+
+    def load_point(self, point):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        with open(self._path) as file:
+        with open(self._point_path(self.points)) as file:
             nr_of_metadata_lines = 7
             headers = [file.readline() for _ in range(nr_of_metadata_lines)]
             df = pd.read_csv(file)
 
         geometry = geopandas.points_from_xy(
-            [self.point[0]] * len(df), [self.point[1]] * len(df)
+            [point[0]] * len(df), [point[1]] * len(df)
         )
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         gdf.attrs["headers"] = "\n".join(headers)
@@ -195,136 +260,35 @@ class DaymetSinglePoint(Daymet):
             var_columns = list(self.variables)
         return gdf[["datetime", "geometry"] + var_columns]
 
-    def _r_download(self):
-        logger.info(f"Downloading data to {self._path}")
-        return f"""\
-        library(daymetr)
-        daymetr::download_daymet(
-            site = "daymet_single_point_{self.point[0]}_{self.point[1]}",
-            lat = {self.point[1]},
-            lon = {self.point[0]},
-            start = {self.years.start},
-            end =  {self.years.end},
-            path="{CONFIG.cache_dir}",
-            internal = FALSE)
-        """
-
-
-class DaymetMultiplePoints(Daymet):
-    """Daymet data for multiple points.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteo.daymet.Daymet]
-        points: List of points as [[longitude, latitude], ...], in WGS84
-            projection
-
-    """
-    dataset: Literal["daymet_multiple_points"] = "daymet_multiple_points"
-    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
-
-    @property
-    def _handlers(self):
-        return [
-            DaymetSinglePoint(years=self.years, point=point, variables=self.variables)
-            for point in self.points
-        ]
-
-    def download(self):
-        """Download the data.
-
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
-        is TRUE.
-        """
-        for handler in self._handlers:
-            handler.download()
-
-    def load(self):
+    def load_bbox(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        dataframes = []
-        headers = {}
-        for point, handler in zip(self.points, self._handlers):
-            df = handler.load()
-            geometry = geopandas.points_from_xy(
-                [point[0]] * len(df), [point[1]] * len(df)
-            )
-            geo_df = geopandas.GeoDataFrame(df, geometry=geometry)
-            dataframes.append(geo_df)
-            headers[f"headers_{point[0]}_{point[1]}"] = df.attrs["headers"]
-        all = pd.concat(dataframes)
-        all.attrs = headers
-        return all
-
-
-class DaymetBoundingBox(Daymet):
-    """Daymet data for a bounding box.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        variables: List of variable you want to download. See
-            [Daymet][springtime.datasets.meteo.daymet.Daymet]
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`. Do not make
-            bounding box too large as there is a 6Gb maximum download size.
-        mosaic: Daymet tile mosaic. Defaults to “na” for North America. Use
-            “pr” for Puerto Rico and “hi” for Hawaii.
-        frequency: Choose from "daily", "monthly", or "annual"
-
-    """
-
-    dataset: Literal["daymet_bounding_box"] = "daymet_bounding_box"
-    area: NamedArea
-    mosaic: Literal["na", "hi", "pr"] = "na"
-    frequency: Literal["daily", "monthly", "annual"] = "daily"
-    # TODO monthly saves as *daily*.nc
-
-    def download(self):
-        """Download the data.
-
-        Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
-        is TRUE.
-        """
-        box_dir_exists = self._box_dir.exists()
-        if not box_dir_exists or CONFIG.force_override or self._missing_files():
-            self._box_dir.mkdir(exist_ok=True, parents=True)
-            # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
-            # took more than 30s so upped timeout
-            run_r_script(self._r_download(), timeout=120)
-
-    def load(self):
-        """Load the dataset from disk into memory.
-
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
-        files = list(self._box_dir.glob("*.nc"))
+        files = self.download()
         df = xr.open_mfdataset(files).to_dataframe().reset_index()
         df.rename(columns={"time": "datetime"}, inplace=True)
         geometry = geopandas.points_from_xy(df.pop("lon"), df.pop("lat"))
         gdf = geopandas.GeoDataFrame(df, geometry=geometry)
         return gdf[["datetime", "geometry"] + list(self.variables)]
 
-    @model_validator(mode='before')
-    def _expand_variables(cls, data):
-        v = data["variables"]
-        if len(v) == 0:
-            if v.get("frequency", "daily") == "daily":
-                v = ("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp")
-            else:
-                v = ("prcp", "tmax", "tmin", "vp")
-        data["variables"] = v
-        return data
+    def _r_download_point(self, point):
+        """Download single point using daymetR."""
+        return f"""\
+        library(daymetr)
+        daymetr::download_daymet(
+            site = "daymet_single_point_{point[0]}_{point[1]}",
+            lat = {point[1]},
+            lon = {point[0]},
+            start = {self.years.start},
+            end =  {self.years.end},
+            path="{CONFIG.cache_dir}",
+            internal = FALSE)
+        """
 
-    def _r_download(self):
+    def _r_download_ncss(self):
+        """Download netcdf subset using daymetR."""
         param_list = ",".join([f"'{p}'" for p in self.variables])
         params = f"c({param_list})"
         # daymet wants bbox as top left / bottom right pair (lat,lon,lat,lon).
@@ -343,23 +307,6 @@ class DaymetBoundingBox(Daymet):
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
-
-    def _missing_files(self):
-        n_years = self.years.end - self.years.start + 1
-        n_files = len(list(self._box_dir.glob("*.nc")))
-        # TODO make smarter as box_dir can have files
-        # which are not part of this instance
-        return n_files != n_years * len(self.variables)
-
-    @property
-    def _box_dir(self):
-        """Directory in which download_daymet_ncss writes nc file.
-
-        For each variable/year combination."""
-        return (
-            CONFIG.cache_dir / f"daymet_bounding_box_{self.area.name}_{self.frequency}"
-        )
-
 
 # regions = {
 #     "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},

@@ -82,7 +82,7 @@ from pydantic import field_validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, Point, Points
+from springtime.utils import NamedArea, Point, Points, get_points_from_raster, split_time
 
 logger = logging.getLogger(__name__)
 
@@ -326,20 +326,7 @@ class EOBS(Dataset):
             return ds
 
         # Extract points/records
-        if isinstance(self.points, Point):
-            x = [self.points.x]
-            y = [self.points.y]
-            geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
-            ds = extract_points(ds, geometry)
-        elif isinstance(self.points, Sequence):
-            x = [p.x for p in self.points]
-            y = [p.y for p in self.points]
-            geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
-            ds = extract_points(ds, geometry)
-        else:
-            # only remaining option is PointsFromOther
-            records = self.points._records
-            ds = extract_records(ds, records)
+        ds = get_points_from_raster(self.points, ds)
 
         return self._to_dataframe(ds)
 
@@ -377,17 +364,6 @@ def extract_area(ds, bbox):
     )
 
 
-def split_time(ds):
-    """Split datetime coordinate into year and dayofyear."""
-    year = ds.time.dt.year.values
-    doy = ds.time.dt.dayofyear.values
-    split_time = pd.MultiIndex.from_arrays(
-        [year, doy],
-        names=["year", "doy"],
-    )
-    return ds.assign_coords(time=split_time).unstack("time")
-
-
 def monthly_agg(ds, operator=np.mean):
     """Return monthly aggregates based on DOY dimension."""
     bins = np.linspace(0, 366, 13, dtype=int)
@@ -407,33 +383,6 @@ def monthly_gdd(ds, t_base = 5):
     aggregated = grouped.max().rename(doy_bins="doy")
     aggregated['doy'] = aggregated['doy'].values.astype(int)
     return aggregated
-
-
-def extract_points(ds, points: gpd.GeoSeries, method="nearest"):
-    """Extract list of points from gridded dataset."""
-    x = xr.DataArray(points.unique().x, dims=["geometry"])
-    y = xr.DataArray(points.unique().y, dims=["geometry"])
-    geometry = xr.DataArray(points.unique(), dims=["geometry"])
-    return (
-        ds.sel(longitude=x, latitude=y, method=method)
-        .drop_vars(["latitude", "longitude"])
-        .assign_coords(geometry=geometry)
-    )
-
-
-def extract_records(ds, records: gpd.GeoDataFrame):
-    """Extract list of year/geometry records from gridded dataset."""
-    x = records.geometry.x.to_xarray()
-    y = records.geometry.y.to_xarray()
-    year = records.year.to_xarray()
-    geometry = records.geometry.to_xarray()
-    # TODO ensure all years present before allowing 'nearest' on year
-    # TODO also work when there is no year column (static variables)?
-    return (
-        ds.sel(longitude=x, latitude=y, year=year, method="nearest")
-        .drop(["latitude", "longitude"])
-        .assign_coords(year=year, geometry=geometry)
-    )
 
 
 # TODO

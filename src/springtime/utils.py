@@ -6,7 +6,9 @@ import subprocess
 import time
 from functools import wraps
 from logging import getLogger
-from typing import NamedTuple, Sequence, Tuple
+from typing import NamedTuple, Sequence
+
+import pandas as pd
 
 import xarray as xr
 import geopandas as gpd
@@ -28,7 +30,7 @@ germany = {
     ],
 }
 
-class Point(NamedTuple):
+class Point(NamedTuple):  # TODO use shapely point instead?
     """Single point with x and y coordinate."""
     x: float
     y: float
@@ -42,13 +44,13 @@ class PointsFromOther(BaseModel):
     """
 
     source: str
-    _xy: Sequence[Tuple[float, float]] = PrivateAttr(default=[])
+    _xy: Sequence[Point] = PrivateAttr(default=[])
     _points: gpd.GeoSeries | None = PrivateAttr(default=None)
     _records: gpd.GeoSeries | None = PrivateAttr(default=None)
 
     def get_points(self, other):
         # TODO: refactor to generic utility function
-        self._xy = list(map(lambda p: (p.x, p.y), other.geometry.unique()))
+        self._xy = list(map(lambda p: Point(p.x, p.y), other.geometry.unique()))
         self._points = other.geometry.unique()
         self._records = other[['year', 'geometry']]
 
@@ -352,6 +354,53 @@ def points_from_cube(
     return gpd.GeoDataFrame(df, geometry=df.geometry)
 
 
+# TODO merge with points_from_cube from above?
+def get_points_from_raster(points: Point | Points, ds: xr.Dataset) -> xr.Dataset:
+    """Extract points from area."""
+    if isinstance(points, Point):
+        x = [points.x]
+        y = [points.y]
+        geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
+        ds = extract_points(ds, geometry)
+    elif isinstance(points, Sequence):
+        x = [p.x for p in points]
+        y = [p.y for p in points]
+        geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
+        ds = extract_points(ds, geometry)
+    else:
+                # only remaining option is PointsFromOther
+        records = points._records
+        ds = extract_records(ds, records)
+    return ds
+
+
+def extract_points(ds, points: gpd.GeoSeries, method="nearest"):
+    """Extract list of points from gridded dataset."""
+    x = xr.DataArray(points.unique().x, dims=["geometry"])
+    y = xr.DataArray(points.unique().y, dims=["geometry"])
+    geometry = xr.DataArray(points.unique(), dims=["geometry"])
+    return (
+        ds.sel(longitude=x, latitude=y, method=method)
+        .drop_vars(["latitude", "longitude"])
+        .assign_coords(geometry=geometry)
+    )
+
+
+def extract_records(ds, records: gpd.GeoDataFrame):
+    """Extract list of year/geometry records from gridded dataset."""
+    x = records.geometry.x.to_xarray()
+    y = records.geometry.y.to_xarray()
+    year = records.year.to_xarray()
+    geometry = records.geometry.to_xarray()
+    # TODO ensure all years present before allowing 'nearest' on year
+    # TODO also work when there is no year column (static variables)?
+    return (
+        ds.sel(longitude=x, latitude=y, year=year, method="nearest")
+        .drop(["latitude", "longitude"])
+        .assign_coords(year=year, geometry=geometry)
+    )
+
+
 def join_dataframes(dfs, index_cols=["year", "geometry"]):
     """Join dataframes by index cols.
 
@@ -372,3 +421,22 @@ def join_dataframes(dfs, index_cols=["year", "geometry"]):
     geometry = gpd.GeoSeries.from_wkt(df.pop("geometry"))
 
     return gpd.GeoDataFrame(df, geometry=geometry).set_index(index_cols)
+
+
+def split_time(ds, freq='daily'):
+    """Split datetime coordinate into year and dayofyear or month."""
+    year = ds.time.dt.year.values
+
+    if freq=="daily":
+        doy = ds.time.dt.dayofyear.values
+        cols = [year, doy]
+        colnames = ['year', 'doy']
+    elif freq == "monthly":
+        month = ds.time.dt.month.values
+        cols = [year, month]
+        colnames = ['year', 'month']
+    else:
+        raise ValueError("Unknown frequency. Choose daily or monthly.")
+
+    split_time = pd.MultiIndex.from_arrays(cols, names=colnames)
+    return ds.assign_coords(time=split_time).unstack("time")

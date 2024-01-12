@@ -80,7 +80,8 @@ Example: Example: download monthly data
 
 from datetime import datetime
 from itertools import product
-from typing import Literal, Sequence, Tuple, Union
+from pathlib import Path
+from typing import Literal, Sequence, get_args
 import logging
 import geopandas as gpd
 import pandas as pd
@@ -89,7 +90,7 @@ from pydantic import model_validator, field_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import Point, Points, PointsFromOther, YearRange
+from springtime.utils import Point, Points, YearRange, split_time
 from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__name__)
@@ -97,6 +98,8 @@ logger = logging.getLogger(__name__)
 DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 """Daymet variables."""
 
+DaymetFrequencies = Literal["daily", "monthly", "annual"]
+"""Daymet frequencies"""
 
 class Daymet(Dataset):
     """Base class for common Daymet attributes.
@@ -133,11 +136,17 @@ class Daymet(Dataset):
     years: YearRange
     points: Point | Points | None = None
     area: NamedArea | None = None
-    variables: Sequence[DaymetVariables] = tuple()
-    # resample: str  # TODO implement
+    variables: Sequence[DaymetVariables] = get_args(DaymetVariables)
+    # resample: str  # TODO implement (different for point data or grid data...)
     mosaic: Literal["na", "hi", "pr"] = "na"
-    frequency: Literal["daily", "monthly", "annual"] = "daily"
-    # TODO monthly saves as *daily*.nc
+    frequency: DaymetFrequencies = "daily"
+
+    # TODO validator for valid regions?
+    # regions = {
+    #     "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},
+    #     "na": {"lon": [-178.13, -53.06], "lat": [14.07, 82.91]},
+    #     "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
+    # }
 
     @model_validator(mode='before')
     def _expand_variables(cls, data):
@@ -149,6 +158,12 @@ class Daymet(Dataset):
             data["variables"] = v
 
         return data
+
+    @model_validator(mode='after')
+    def check_points_or_area(self):
+        if not self.points and not self.area:
+            raise ValueError('Either points or area (or both) is required')
+        return self
 
     @field_validator("years")
     @classmethod
@@ -170,7 +185,7 @@ class Daymet(Dataset):
         """Directory in which download_daymet_ncss writes nc file."""
         return self._root_dir / f"bbox_{self.area.name}_{self.frequency}"
 
-    def _box_paths(self, variable, year):
+    def _box_path(self, variable: str, year: int) -> Path:
         """Get path for netcdf subsets.
 
         Monthly and annual data are accumulated.
@@ -193,7 +208,7 @@ class Daymet(Dataset):
 
         return self._box_dir / path
 
-    def _point_path(self, point):
+    def _point_path(self, point: Point) -> Path:
         """Path to downloaded file for single point."""
         location_name = f"{point.x}_{point.y}"
         time_stamp = f"{self.years.start}_{self.years.end}"
@@ -210,15 +225,16 @@ class Daymet(Dataset):
 
         return [self.download_point(point) for point in self.points]
 
-    def download_point(self, point):
+    def download_point(self, point: Point):
         """Download data for a single point."""
         path = self._point_path(point)
 
         if path.exists() and not CONFIG.force_override:
             logger.info(f"Found {path}")
         else:
-            logger.info(f"Downloading data to {self._point_path}")
+            logger.info(f"Downloading data to {self._point_path(point)}.")
             run_r_script(self._r_download_point(point))
+            logger.info("Please notice the metadata at the top of the file.")
         return path
 
     def download_bbox(self):
@@ -228,7 +244,7 @@ class Daymet(Dataset):
 
         paths = []
         for variable, year in product(self.variables, self.years.range):
-            path = self._box_paths(variable, year)
+            path = self._box_path(variable, year)
 
             if path.exists() and not CONFIG.force_override:
                 logger.info("Found {path}")
@@ -242,80 +258,75 @@ class Daymet(Dataset):
 
         return paths
 
-    def raw_load(self):
+    def raw_load(self) -> xr.Dataset | gpd.GeoDataFrame:
+        """Load raw data."""
         paths = self.download()
 
         if self.area is not None:
-            return self.load_bbox()
+            return xr.open_mfdataset(paths)
 
-        return self.load_points()
-
-    def load(self):
-        df = self.raw_load()
-
-        # Do stuff
-
-        return df
-
-    def load_points(self):
         if isinstance(self.points, Point):
-            return self.load_point(self.points)
+            return self.raw_load_point(self.points)
 
-        dataframes = []
-        headers = {}
-        for point in self.points:
-            gdf = self.load_point(point)
-            dataframes.append(gdf)
-            headers[f"headers_{point.x}_{point.y}"] = gdf.attrs["headers"]
+        df = pd.concat([self.raw_load_point(point) for point in self.points])
+        return gpd.GeoDataFrame(df)
 
-        all = pd.concat(dataframes)
-        all.attrs = headers
-        return all
+    def raw_load_point(self, point):
+        """Read csv file for a single daymet data point.
 
-    def load_point(self, point):
-        """Load the dataset from disk into memory.
-
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
+        Lat/lon is in csv headers. Add geometry column instead.
         """
-        with open(self._point_path(point)) as file:
-            nr_of_metadata_lines = 7
-            headers = [file.readline() for _ in range(nr_of_metadata_lines)]
-            df = pd.read_csv(file)
+        file = self._point_path(point)
+        df = pd.read_csv(file, skiprows=7)
 
+        # Add geometry since we want to batch read dataframes with different coords
         geometry = gpd.points_from_xy(
             [point.x] * len(df), [point.y] * len(df)
         )
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+        gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
 
-        gdf.attrs["headers"] = "\n".join(headers)
+        return gdf
 
-        # Remove unit from column names
-        gdf.attrs["units"] = gdf.columns.values
-        gdf.columns = [col.split(" (")[0] for col in gdf.columns]
+    def load(self) -> gpd.GeoDataFrame:
 
-        # Convert year and yday to datetime
-        gdf["datetime"] = pd.to_datetime(gdf["year"], format="%Y") + pd.to_timedelta(
-            gdf["yday"] - 1, unit="D"
-        )
-        var_columns = list(gdf.columns[2:-2])
-        if self.variables:
-            # Drop columns that are not in self.variables
-            var_columns = list(self.variables)
-        return gdf[["datetime", "geometry"] + var_columns]
+        # Load dataframe
+        if self.area is None:
+            gdf = self.raw_load()
 
-    def load_bbox(self):
-        """Load the dataset from disk into memory.
+            # Remove unit from column names
+            gdf.attrs["units"] = gdf.columns.values
+            gdf.columns = [col.split(" (")[0] for col in gdf.columns]
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
-        files = self.download()
-        df = xr.open_mfdataset(files).to_dataframe().reset_index()
-        df.rename(columns={"time": "datetime"}, inplace=True)
-        geometry = gpd.points_from_xy(df.pop("lon"), df.pop("lat"))
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return gdf[["datetime", "geometry"] + list(self.variables)]
+        else:
+            ds = self.raw_load()
+            ds = split_time(ds, freq = self.frequency)
+            if self.frequency == "daily":
+                ds = ds.rename({"doy": "yday"})  # consistent with point data
+
+            if self.points is not None:
+                # TODO implement
+                raise NotImplementedError(
+                    "Extract points from raster not implemented for daymet."
+                    )
+
+            df = ds.to_dataframe().reset_index()
+
+            geometry = gpd.points_from_xy(df.pop("lon"), df.pop("lat"))
+            gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
+
+        # Filter columns of interest
+        freq = "yday" if self.frequency == "daily" else "month"
+        columns = ["year", freq, "geometry"] + list(self.variables)
+        gdf = gdf[columns]
+
+        # Pivot dataframe such that yday/month is on the columns
+        df = gdf.set_index(["year", "geometry", freq]).unstack(freq)
+        df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+
+        # Return flat geodataframe
+        df = df.reset_index()
+        return gpd.GeoDataFrame(df)
+
 
     def _r_download_point(self, point):
         """Download single point using daymetR."""
@@ -327,7 +338,7 @@ class Daymet(Dataset):
             lon = {point.x},
             start = {self.years.start},
             end =  {self.years.end},
-            path="{CONFIG.cache_dir}",
+            path="{self._root_dir}",
             internal = FALSE)
         """
 
@@ -345,13 +356,7 @@ class Daymet(Dataset):
             start = {year},
             end =  {year},
             frequency = "{self.frequency}",
-            param = {variable},
+            param = "{variable}",
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
-
-# regions = {
-#     "hi": {"lon": [-160.31, -154.77], "lat": [17.95, 23.52]},
-#     "na": {"lon": [-178.13, -53.06], "lat": [14.07, 82.91]},
-#     "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
-# }

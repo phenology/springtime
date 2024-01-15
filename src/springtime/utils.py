@@ -295,6 +295,8 @@ class ResampleConfig(BaseModel):
     operator: str = "mean"
     """See
     https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.agg.html
+    and
+    https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html#built-in-aggregation-methods
     for allowed values."""
 
 
@@ -318,6 +320,12 @@ def resample(df, freq="month", operator="mean", column="datetime"):
     new_df = (
         df.groupby(groups, sort=False).agg(operator, numeric_only=True).reset_index()
     )
+
+    # TODO: could this make the frequency more flexible?
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+    # df = df.set_index(["geometry", "datetime"]).groupby(
+    #     [pd.Grouper(level='geometry'), pd.Grouper(level='datetime', freq=frequency)]
+    #     ).agg(operator)
 
     return gpd.GeoDataFrame(new_df)
 
@@ -368,7 +376,7 @@ def get_points_from_raster(points: Point | Points, ds: xr.Dataset) -> xr.Dataset
         geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
         ds = extract_points(ds, geometry)
     else:
-                # only remaining option is PointsFromOther
+        # only remaining option is PointsFromOther
         records = points._records
         ds = extract_records(ds, records)
     return ds

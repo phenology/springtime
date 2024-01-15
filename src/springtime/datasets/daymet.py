@@ -28,6 +28,8 @@ install.packages("daymetr")
 Example: Example: Download data for 3 points
 
     ```pycon
+    from springtime.datasets import Daymet
+
     source = Daymet(
         points=[
             [-84.2625, 36.0133],
@@ -43,9 +45,9 @@ Example: Example: Download data for 3 points
 Example: Example: Download daily data
 
     ```pycon
-    from springtime.datasets.meteo.daymet import DaymetBoundingBox
+    from springtime.datasets import Daymet
 
-    source = DaymetBoundingBox(
+    source = Daymet(
         variables = ["tmin", "tmax"],
         area = {
             "name": "indianapolis",
@@ -60,9 +62,9 @@ Example: Example: Download daily data
 Example: Example: download monthly data
 
     ```pycon
-    from springtime.datasets.meteo.daymet import DaymetBoundingBox
+    from springtime.datasets import Daymet
 
-    source = DaymetBoundingBox(
+    source = Daymet(
         variables = ["tmin", "tmax"],
         area = {
             "name": "indianapolis",
@@ -81,7 +83,7 @@ Example: Example: download monthly data
 from datetime import datetime
 from itertools import product
 from pathlib import Path
-from typing import Literal, Sequence, get_args
+from typing import Literal, Optional, Sequence, get_args
 import logging
 import geopandas as gpd
 import pandas as pd
@@ -90,7 +92,7 @@ from pydantic import model_validator, field_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import Point, Points, YearRange, split_time
+from springtime.utils import Point, Points, PointsFromOther, ResampleConfig, YearRange, join_dataframes, resample, split_time
 from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__name__)
@@ -137,7 +139,7 @@ class Daymet(Dataset):
     points: Point | Points | None = None
     area: NamedArea | None = None
     variables: Sequence[DaymetVariables] = get_args(DaymetVariables)
-    # resample: str  # TODO implement (different for point data or grid data...)
+    resample: Optional[ResampleConfig] = None
     mosaic: Literal["na", "hi", "pr"] = "na"
     frequency: DaymetFrequencies = "daily"
 
@@ -163,6 +165,18 @@ class Daymet(Dataset):
     def check_points_or_area(self):
         if not self.points and not self.area:
             raise ValueError('Either points or area (or both) is required')
+
+        return self
+
+    @model_validator(mode='after')
+    def check_frequency(self):
+        freq = self.frequency
+        if self.resample and not freq=="daily":
+            raise ValueError('Can only resample on daily data.')
+
+        if not self.area and not freq=="daily":
+            raise ValueError(f'Frequency set to {freq} but point data is always daily.')
+
         return self
 
     @field_validator("years")
@@ -212,13 +226,16 @@ class Daymet(Dataset):
         """Path to downloaded file for single point."""
         location_name = f"{point.x}_{point.y}"
         time_stamp = f"{self.years.start}_{self.years.end}"
-        filename = f"daymet_single_point_{location_name}_{time_stamp}.csv"
+        filename = f"daymet_{location_name}_{time_stamp}.csv"
         return self._root_dir / filename
 
     def download(self):
         """Download data for dataset."""
         if self.area is not None:
             return self.download_bbox()
+
+        # Conditional type checking is tricky
+        assert self.points, "self.area and self.points not set, this shouldn't happen."
 
         if isinstance(self.points, Point):
             return [self.download_point(self.points)]
@@ -247,7 +264,7 @@ class Daymet(Dataset):
             path = self._box_path(variable, year)
 
             if path.exists() and not CONFIG.force_override:
-                logger.info("Found {path}")
+                logger.info(f"Found {path}")
             else:
                 logger.info(f"Downloading variable {variable} for year {year}")
                 # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
@@ -265,13 +282,16 @@ class Daymet(Dataset):
         if self.area is not None:
             return xr.open_mfdataset(paths)
 
+        # Conditional type checking is tricky
+        assert self.points, "self.area and self.points not set, this shouldn't happen."
+
         if isinstance(self.points, Point):
             return self.raw_load_point(self.points)
 
         df = pd.concat([self.raw_load_point(point) for point in self.points])
         return gpd.GeoDataFrame(df)
 
-    def raw_load_point(self, point):
+    def raw_load_point(self, point) -> gpd.GeoDataFrame:
         """Read csv file for a single daymet data point.
 
         Lat/lon is in csv headers. Add geometry column instead.
@@ -285,47 +305,103 @@ class Daymet(Dataset):
         )
         gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
 
-        return gdf
+        # type checker is iffy
+        assert isinstance(gdf, gpd.GeoDataFrame), "Something unexpected happened"
+
+        return gdf#.set_index([ 'geometry', 'year', 'yday'])
 
     def load(self) -> gpd.GeoDataFrame:
 
-        # Load dataframe
         if self.area is None:
+            # Load csv data into (geo)dataframe
             gdf = self.raw_load()
 
             # Remove unit from column names
             gdf.attrs["units"] = gdf.columns.values
             gdf.columns = [col.split(" (")[0] for col in gdf.columns]
 
+            # Filter columns of interest
+            columns = ["year", "yday", "geometry"] + list(self.variables)
+            gdf = gdf[columns]
+
         else:
+            # Load netcdf data into (geo)dataframe
             ds = self.raw_load()
-            ds = split_time(ds, freq = self.frequency)
-            if self.frequency == "daily":
-                ds = ds.rename({"doy": "yday"})  # consistent with point data
+
+            gdf = self._to_dataframe(ds)
 
             if self.points is not None:
-                # TODO implement
-                raise NotImplementedError(
-                    "Extract points from raster not implemented for daymet."
-                    )
+                gdf = self._extract_points(gdf, self.points)
 
-            df = ds.to_dataframe().reset_index()
+            gdf = self._split_time(gdf)
 
-            geometry = gpd.points_from_xy(df.pop("lon"), df.pop("lat"))
-            gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
+        # if isinstance(self.points, PointsFromOther):
+        #     other = self.points._records
+        #     gdf = join_dataframes([gdf, other]).reset_index()  # TODO dropna??
 
-        # Filter columns of interest
-        freq = "yday" if self.frequency == "daily" else "month"
-        columns = ["year", freq, "geometry"] + list(self.variables)
-        gdf = gdf[columns]
+        if self.resample is not None:
+            gdf = self._resample_yday(gdf, self.resample.frequency, self.resample.operator)
+
+        # type checker is iffy
+        assert isinstance(gdf, gpd.GeoDataFrame), "Something unexpected happened"
 
         # Pivot dataframe such that yday/month is on the columns
-        df = gdf.set_index(["year", "geometry", freq]).unstack(freq)
-        df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+        if self.resample is not None:
+            freq = self.resample.frequency
+            gdf = gdf.set_index(["year", "geometry", freq]).unstack(freq)
+        elif self.frequency == 'daily':
+            gdf = gdf.set_index(["year", "geometry", "yday"]).unstack("yday")
+            gdf.columns = gdf.columns.map("{0[0]}|{0[1]}".format)
+        elif self.frequency == 'monthly':
+            gdf = gdf.set_index(["year", "geometry", "month"]).unstack("month")
+            gdf.columns = gdf.columns.map("{0[0]}|{0[1]}".format)
 
         # Return flat geodataframe
-        df = df.reset_index()
-        return gpd.GeoDataFrame(df)
+        return gpd.GeoDataFrame(gdf).reset_index()
+
+    def _split_time(self, gdf) -> gpd.GeoDataFrame:
+        """Replace datetime with year (+ month/yday)"""
+        gdf["year"] = gdf["time"].dt.year
+
+        if self.frequency == "daily":
+            gdf["yday"] = gdf["time"].dt.dayofyear
+        elif self.frequency == "monthly":
+            gdf["month"] = gdf["time"].dt.month
+
+        gdf = gdf.drop(columns="time")
+        return gdf
+
+    def _extract_points(self, gdf, points):
+        """Find nearest points from dataframe.
+
+        The same point is returned for all times.
+        """
+        subset = gpd.points_from_xy(*map(list, zip(*points)))
+        subset_gdf = gpd.GeoDataFrame().set_geometry(subset)
+        gdf = gpd.sjoin_nearest(subset_gdf, gdf.set_index(["time"])).rename(
+                    columns={"index_right": "time"}
+                )
+
+        return gdf
+
+    def _to_dataframe(self, ds):
+        """Convert ds to gdf, set geometry and drop trash."""
+        df = ds.to_dataframe().reset_index()
+
+        # Infer geometry
+        geometry = gpd.points_from_xy(df.pop("lon"), df.pop("lat"))
+        gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
+        gdf = gdf.drop(columns=["x", "y", "lambert_conformal_conic"])
+        return gdf
+
+    # TODO harmonize with eobs resampling and with utils.resample
+    def _resample_yday(self, gdf, frequency, operator) -> gpd.GeoDataFrame:
+        """Resample a dataframe that has year and yday columns."""
+
+        gdf["datetime"] = pd.to_datetime(gdf["year"]*1000 + gdf["yday"], format="%Y%j")
+        gdf = gdf.drop(columns=['year', 'yday'])
+
+        return resample(gdf, freq=frequency, operator=operator, column='datetime')
 
 
     def _r_download_point(self, point):
@@ -333,7 +409,7 @@ class Daymet(Dataset):
         return f"""\
         library(daymetr)
         daymetr::download_daymet(
-            site = "daymet_single_point_{point.x}_{point.y}",
+            site = "daymet_{point.x}_{point.y}",
             lat = {point.y},
             lon = {point.x},
             start = {self.years.start},
@@ -348,6 +424,7 @@ class Daymet(Dataset):
         # Aka north,west,south,east in WGS84 projection.
         # while self.area.bbox is xmin, ymin, xmax, ymax
         # so do some reshuffling 3,0,1,2
+        assert self.area, "_r_download_ncss called but self.area is not set"
         box = self.area.bbox
         return f"""\
         library(daymetr)
@@ -360,3 +437,4 @@ class Daymet(Dataset):
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
+

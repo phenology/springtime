@@ -61,9 +61,8 @@ from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__file__)
 
-phenocam_cache_dir = CONFIG.cache_dir / "phenocam"
-rois_file = phenocam_cache_dir / "roi_data.csv"
-sites_file = phenocam_cache_dir / "site_meta_data.csv"
+rois_file = CONFIG.cache_dir / 'phenocam' / "roi_data.csv"
+sites_file = CONFIG.cache_dir / 'phenocam' / "site_meta_data.csv"
 
 # variables with "flag" in their names are removed from the list below because
 # their values might be NaN.
@@ -130,11 +129,15 @@ class Phenocam(Dataset):
     dataset: Literal["phenocam"] = "phenocam"
     veg_type: Optional[str] = None
     frequency: Literal["1", "3", "roistats"] = "3"
-    variables: Sequence[PhenocamVariables] = tuple()
+    variables: Sequence[PhenocamVariables] = []
     site: Optional[str] = None
     roi_id: Optional[str] = None
     area: Optional[NamedArea] = None
     # TODO specify either a site (and rois) or area, not both
+
+    @property
+    def _root_dir(self):
+        return CONFIG.cache_dir / "phenocam"
 
     def _filter_rois(self):
         """Reduce the full ROI listing to the applicable records."""
@@ -151,7 +154,10 @@ class Phenocam(Dataset):
 
         # Narrow to site?
         if self.site is not None:
-            rois_df = rois_df.loc(rois_df.site == self.site)
+            if self.site.endswith("$"):
+                rois_df = rois_df.loc[rois_df.site == self.site[:-1]]
+            else:
+                rois_df = rois_df.loc[rois_df.site.str.contains(self.site)]
 
         # Narrow to single ROI?
         if self.roi_id is not None:
@@ -166,7 +172,7 @@ class Phenocam(Dataset):
     def _derive_path(self, roi: pd.Series) -> Path:
         freq = "roistats" if self.frequency == "roistats" else f"{self.frequency}day"
         return (
-            phenocam_cache_dir
+            self._root_dir
             / f"{roi.site}_{roi.veg_type}_{roi.roi_id_number:04}_{freq}.csv"
         )
 
@@ -181,10 +187,10 @@ class Phenocam(Dataset):
         sites = list_sites()
         site_locations = sites[["site", "geometry"]]
         df = df.merge(site_locations, on="site")
-        df = gpd.GeoDataFrame(df, geometry=df.geometry)
+        df = gpd.GeoDataFrame(df).set_geometry('geometry')
         df.rename(columns={"date": "datetime"}, inplace=True)
         # Do not return variables that are not derived from image data
-        # to get raw file see phenocam_cache_dir directory.
+        # to get raw file see self._root_dir directory.
         non_derived_variables = {
             # Columns from https://phenocam.nau.edu/data/archive/harvard/ROI/harvard_DB_1000_3day.csv
             "date",
@@ -205,14 +211,14 @@ class Phenocam(Dataset):
         return df[["datetime", "geometry"] + variables]
 
 
-    def find_or_download(self):
+    def download(self):
         """Download the data.
 
         Only downloads if data is not in CONFIG.cache_dir or CONFIG.force_override
         is TRUE.
         """
         logger.info("Looking for data")
-        phenocam_cache_dir.mkdir(parents=True, exist_ok=True)
+        self._root_dir.mkdir(parents=True, exist_ok=True)
         paths = []
 
         # Default roi_id in phenocamr is "ALL", then it loops over all ROIs in R.
@@ -225,7 +231,7 @@ class Phenocam(Dataset):
                 _r_download_data(
                     site=row.site,
                     frequency=self.frequency,
-                    output_dir = phenocam_cache_dir,
+                    output_dir = self._root_dir,
                     veg_type = row["veg_type"],
                     roi_id = row["roi_id_number"])
 
@@ -239,22 +245,22 @@ class Phenocam(Dataset):
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        paths = self.find_or_download()
+        paths = self.download()
         df = pd.concat([_load_location(path) for path in paths])
         return df
 
     def load(self):
-        raw_df = self.raw_load
+        raw_df = self.raw_load()
 
         # Select years
         df = raw_df.loc[(self.years.start <= raw_df.year) & (raw_df.year <= self.years.end)]
 
         # Convert to gpd
-        self._to_geopandas(df)
+        gdf = self._to_geopandas(df)
 
         # TODO: infer event?
 
-        return df
+        return gdf
 
 
 def _load_location(location: Path) -> pd.DataFrame:
@@ -328,16 +334,20 @@ def _r_download_rois():
 
 
 def _r_download_data(site, frequency, output_dir, veg_type, roi_id):
+    """Download data for an exact site match.
+
+    $ is appended to site to get an exact match.
+    """
     veg_type = "NULL" if veg_type is None else f"'{veg_type}'"
-    roi_id = "NULL" if roi_id is None else f"'{roi_id} '"
+    roi_id = "NULL" if roi_id is None else f"'{roi_id}'"
     script = f"""\
         library(phenocamr)
         download_phenocam(
-            site={site},
-            frequency={frequency}
+            site="{site}$",
+            frequency={frequency},
             internal=FALSE,
-            output_dir={output_dir},
-            veg_type={veg_type}
+            out_dir='{output_dir}',
+            veg_type={veg_type},
             roi_id={roi_id}
         )
         """

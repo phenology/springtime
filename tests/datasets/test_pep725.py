@@ -13,13 +13,13 @@ from springtime.config import CONFIG
 """
 To update reference data, run one of the following:
 
-    pytest tests/test_pep725.py --update-reference
-    pytest tests/test_pep725.py --update-reference --redownload
+    pytest tests/datasets/test_pep725.py --update-reference
+    pytest tests/datasets/test_pep725.py --update-reference --redownload
 
 
 To include download, run:
 
-    pytest tests/test_pep725.py --include-downloads
+    pytest tests/datasets/test_pep725.py --include-downloads
 """
 
 REFERENCE_DATA = CONFIG.cache_dir / "pep725_load_reference.geojson"

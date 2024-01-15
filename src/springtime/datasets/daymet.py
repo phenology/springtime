@@ -356,8 +356,10 @@ class Daymet(Dataset):
             gdf = gdf.set_index(["year", "geometry", "month"]).unstack("month")
             gdf.columns = gdf.columns.map("{0[0]}|{0[1]}".format)
 
-        # Return flat geodataframe
-        return gpd.GeoDataFrame(gdf).reset_index()
+
+
+        # Return flat geodataframe & ensure geometry column recognized as such
+        return gpd.GeoDataFrame(gdf).reset_index().set_geometry('geometry')
 
     def _split_time(self, gdf) -> gpd.GeoDataFrame:
         """Replace datetime with year (+ month/yday)"""

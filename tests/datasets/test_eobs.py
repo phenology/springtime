@@ -13,13 +13,13 @@ from springtime.datasets.meteo.eobs import EOBS, extract_points
 """
 To update reference data, run one of the following:
 
-    pytest tests/test_eobs.py --update-reference
-    pytest tests/test_eobs.py --update-reference --redownload
+    pytest tests/datasets/test_eobs.py --update-reference
+    pytest tests/datasets/test_eobs.py --update-reference --redownload
 
 
 To include download, run:
 
-    pytest tests/test_eobs.py --include-downloads
+    pytest tests/datasets/test_eobs.py --include-downloads
 """
 
 REFERENCE_DATA = CONFIG.cache_dir / "eobs_load_reference.geojson"

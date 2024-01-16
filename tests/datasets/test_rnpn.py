@@ -1,15 +1,12 @@
 import shutil
 from textwrap import dedent
 
-import pandas as pd
 import geopandas as gpd
-from springtime.datasets import RNPN, load_dataset
-
+import pandas as pd
 import pytest
 
-
 from springtime.config import CONFIG
-
+from springtime.datasets import RNPN, load_dataset
 
 """
 To update reference data, run one of the following:
@@ -101,6 +98,7 @@ def test_update_reference_data(dataset, redownload):
     """Update the reference data for these tests."""
     if redownload:
         from springtime.datasets.rnpn import cache_dir
+
         shutil.rmtree(cache_dir)
 
     loaded_data = dataset.load()

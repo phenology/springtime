@@ -1,12 +1,12 @@
 import shutil
 from textwrap import dedent
-import pandas as pd
 
-import pytest
-from springtime.datasets import load_dataset
-from springtime.config import CONFIG
-from springtime.datasets import Phenocam
 import geopandas as gpd
+import pandas as pd
+import pytest
+
+from springtime.config import CONFIG
+from springtime.datasets import Phenocam, load_dataset
 
 """
 To update reference data, run one of the following:
@@ -33,9 +33,11 @@ REFERENCE_RECIPE = dedent(
         """
 )
 
+
 @pytest.fixture
 def harvard_bbox():
     return {"name": "harvard", "bbox": [-73, 42, -72, 43]}
+
 
 @pytest.fixture
 def reference_args():
@@ -53,7 +55,9 @@ def test_load_exact_match(reference_args):
         Columns differ. New columns are {loaded_data.columns},
         vs reference {reference.columns}."""
 
-    pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values], check_dtype=False)
+    pd.testing.assert_frame_equal(
+        loaded_data, reference[loaded_data.columns.values], check_dtype=False
+    )
 
 
 def test_instantiate_approximate_match(reference_args):
@@ -66,6 +70,7 @@ def test_load_approx(reference_args):
     reference_args.update(site="harvard")
     dataset = Phenocam(**reference_args)
     dataset.load()
+
 
 @pytest.mark.download
 def test_load_area(reference_args, harvard_bbox):

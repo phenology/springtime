@@ -1,14 +1,11 @@
 from textwrap import dedent
 
-import pandas as pd
 import geopandas as gpd
-from springtime.datasets import PEP725Phenor, load_dataset
-
+import pandas as pd
 import pytest
 
-
 from springtime.config import CONFIG
-
+from springtime.datasets import PEP725Phenor, load_dataset
 
 """
 To update reference data, run one of the following:

@@ -67,21 +67,21 @@ Example: Example: Load coarse mean temperature around amsterdam from 2002 till 2
 
 """
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Any, Literal, Optional, Sequence
 from urllib.request import urlretrieve
 
-import numpy as np
-from springtime.datasets.abstract import Dataset
-
 import geopandas as gpd
+import numpy as np
 import xarray as xr
 from pydantic import field_validator
 from xarray import open_mfdataset
 
 from springtime.config import CONFIG
-from springtime.utils import NamedArea, Point, Points, get_points_from_raster, split_time
+from springtime.datasets.abstract import Dataset
+from springtime.utils import (NamedArea, Point, Points, get_points_from_raster,
+                              split_time)
 
 logger = logging.getLogger(__name__)
 
@@ -110,11 +110,11 @@ short_vars = {
 }
 
 operators = {
-    'mean': np.mean,
-    'min': np.min,
-    'max': np.max,
-    'sum': np.sum,
-    'median': np.median,
+    "mean": np.mean,
+    "min": np.min,
+    "max": np.max,
+    "sum": np.sum,
+    "median": np.median,
 }
 
 
@@ -238,7 +238,11 @@ class EOBS(Dataset):
 
             # Check if we can skip because minized path exists
             minimized_path = self._minimized_path(variable)
-            if self.minimize_cache and minimized_path.exists() and not CONFIG.force_override:
+            if (
+                self.minimize_cache
+                and minimized_path.exists()
+                and not CONFIG.force_override
+            ):
                 logger.info(f"Found {minimized_path}")
                 paths.append(minimized_path)
                 continue
@@ -259,7 +263,7 @@ class EOBS(Dataset):
 
             if self.minimize_cache:
                 arrays = [xr.open_dataarray(p) for p in sub_paths]
-                da = arrays[0] if len(arrays) == 1 else xr.concat(arrays, dim='time')
+                da = arrays[0] if len(arrays) == 1 else xr.concat(arrays, dim="time")
 
                 da = extract_time(da, self.years.start, self.years.end)
 
@@ -307,21 +311,23 @@ class EOBS(Dataset):
         # Resample
         if self.resample is not None:
             resample_kwargs = self.resample
-            frequency = resample_kwargs.pop('frequency', 'M')
-            operator_key = resample_kwargs.pop('operator', 'mean')
+            frequency = resample_kwargs.pop("frequency", "M")
+            operator_key = resample_kwargs.pop("operator", "mean")
             operator = operators[operator_key]
             ds = ds.resample(time=frequency, **resample_kwargs).reduce(operator)
 
         # Extract year and DOY columns
-        if 'time' in ds.dims:
+        if "time" in ds.dims:
             ds = split_time(ds)
 
         # Early return if no points are extracted
         if self.points is None:
-            logger.warning("""
+            logger.warning(
+                """
                 No points selected; returning gridded data as xarray object.
                 Useful for prediction, but cannot be used in a recipe.
-                """)
+                """
+            )
             return ds
 
         # Extract points/records
@@ -332,7 +338,7 @@ class EOBS(Dataset):
     def _to_dataframe(self, ds: xr.Dataset):
         """Transform to dataframe and process to final format."""
         # TODO simplify; maybe add other option, to include data as list?
-        if 'index' in ds.coords:
+        if "index" in ds.coords:
             df = ds.to_dataframe()
             df = df.set_index(["year", "geometry"], append=True).unstack("doy")
             df.columns = df.columns.map("{0[0]}|{0[1]}".format)
@@ -366,21 +372,23 @@ def extract_area(ds, bbox):
 def monthly_agg(ds, operator=np.mean):
     """Return monthly aggregates based on DOY dimension."""
     bins = np.linspace(0, 366, 13, dtype=int)
-    grouped = ds.groupby_bins(group='doy', bins=bins, labels=bins[1:], precision=0)
+    grouped = ds.groupby_bins(group="doy", bins=bins, labels=bins[1:], precision=0)
     aggregated = grouped.reduce(operator).rename(doy_bins="doy")
-    aggregated['doy'] = aggregated['doy'].values.astype(int)
+    aggregated["doy"] = aggregated["doy"].values.astype(int)
     return aggregated
 
 
-def monthly_gdd(ds, t_base = 5):
+def monthly_gdd(ds, t_base=5):
     """Return monthly growing degree days based on DOY dimension."""
     # TODO rename variable to GDD?
     # only operate on data-arrays, not datasets?
     bins = np.linspace(0, 366, 13, dtype=int)
-    gdd = (ds - t_base).cumsum('doy')
-    grouped = gdd.groupby_bins(group='doy', bins=bins, labels=bins[1:].astype(int), precision=0)
+    gdd = (ds - t_base).cumsum("doy")
+    grouped = gdd.groupby_bins(
+        group="doy", bins=bins, labels=bins[1:].astype(int), precision=0
+    )
     aggregated = grouped.max().rename(doy_bins="doy")
-    aggregated['doy'] = aggregated['doy'].values.astype(int)
+    aggregated["doy"] = aggregated["doy"].values.astype(int)
     return aggregated
 
 

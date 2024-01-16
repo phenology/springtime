@@ -80,20 +80,21 @@ Example: Example: download monthly data
 
 """
 
+import logging
 from datetime import datetime
 from itertools import product
 from pathlib import Path
 from typing import Literal, Optional, Sequence, get_args
-import logging
+
 import geopandas as gpd
 import pandas as pd
 import xarray as xr
-from pydantic import model_validator, field_validator
+from pydantic import field_validator, model_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import Point, Points, PointsFromOther, ResampleConfig, YearRange, join_dataframes, resample, split_time
-from springtime.utils import NamedArea, run_r_script
+from springtime.utils import (NamedArea, Point, Points, ResampleConfig,
+                              YearRange, resample, run_r_script)
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +103,7 @@ DaymetVariables = Literal["dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"]
 
 DaymetFrequencies = Literal["daily", "monthly", "annual"]
 """Daymet frequencies"""
+
 
 class Daymet(Dataset):
     """Base class for common Daymet attributes.
@@ -134,6 +136,7 @@ class Daymet(Dataset):
 
 
     """
+
     dataset: Literal["daymet"] = "daymet"
     years: YearRange
     points: Point | Points | None = None
@@ -150,7 +153,7 @@ class Daymet(Dataset):
     #     "pr": {"lon": [-67.99, -64.12], "lat": [16.84, 19.94]},
     # }
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     def _expand_variables(cls, data):
         if data.get("variables") is None:
             if data.get("frequency", "daily") == "daily":
@@ -161,30 +164,28 @@ class Daymet(Dataset):
 
         return data
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_points_or_area(self):
         if not self.points and not self.area:
-            raise ValueError('Either points or area (or both) is required')
+            raise ValueError("Either points or area (or both) is required")
 
         return self
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_frequency(self):
         freq = self.frequency
-        if self.resample and not freq=="daily":
-            raise ValueError('Can only resample on daily data.')
+        if self.resample and not freq == "daily":
+            raise ValueError("Can only resample on daily data.")
 
-        if not self.area and not freq=="daily":
-            raise ValueError(f'Frequency set to {freq} but point data is always daily.')
+        if not self.area and not freq == "daily":
+            raise ValueError(f"Frequency set to {freq} but point data is always daily.")
 
         return self
 
     @field_validator("years")
     @classmethod
     def _valid_years(cls, v):
-        assert (
-            v.start >= 1980
-        ), f"Asked for year {v.start}, but no data before 1980"
+        assert v.start >= 1980, f"Asked for year {v.start}, but no data before 1980"
         last_year = datetime.now().year - 1
         msg = f"Asked for year {v.end}, but no data till/after {last_year}"
         assert v.end < last_year, msg
@@ -300,18 +301,15 @@ class Daymet(Dataset):
         df = pd.read_csv(file, skiprows=7)
 
         # Add geometry since we want to batch read dataframes with different coords
-        geometry = gpd.points_from_xy(
-            [point.x] * len(df), [point.y] * len(df)
-        )
+        geometry = gpd.points_from_xy([point.x] * len(df), [point.y] * len(df))
         gdf = gpd.GeoDataFrame(df).set_geometry(geometry)
 
         # type checker is iffy
         assert isinstance(gdf, gpd.GeoDataFrame), "Something unexpected happened"
 
-        return gdf#.set_index([ 'geometry', 'year', 'yday'])
+        return gdf  # .set_index([ 'geometry', 'year', 'yday'])
 
     def load(self) -> gpd.GeoDataFrame:
-
         if self.area is None:
             # Load csv data into (geo)dataframe
             gdf = self.raw_load()
@@ -340,7 +338,9 @@ class Daymet(Dataset):
         #     gdf = join_dataframes([gdf, other]).reset_index()  # TODO dropna??
 
         if self.resample is not None:
-            gdf = self._resample_yday(gdf, self.resample.frequency, self.resample.operator)
+            gdf = self._resample_yday(
+                gdf, self.resample.frequency, self.resample.operator
+            )
 
         # type checker is iffy
         assert isinstance(gdf, gpd.GeoDataFrame), "Something unexpected happened"
@@ -349,17 +349,15 @@ class Daymet(Dataset):
         if self.resample is not None:
             freq = self.resample.frequency
             gdf = gdf.set_index(["year", "geometry", freq]).unstack(freq)
-        elif self.frequency == 'daily':
+        elif self.frequency == "daily":
             gdf = gdf.set_index(["year", "geometry", "yday"]).unstack("yday")
             gdf.columns = gdf.columns.map("{0[0]}|{0[1]}".format)
-        elif self.frequency == 'monthly':
+        elif self.frequency == "monthly":
             gdf = gdf.set_index(["year", "geometry", "month"]).unstack("month")
             gdf.columns = gdf.columns.map("{0[0]}|{0[1]}".format)
 
-
-
         # Return flat geodataframe & ensure geometry column recognized as such
-        return gpd.GeoDataFrame(gdf).reset_index().set_geometry('geometry')
+        return gpd.GeoDataFrame(gdf).reset_index().set_geometry("geometry")
 
     def _split_time(self, gdf) -> gpd.GeoDataFrame:
         """Replace datetime with year (+ month/yday)"""
@@ -381,8 +379,8 @@ class Daymet(Dataset):
         subset = gpd.points_from_xy(*map(list, zip(*points)))
         subset_gdf = gpd.GeoDataFrame().set_geometry(subset)
         gdf = gpd.sjoin_nearest(subset_gdf, gdf.set_index(["time"])).rename(
-                    columns={"index_right": "time"}
-                )
+            columns={"index_right": "time"}
+        )
 
         return gdf
 
@@ -400,11 +398,12 @@ class Daymet(Dataset):
     def _resample_yday(self, gdf, frequency, operator) -> gpd.GeoDataFrame:
         """Resample a dataframe that has year and yday columns."""
 
-        gdf["datetime"] = pd.to_datetime(gdf["year"]*1000 + gdf["yday"], format="%Y%j")
-        gdf = gdf.drop(columns=['year', 'yday'])
+        gdf["datetime"] = pd.to_datetime(
+            gdf["year"] * 1000 + gdf["yday"], format="%Y%j"
+        )
+        gdf = gdf.drop(columns=["year", "yday"])
 
-        return resample(gdf, freq=frequency, operator=operator, column='datetime')
-
+        return resample(gdf, freq=frequency, operator=operator, column="datetime")
 
     def _r_download_point(self, point):
         """Download single point using daymetR."""
@@ -439,4 +438,3 @@ class Daymet(Dataset):
             mosaic = "{self.mosaic}",
             path = "{self._box_dir}")
         """
-

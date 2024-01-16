@@ -1,13 +1,13 @@
 import shutil
 from textwrap import dedent
 
-import pandas as pd
 import geopandas as gpd
-from springtime.datasets import load_dataset
-import xarray as xr
+import pandas as pd
 import pytest
+import xarray as xr
 
 from springtime.config import CONFIG
+from springtime.datasets import load_dataset
 from springtime.datasets.meteo.eobs import EOBS, extract_points
 
 """
@@ -52,18 +52,19 @@ REFERENCE_RECIPE = dedent(
         """
 )
 
+
 @pytest.fixture
 def reference_args(germany):
     return dict(
-        grid_resolution = "0.25deg",
+        grid_resolution="0.25deg",
         years=["2000", "2002"],
-        points = [(5, 10), (10, 12)],
+        points=[(5, 10), (10, 12)],
         variables=[
             "mean_temperature",
             "minimum_temperature",
         ],
-        area = germany,
-        minimize_cache = True
+        area=germany,
+        minimize_cache=True,
     )
 
 
@@ -129,12 +130,16 @@ def test_load(reference_args):
         Columns differ. New columns are {loaded_data.columns},
         vs reference {reference.columns}."""
 
-    pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values], check_dtype=False)
+    pd.testing.assert_frame_equal(
+        loaded_data, reference[loaded_data.columns.values], check_dtype=False
+    )
 
 
 def test_extract_points(reference_args):
     ds = EOBS(**reference_args).raw_load()
-    points = gpd.GeoSeries(gpd.points_from_xy(x=[0, 5, 7], y=[5, 10, 12]), name="geometry")
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(x=[0, 5, 7], y=[5, 10, 12]), name="geometry"
+    )
 
     # Extract multipe points
     extract_points(ds, points)

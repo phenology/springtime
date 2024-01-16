@@ -1,12 +1,12 @@
 import shutil
 from textwrap import dedent
-import pandas as pd
 
-import pytest
-from springtime.datasets import load_dataset
-from springtime.config import CONFIG
-from springtime.datasets import Daymet
 import geopandas as gpd
+import pandas as pd
+import pytest
+
+from springtime.config import CONFIG
+from springtime.datasets import Daymet, load_dataset
 
 """
 To update reference data, run one of the following:
@@ -49,13 +49,15 @@ REFERENCE_RECIPE = dedent(
         """
 )
 
+
 @pytest.fixture
 def indianapolis():
-  return {"name": "indianapolis", "bbox": [-86.5, 39.5, -86, 40.1]}
+    return {"name": "indianapolis", "bbox": [-86.5, 39.5, -86, 40.1]}
+
 
 @pytest.fixture
 def points():
-  return [
+    return [
         [-84.2625, 36.0133],
         [-86, 39.6],
         [-85, 40],
@@ -71,6 +73,7 @@ def reference_args(points, indianapolis):
         years=[2000, 2002],
         frequency="monthly",
     )
+
 
 def test_load_points(reference_args):
     reference_args.update(area=None, frequency="daily")
@@ -95,8 +98,9 @@ def test_load_points_and_area(reference_args):
         Columns differ. New columns are {loaded_data.columns},
         vs reference {reference.columns}."""
 
-    pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values], check_dtype=False)
-
+    pd.testing.assert_frame_equal(
+        loaded_data, reference[loaded_data.columns.values], check_dtype=False
+    )
 
 
 def test_to_recipe(reference_args):

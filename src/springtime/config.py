@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from xdg_base_dirs import xdg_cache_home, xdg_config_home
+
 from pydantic import BaseModel, field_validator
+from xdg_base_dirs import xdg_cache_home, xdg_config_home
 
 CONFIG_DIR: Path = xdg_config_home() / "springtime"
 CONFIG_DIR.mkdir(parents=True, exist_ok=True)
@@ -23,5 +24,6 @@ class Config(BaseModel, validate_assignment=True, validate_default=True):
             print(f"Creating folder {path}")
             path.mkdir(parents=True)
         return path
+
 
 CONFIG = Config()

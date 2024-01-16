@@ -10,11 +10,11 @@ implement the basic functionality described here.
 """
 
 from abc import ABC, abstractmethod
-from pydantic import BaseModel
+
 import yaml
+from pydantic import BaseModel
 
 from springtime.utils import YearRange
-
 
 
 class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
@@ -25,6 +25,7 @@ class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
         years: timerange. For example years=[2000, 2002] downloads data for
             three years.
     """
+
     dataset: str
     years: YearRange | None = None  # TODO not optional or not in abstract
 
@@ -57,5 +58,7 @@ class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
 
     def to_recipe(self):
         """Print out a recipe to reproduce this dataset."""
-        recipe = self.model_dump(mode='json', exclude_none=True, exclude=["credential_file"])
+        recipe = self.model_dump(
+            mode="json", exclude_none=True, exclude=["credential_file"]
+        )
         return yaml.dump(recipe, sort_keys=False)

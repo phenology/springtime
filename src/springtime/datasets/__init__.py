@@ -6,21 +6,15 @@
 
 from typing import Union
 
+import yaml
 from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated
 
-import yaml
 from springtime.datasets.abstract import Dataset
-
+from springtime.datasets.appeears import (AppeearsArea, AppeearsPoints,
+                                          AppeearsPointsFromArea)
 from springtime.datasets.daymet import Daymet
-from springtime.datasets.eobs import (
-    EOBS
-)
-from springtime.datasets.appeears import (
-    AppeearsPoints,
-    AppeearsPointsFromArea,
-    AppeearsArea,
-)
+from springtime.datasets.eobs import EOBS
 from springtime.datasets.pep725 import PEP725Phenor
 from springtime.datasets.phenocam import Phenocam
 from springtime.datasets.ppo import RPPO

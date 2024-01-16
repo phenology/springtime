@@ -117,6 +117,7 @@ class RNPN(Dataset):
             to aggregate in case of multiple observations per site/year
 
     """
+
     dataset: Literal["RNPN"] = "RNPN"
     species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]] = None
     phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
@@ -174,7 +175,6 @@ class RNPN(Dataset):
         return paths
 
     def raw_load(self):
-
         paths = self.download()
 
         df = pd.concat([pd.read_csv(path) for path in paths])
@@ -206,7 +206,6 @@ class RNPN(Dataset):
         )
 
         return gpd.GeoDataFrame(gdf)
-
 
     def _r_download(self, filename: Path, year):
         opt_args = []

@@ -36,9 +36,7 @@ from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, run_r_script
 
-
 logger = logging.getLogger(__name__)
-
 
 
 class RPPO(Dataset):
@@ -60,6 +58,7 @@ class RPPO(Dataset):
             phenological event by setting it to "first_yes_day" or "last_yes_day".
 
     """
+
     # TODO years not required?
     # TODO rppo support more keywords, like scientific name. Also support those?
     dataset: Literal["rppo"] = "rppo"
@@ -76,7 +75,6 @@ class RPPO(Dataset):
         return CONFIG.cache_dir / "PPO" / fn
 
     def _build_filename(self, suffix="csv"):
-
         parts = [self.genus, self.termID]
 
         if self.years is not None:
@@ -97,8 +95,10 @@ class RPPO(Dataset):
 
         self._path().parent.mkdir(parents=True, exist_ok=True)
         run_r_script(self._r_download(), timeout=300)
-        logger.info(f"""Download successful. Please see the readme
-                    and citation files in {self._path().parent}""")
+        logger.info(
+            f"""Download successful. Please see the readme
+                    and citation files in {self._path().parent}"""
+        )
 
     def raw_load(self):
         logger.info("Locating data...")
@@ -115,14 +115,24 @@ class RPPO(Dataset):
         df = self.raw_load()
 
         # Filter terms
-        exclude_rows = df.termID.map(lambda x: any(term in x for term in self.exclude_terms))
+        exclude_rows = df.termID.map(
+            lambda x: any(term in x for term in self.exclude_terms)
+        )
         df = df[~exclude_rows]
 
         # Transform to events?
         if self.infer_event == "first_yes_day":
-            df = df.groupby(["year", "latitude", "longitude"])["dayOfYear"].agg("min").reset_index()
+            df = (
+                df.groupby(["year", "latitude", "longitude"])["dayOfYear"]
+                .agg("min")
+                .reset_index()
+            )
         elif self.infer_event == "last_yes_day":
-            df = df.groupby(["year", "latitude", "longitude"])["dayOfYear"].agg("max").reset_index()
+            df = (
+                df.groupby(["year", "latitude", "longitude"])["dayOfYear"]
+                .agg("max")
+                .reset_index()
+            )
         else:
             df = df[["year", "latitude", "longitude", "dayOfYear"]]
 

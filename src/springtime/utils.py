@@ -8,11 +8,11 @@ from functools import wraps
 from logging import getLogger
 from typing import NamedTuple, Sequence
 
-import pandas as pd
-
-import xarray as xr
 import geopandas as gpd
-from pydantic import BaseModel, PositiveInt, model_validator, field_validator, PrivateAttr
+import pandas as pd
+import xarray as xr
+from pydantic import (BaseModel, PositiveInt, PrivateAttr, field_validator,
+                      model_validator)
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)
@@ -30,8 +30,10 @@ germany = {
     ],
 }
 
+
 class Point(NamedTuple):  # TODO use shapely point instead?
     """Single point with x and y coordinate."""
+
     x: float
     y: float
 
@@ -52,7 +54,7 @@ class PointsFromOther(BaseModel):
         # TODO: refactor to generic utility function
         self._xy = list(map(lambda p: Point(p.x, p.y), other.geometry.unique()))
         self._points = other.geometry.unique()
-        self._records = other[['year', 'geometry']]
+        self._records = other[["year", "geometry"]]
 
     def __iter__(self):
         for item in self._xy:
@@ -60,6 +62,7 @@ class PointsFromOther(BaseModel):
 
     def __len__(self):
         return len(self._xy)
+
 
 Points = Sequence[Point] | PointsFromOther
 """Points can be a list of (lon, lat) tuples or a PointsFromOther object."""
@@ -129,7 +132,7 @@ class YearRange(NamedTuple):
     end: PositiveInt
     """The end year is inclusive."""
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def _must_increase(self):
         assert (
             self.start <= self.end
@@ -431,18 +434,18 @@ def join_dataframes(dfs, index_cols=["year", "geometry"]):
     return gpd.GeoDataFrame(df, geometry=geometry).set_index(index_cols)
 
 
-def split_time(ds, freq='daily'):
+def split_time(ds, freq="daily"):
     """Split datetime coordinate into year and dayofyear or month."""
     year = ds.time.dt.year.values
 
-    if freq=="daily":
+    if freq == "daily":
         doy = ds.time.dt.dayofyear.values
         cols = [year, doy]
-        colnames = ['year', 'doy']
+        colnames = ["year", "doy"]
     elif freq == "monthly":
         month = ds.time.dt.month.values
         cols = [year, month]
-        colnames = ['year', 'month']
+        colnames = ["year", "month"]
     else:
         raise ValueError("Unknown frequency. Choose daily or monthly.")
 

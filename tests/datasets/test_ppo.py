@@ -1,14 +1,11 @@
 from textwrap import dedent
 
-import pandas as pd
 import geopandas as gpd
-from springtime.datasets import RPPO, load_dataset
-
+import pandas as pd
 import pytest
 
-
 from springtime.config import CONFIG
-
+from springtime.datasets import RPPO, load_dataset
 
 """
 To update reference data, run one of the following:
@@ -38,6 +35,8 @@ REFERENCE_RECIPE = dedent(
       infer_event: first_yes_day
         """
 )
+
+
 @pytest.fixture
 def reference_args():
     return dict(
@@ -48,6 +47,7 @@ def reference_args():
         infer_event="first_yes_day",
         limit=10000,
     )
+
 
 def test_load_reference(reference_args):
     RPPO(**reference_args).load()
@@ -93,7 +93,6 @@ def test_load_with_area(temporary_cache_dir, germany, reference_args):
         RPPO(**reference_args, area=germany).load()
 
 
-
 def test_load(reference_args):
     """Compare loaded (i.e. processed) data with stored reference."""
     dataset = RPPO(**reference_args)
@@ -116,4 +115,3 @@ def test_update_reference_data(redownload, reference_args):
         dataset._path().unlink()
     loaded_data = dataset.load()
     loaded_data.to_file(REFERENCE_DATA)
-

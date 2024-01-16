@@ -10,29 +10,25 @@ See <https://appeears.earthdatacloud.nasa.gov/>
 Credentials are read from `~/.config/springtime/appeears.json`.
 JSON file should look like `{"username": "foo", "password": "bar"}`.
 """
+import json
+import logging
 from datetime import datetime, timezone
 from hashlib import sha1
-import json
 from pathlib import Path
 from time import sleep
 from typing import Literal, Optional, Sequence, Tuple, Union
 
-import requests
 import geopandas
 import pandas as pd
-from shapely import to_geojson
+import requests
 import xarray as xr
 from pydantic import BaseModel, Field, conset
-import logging
+from shapely import to_geojson
+
 from springtime.config import CONFIG, CONFIG_DIR
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (
-    NamedArea,
-    Points,
-    PointsFromOther,
-    YearRange,
-    points_from_cube,
-)
+from springtime.utils import (NamedArea, Points, PointsFromOther, YearRange,
+                              points_from_cube)
 
 logger = logging.getLogger(__name__)
 

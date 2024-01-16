@@ -38,6 +38,7 @@ Example:
 import logging
 from pathlib import Path
 from typing import List, Literal
+
 import geopandas
 import pandas as pd
 
@@ -64,6 +65,7 @@ class PEP725Phenor(Dataset):
         years: year range for filtering observations
 
     """
+
     # Generic settings
     dataset: Literal["PEP725Phenor"] = "PEP725Phenor"
     credential_file: Path = CONFIG.pep725_credentials_file
@@ -73,7 +75,7 @@ class PEP725Phenor(Dataset):
 
     # Load arguments
     phenophase: int | None = None
-    include_cols: List[str] | Literal['all'] = ["year", "geometry", "day"]
+    include_cols: List[str] | Literal["all"] = ["year", "geometry", "day"]
     area: NamedArea | None = None
     years: YearRange | None = None
 
@@ -81,7 +83,7 @@ class PEP725Phenor(Dataset):
     def _location(self):
         """Path where files will be downloaded to and loaded from."""
         species_file = CONFIG.cache_dir / "PEP725" / self.species
-        return species_file.with_suffix('.csv')
+        return species_file.with_suffix(".csv")
 
     def _exists_locally(self) -> bool:
         """Tell if the data is already present on disk."""
@@ -107,7 +109,7 @@ class PEP725Phenor(Dataset):
 
         if self.phenophase:
             df = df[(df["bbch"] == self.phenophase)]
-            df.rename(columns={'day': f'DOY {self.phenophase}'})
+            df.rename(columns={"day": f"DOY {self.phenophase}"})
 
         if self.years:
             years_set = set(self.years.range)

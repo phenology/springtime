@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Dict, Optional
@@ -12,8 +12,9 @@ import click
 import pandas as pd
 import yaml
 from pydantic import BaseModel, field_validator
-from springtime.config import CONFIG, Config as SpringtimeConfig
 
+from springtime.config import CONFIG
+from springtime.config import Config as SpringtimeConfig
 from springtime.datasets import Datasets
 from springtime.utils import PointsFromOther, join_dataframes
 

@@ -61,8 +61,8 @@ from springtime.utils import NamedArea, run_r_script
 
 logger = logging.getLogger(__file__)
 
-rois_file = CONFIG.cache_dir / 'phenocam' / "roi_data.csv"
-sites_file = CONFIG.cache_dir / 'phenocam' / "site_meta_data.csv"
+rois_file = CONFIG.cache_dir / "phenocam" / "roi_data.csv"
+sites_file = CONFIG.cache_dir / "phenocam" / "site_meta_data.csv"
 
 # variables with "flag" in their names are removed from the list below because
 # their values might be NaN.
@@ -125,6 +125,7 @@ class Phenocam(Dataset):
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
 
     """
+
     # TODO: resample?
     dataset: Literal["phenocam"] = "phenocam"
     veg_type: Optional[str] = None
@@ -187,7 +188,7 @@ class Phenocam(Dataset):
         sites = list_sites()
         site_locations = sites[["site", "geometry"]]
         df = df.merge(site_locations, on="site")
-        df = gpd.GeoDataFrame(df).set_geometry('geometry')
+        df = gpd.GeoDataFrame(df).set_geometry("geometry")
         df.rename(columns={"date": "datetime"}, inplace=True)
         # Do not return variables that are not derived from image data
         # to get raw file see self._root_dir directory.
@@ -210,7 +211,6 @@ class Phenocam(Dataset):
             variables = list(self.variables)
         return df[["datetime", "geometry"] + variables]
 
-
     def download(self):
         """Download the data.
 
@@ -231,9 +231,10 @@ class Phenocam(Dataset):
                 _r_download_data(
                     site=row.site,
                     frequency=self.frequency,
-                    output_dir = self._root_dir,
-                    veg_type = row["veg_type"],
-                    roi_id = row["roi_id_number"])
+                    output_dir=self._root_dir,
+                    veg_type=row["veg_type"],
+                    roi_id=row["roi_id_number"],
+                )
 
             paths.append(path)
 
@@ -253,7 +254,9 @@ class Phenocam(Dataset):
         raw_df = self.raw_load()
 
         # Select years
-        df = raw_df.loc[(self.years.start <= raw_df.year) & (raw_df.year <= self.years.end)]
+        df = raw_df.loc[
+            (self.years.start <= raw_df.year) & (raw_df.year <= self.years.end)
+        ]
 
         # Convert to gpd
         gdf = self._to_geopandas(df)
@@ -290,7 +293,6 @@ def list_sites() -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(df).set_geometry(geometry)
 
 
-
 def list_rois() -> gpd.GeoDataFrame:
     """List of phenocam regions of interest (ROI).
 
@@ -306,7 +308,6 @@ def list_rois() -> gpd.GeoDataFrame:
     lat = df.pop("lat")
     geometry = gpd.points_from_xy(lon, lat)
     return gpd.GeoDataFrame(df).set_geometry(geometry)
-
 
 
 def _r_download_sites():

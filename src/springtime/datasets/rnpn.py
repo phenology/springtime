@@ -113,16 +113,16 @@ class RNPN(Dataset):
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         use_first: When true uses first_yes columns as value, otherwise the last
             "_yes"-columns.
-        aggregation_operator: "min", "max", "mean", or "median"
+        aggregation_operator: "min", "max", "mean", or "median" (default). How
+            to aggregate in case of multiple observations per site/year
 
     """
-
     dataset: Literal["RNPN"] = "RNPN"
     species_ids: Optional[Union[NamedIdentifiers, SpeciesByFunctionalType]] = None
     phenophase_ids: Union[NamedIdentifiers, PhenophasesByName]
     area: Optional[NamedArea] = None
     use_first: bool = True
-    aggregation_operator: Literal["min", "max", "mean", "median"] = "min"
+    aggregation_operator: Literal["min", "max", "mean", "median"] = "median"
 
     def _filename(self, year):
         """Path where files will be downloaded to and loaded from.

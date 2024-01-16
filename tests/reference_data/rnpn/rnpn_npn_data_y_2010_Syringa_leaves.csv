@@ -1,0 +1,9 @@
+"site_id","latitude","longitude","elevation_in_meters","state","species_id","genus","species","common_name","kingdom","individual_id","phenophase_id","phenophase_description","first_yes_year","first_yes_month","first_yes_day","first_yes_doy","first_yes_julian_date","numdays_since_prior_no","last_yes_year","last_yes_month","last_yes_day","last_yes_doy","last_yes_julian_date","numdays_until_next_no"
+17967,38.388618,-91.376022,909,"MO",36,"Syringa","vulgaris","common lilac","Plantae",70516,483,"Leaves",2010,3,1,60,2455257,-9999,2010,3,1,60,2455257,-9999
+17994,39.538925,-79.971695,1203,"WV",36,"Syringa","vulgaris","common lilac","Plantae",70607,483,"Leaves",2010,5,5,125,2455322,-9999,2010,5,5,125,2455322,-9999
+17999,39.79147,-85.609932,947,"IN",36,"Syringa","vulgaris","common lilac","Plantae",70623,483,"Leaves",2010,4,12,102,2455299,-9999,2010,4,12,102,2455299,-9999
+18032,40.947803,-76.628807,613,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70741,483,"Leaves",2010,4,5,95,2455292,-9999,2010,4,5,95,2455292,-9999
+18051,41.292011,-91.693176,734,"IA",36,"Syringa","vulgaris","common lilac","Plantae",70816,483,"Leaves",2010,4,12,102,2455299,-9999,2010,4,12,102,2455299,-9999
+18065,41.888557,-91.48378,850,"IA",36,"Syringa","vulgaris","common lilac","Plantae",70853,483,"Leaves",2010,4,4,94,2455291,-9999,2010,4,4,94,2455291,-9999
+18076,42.101048,-74.299873,1035,"NY",36,"Syringa","vulgaris","common lilac","Plantae",70890,483,"Leaves",2010,4,9,99,2455296,-9999,2010,4,9,99,2455296,-9999
+18097,42.898323,-77.43737,994,"NY",36,"Syringa","vulgaris","common lilac","Plantae",70949,483,"Leaves",2010,4,8,98,2455295,-9999,2010,4,8,98,2455295,-9999

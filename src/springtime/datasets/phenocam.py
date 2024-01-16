@@ -21,9 +21,9 @@ install.packages("phenocamr")
 Example:
 
     ```python
-    from springtime.datasets import PhenocamrSite
+    from springtime.datasets import Phenocam
 
-    dataset = PhenocamrSite(
+    dataset = Phenocamr(
         site="harvard$",
         years=(2019, 2020),
     )
@@ -34,9 +34,9 @@ Example:
 Example:
 
     ```python
-    from springtime.datasets import PhenocamrBoundingBox
+    from springtime.datasets import Phenocam
 
-    dataset = PhenocamrBoundingBox(
+    dataset = Phenocamr(
         area={
             "name": "harvard",
             "bbox": [-73, 42, -72, 43],
@@ -287,7 +287,7 @@ def list_sites() -> gpd.GeoDataFrame:
     lon = df.pop("lon")
     lat = df.pop("lat")
     geometry = gpd.points_from_xy(lon, lat)
-    return gpd.GeoDataFrame(df, geometry=geometry)
+    return gpd.GeoDataFrame(df).set_geometry(geometry)
 
 
 
@@ -305,7 +305,7 @@ def list_rois() -> gpd.GeoDataFrame:
     lon = df.pop("lon")
     lat = df.pop("lat")
     geometry = gpd.points_from_xy(lon, lat)
-    return gpd.GeoDataFrame(df, geometry=geometry)
+    return gpd.GeoDataFrame(df).set_geometry(geometry)
 
 
 

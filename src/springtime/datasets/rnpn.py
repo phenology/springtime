@@ -11,7 +11,7 @@ which species/phenophases combis are available.
 Example:
 
     ```python
-    from springtime.datasets.insitu.npn.rnpn import (
+    from springtime.datasets.rnpn import (
         RNPN,
         npn_species,
         npn_phenophases
@@ -45,6 +45,7 @@ install.packages("rnpn")
 ```
 
 """
+import logging
 from pathlib import Path
 from typing import Literal, Optional, Union
 
@@ -55,6 +56,8 @@ from pydantic import BaseModel
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, NamedIdentifiers, run_r_script
+
+logger = logging.getLogger(__name__)
 
 request_source = "Springtime user https://github.com/springtime/springtime"
 cache_dir = CONFIG.cache_dir / "rnpn"
@@ -141,19 +144,6 @@ class RNPN(Dataset):
         rnpn_filename = "_".join([str(p) for p in parts]) + ".csv"
         return cache_dir / rnpn_filename
 
-    def load(self):
-        """Load the dataset into memory."""
-        df = pd.concat(
-            [
-                pd.read_csv(self._filename(year))
-                for year in self.years.range
-                if self._filename(year).exists()
-            ]
-        )
-        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
-        gdf = gpd.GeoDataFrame(df, geometry=geometry)
-        return _reformat(self, gdf)
-
     def download(self, timeout: int = 30):
         """Download the data.
 
@@ -164,16 +154,59 @@ class RNPN(Dataset):
             TimeoutError: If requests still fails after 3 attempts.
 
         """
+        logger.info("Locating data")
+
         cache_dir.mkdir(parents=True, exist_ok=True)
+
+        paths = []
 
         for year in self.years.range:
             filename = self._filename(year)
 
             if filename.exists() and not CONFIG.force_override:
-                print(f"{filename} already exists, skipping")
+                logger.info(f"Found {filename}")
             else:
-                print(f"downloading {filename}")
+                logger.info(f"Downloading {filename}")
                 run_r_script(self._r_download(filename, year), timeout=timeout)
+
+            paths.append(filename)
+
+        return paths
+
+    def raw_load(self):
+
+        paths = self.download()
+
+        df = pd.concat([pd.read_csv(path) for path in paths])
+
+        return df
+
+    def load(self):
+        """Load the dataset into memory."""
+        df = self.raw_load()
+
+        # Extract geometry
+        geometry = gpd.points_from_xy(df.pop("longitude"), df.pop("latitude"))
+        gdf = gpd.GeoDataFrame(df, geometry=geometry)
+
+        # Extract first/last yes day
+        var_name = self.phenophase_ids.name + "_doy"
+        if self.use_first:
+            gdf.rename(columns={"first_yes_doy": var_name}, inplace=True)
+            gdf.rename(columns={"first_yes_year": "year"}, inplace=True)
+        else:
+            gdf.rename(columns={"last_yes_doy": var_name}, inplace=True)
+            gdf.rename(columns={"last_yes_year": "year"}, inplace=True)
+
+        # Calculate mean/stats if multiple records per year/site
+        gdf = (
+            gdf[["year", "geometry", var_name]]
+            .groupby(by=["year", "geometry"], as_index=False, sort=False)
+            .aggregate(self.aggregation_operator)
+        )
+
+        return gpd.GeoDataFrame(gdf)
+
 
     def _r_download(self, filename: Path, year):
         opt_args = []
@@ -271,32 +304,3 @@ def npn_phenophase_ids_by_name(phenophase_name) -> NamedIdentifiers:
 def _lookup(df, column, expression):
     """Return rows where column matches expression."""
     return df[df[column].str.lower().str.contains(expression.lower())]
-
-
-def _reformat(self: RNPN, df):
-    var_name = self.phenophase_ids.name + "_doy"
-    if self.use_first:
-        df["datetime"] = pd.to_datetime(
-            {
-                "year": df.first_yes_year,
-                "month": df.first_yes_month,
-                "day": df.first_yes_day,
-            }
-        )
-        df.rename(columns={"first_yes_doy": var_name}, inplace=True)
-    else:
-        df["datetime"] = pd.to_datetime(
-            {
-                "year": df.last_yes_year,
-                "month": df.last_yes_month,
-                "day": df.last_yes_day,
-            }
-        )
-        df.rename(columns={"last_yes_doy": var_name}, inplace=True)
-
-    df = (
-        df[["datetime", "geometry", var_name]]
-        .groupby(by=[df.datetime.dt.year, "geometry"], as_index=False, sort=False)
-        .aggregate(self.aggregation_operator)
-    )
-    return gpd.GeoDataFrame(df)

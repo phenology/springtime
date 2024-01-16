@@ -35,6 +35,7 @@ Example:
 
 """
 
+import logging
 from pathlib import Path
 from typing import List, Literal
 import geopandas
@@ -43,6 +44,8 @@ import pandas as pd
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
 from springtime.utils import NamedArea, YearRange, run_r_script
+
+logger = logging.getLogger(__name__)
 
 
 class PEP725Phenor(Dataset):

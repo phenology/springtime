@@ -76,7 +76,6 @@ import numpy as np
 from springtime.datasets.abstract import Dataset
 
 import geopandas as gpd
-import pandas as pd
 import xarray as xr
 from pydantic import field_validator
 from xarray import open_mfdataset

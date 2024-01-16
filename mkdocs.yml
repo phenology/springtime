@@ -8,8 +8,8 @@ repo_name: Springtime
 
 nav:
   - Home: index.md
-  - Installation: setup.md
   - User guide:
+    - Installation: setup.md
     - Intro: user_guide/intro.ipynb
     - Datasets:
       - Overview: user_guide/datasets/overview.md
@@ -28,11 +28,9 @@ nav:
     - Example use cases:
       - Experiment 1: user_guide/examples/overview.md
       - Experiment 2: user_guide/examples/overview.md
-  - Developer Guide: develop.md
-  - API Reference: reference/springtime/datasets/
-  # - Usage: usage.md
-  # - Example recipes: recipes.md
-  # - Recipe Reference: clireference/datasets/
+  - Contributing:
+    - Developer Guide: develop.md
+    - API Reference: reference/
 
 theme:
   name: material
@@ -40,8 +38,11 @@ theme:
   logo: lilac_cc0.jpg
   features:
     - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
   icon:
-    repo: fontawesome/brands/github-alt
+    repo: fontawesome/brands/github
     admonition:
       example: octicons/beaker-16
 
@@ -97,7 +98,6 @@ plugins:
 - gen-files:  # Auto-generate API reference files
     scripts:
         - docs/gen_apiref_datasets.py
-        # - docs/gen_cliref_datasets.py
 - literate-nav:  # Create an index for the auto-generated api reference
     nav_file: SUMMARY.md
 - section-index

@@ -16,9 +16,9 @@ from datetime import datetime, timezone
 from hashlib import sha1
 from pathlib import Path
 from time import sleep
-from typing import Literal, Optional, Sequence, Tuple, Union
-
-import geopandas
+from typing import Literal, Optional, Sequence
+from pydantic import model_validator
+import geopandas as gpd
 import pandas as pd
 import requests
 import xarray as xr
@@ -27,7 +27,7 @@ from shapely import to_geojson
 
 from springtime.config import CONFIG, CONFIG_DIR
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (NamedArea, Points, PointsFromOther, YearRange,
+from springtime.utils import (NamedArea, Points, YearRange,
                               points_from_cube)
 
 logger = logging.getLogger(__name__)
@@ -57,14 +57,42 @@ class Appeears(Dataset):
         version: An AppEEARS product version.
         layers: Layers of a AppEEARS product. Use `layers(product)` to get list
             of available layers for a product.
+        area: A dictionary of the form
+            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
+        points: List of points as [[longitude, latitude], ...], in WGS84
+            projection.
 
     """
-
+    dataset: Literal["appears"] = "appears"
     product: str
     version: str  # TODO make optional, if not given, use latest version
     layers: conset(str, min_length=1)  # type: ignore
     # TODO rename to variables or bands?
+    area: NamedArea | None = None
+    points: Points | None = None
     _token: Optional[TokenInfo] = None
+    # TODO resample?
+
+    def load(self):
+        """Load dataset into memory, including pre-processing."""
+        # TODO load should call download.
+        if self.points and self.area:
+            return self.load_points_from_area()
+        if self.points:
+            return self.load_points()
+        return self.load_area()
+
+    def download(self):
+        """Download data if necessary and return file paths."""
+        # TODO rework signatures.
+        return []
+
+    @model_validator(mode="after")
+    def check_points_or_area(self):
+        if not self.points and not self.area:
+            raise ValueError("Either points or area (or both) is required")
+
+        return self
 
     def _check_token(self):
         token_fn = CONFIG.cache_dir / "appeears" / "token.json"
@@ -80,51 +108,34 @@ class Appeears(Dataset):
             username, password = _read_credentials()
             self._token = _login(username, password)
             logger.info("Token expired, logging in again")
-            token_fn.write_text(self._token.json())
+            token_fn.write_text(self._token.model_dump_json())
 
     @property
-    def _output_dir(self):
+    def _root_dir(self):
         """Output directory for downloaded data."""
         d = CONFIG.cache_dir / "appeears"
         d.mkdir(exist_ok=True, parents=True)
         return d
 
-
-class AppeearsArea(Appeears):
-    """Download and load MODIS data using AppEEARS by an area of interest
-
-    Attributes:
-        product: An AppEEARSp product name. Use `products()` to get a list of
-            currently available in AppEEARS.
-        version: An AppEEARS product version.
-        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
-            of available layers for a product.
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-
-    """
-
-    dataset: Literal["appeears_area"] = "appeears_area"
-    area: NamedArea
-
     @property
-    def _path(self):
+    def _area_path(self):
         # MCD15A2H.061_500m_aid0001.nc
         resolution = list(self.layers)[0].split("_")[1]
         return f"{self.product}.{self.version}_{resolution}_aid0001.nc"
 
     @property
-    def _output_dir(self):
-        d = super()._output_dir / self.area.name
+    def _area_dir(self):
+        assert self.area, "Area dir requires area input"
+
+        d = self._root_dir / self.area.name
         d.mkdir(exist_ok=True, parents=True)
         return d
 
-    def download(self):
+    def download_area(self):
         """Download the data."""
-        fn = self._output_dir / self._path
+        assert self.area, "Download area requires area input"
+
+        fn = self._area_dir / self._area_path
         if (fn).exists():
             logger.warning(f"File {fn} exists, not downloading again")
             return
@@ -141,90 +152,49 @@ class AppeearsArea(Appeears):
         logger.warning(f"Task {task} completed")
         files = _list_files(task, token=self._token)
         for file in files:
-            if file.name == self._path:
-                file.download(task, self._output_dir, token=self._token)
+            if file.name == self._area_path:
+                file.download(task, self._area_dir, token=self._token)
 
-    def load(self):
+    def load_area(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        ds = xr.open_dataset(self._output_dir / self._path)
+        assert self.area, "Load area requires area input"
+
+        ds = xr.open_dataset(self._area_dir / self._area_path)
         return ds
 
-
-class AppeearsPointsFromArea(AppeearsArea):
-    """MODIS land products subsets using AppEEARS by points from an area of interest.
-
-    First the bounding box of area is downloaded and then points are selected
-    from the area.
-
-    This class could be quicker then AppeearsPoints if the amount of points is
-    large and in a small area.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        product: An AppEEARSp product name. Use `products()` to get a list of
-            currently available in AppEEARS.
-        version: An AppEEARS product version.
-        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
-            of available layers for a product.
-        area: A dictionary of the form
-            `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
-        points: List of points as [[longitude, latitude], ...], in WGS84
-            projection.
-    """
-
-    dataset: Literal["appeears_points_from_area"] = "appeears_points_from_area"
-    # TODO when area is not given use bounding box of points
-    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
-
-    def load(self):
+    def load_points_from_area(self):
         """Load the dataset from disk into memory.
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
+        First the bounding box of area is downloaded and then points are
+        selected from the area. This could be quicker then directly downloading
+        points, if the amount of points is large and in a small area.
         """
-        ds = super().load()
+        assert self.points, "Load points requires points input"
+        ds = self.load_area()
+
         # Convert cftime.DatetimeJulian to datetime.datetime
         datetimeindex = ds.indexes["time"].to_datetimeindex()
         ds["time"] = datetimeindex
+
         # Coords are in geometric projection no need for crs variable
         ds = ds.drop_vars(["crs"])
         df = points_from_cube(ds, self.points)
+
         # Drop QC variables
         df = df.filter(regex="^(?!.*_QC$)")
         df.rename({"time": "datetime"}, axis=1, inplace=True)
         return df
 
-
-class AppeearsPoints(Appeears):
-    """MODIS land products subsets using AppEEARS.
-
-    Attributes:
-        years: timerange. For example years=[2000, 2002] downloads data for three years.
-        resample: Resample the dataset to a different time resolution. If None,
-            no resampling.
-        product: An AppEEARSp product name. Use `products()` to get a list of
-            currently available in AppEEARS.
-        version: An AppEEARS product version.
-        layers: Layers of a AppEEARS product. Use `layers(product)` to get list
-            of available layers for a product.
-        points: List of points as [[longitude, latitude], ...], in WGS84
-            projection.
-
-    """
-
-    dataset: Literal["appeears_points"] = "appeears_points"
-    points: Union[Sequence[Tuple[float, float]], PointsFromOther]
-
     def _points_hash(self, points: Points):
+        """Encode coordinates to a more manageable string."""
         return sha1(json.dumps(points).encode("utf-8")).hexdigest()
 
-    def _task_name(self, points: Points):
+    def _point_task_name(self, points: Points):
+        """Generate unique name for point download task"""
         return _generate_task_name(
             product=self.product,
             points=self._points_hash(points),
@@ -232,29 +202,18 @@ class AppeearsPoints(Appeears):
             years=self.years,
         )
 
-    def _path(self, points: Points):
-        chunk = f"{self._task_name(points)}-{self.product}-{self.version}"
+    def _point_path(self, points: Points):
+        chunk = f"{self._point_task_name(points)}-{self.product}-{self.version}"
         return f"{chunk}-results.csv".replace("_", "-")
 
-    def download(self):
-        """Download the data."""
-        # api can not handle more than 500 points (of 1 product, 2 layers)
-        # at once so we split the points into chunks
-        points_chunks = [
-            self.points[i : i + 500] for i in range(0, len(self.points), 500)
-        ]
-        for points_chunk in points_chunks:
-            # TODO wait for tasks to complete in parallel
-            self._run_task(points_chunk)
-
-    def _run_task(self, points):
+    def _run_point_task(self, points):
         task_name = _generate_task_name(
             product=self.product,
             points=self._points_hash(points),
             layers=self.layers,
             years=self.years,
         )
-        fn = self._output_dir / self._path(points)
+        fn = self._root_dir / self._point_path(points)
         if fn.exists():
             logger.warning(f"File {fn} already downloaded")
             return
@@ -273,22 +232,45 @@ class AppeearsPoints(Appeears):
         logger.warning(f"Task {task} completed")
         files = _list_files(task, token=self._token)
 
-        logger.warning(f"Looking for file {self._path(points)}")
+        logger.warning(f"Looking for file {self._point_path(points)}")
         for file in files:
-            if file.name == self._path(points):
+            if file.name == self._point_path(points):
                 logger.warning(f"Downloading {file.name}")
-                file.download(task, self._output_dir, token=self._token)
+                file.download(task, self._root_dir, token=self._token)
 
-    def load(self):
+    def download_points(self):
+        """Download point files if necessary and return paths."""
+
+        # api can not handle more than 500 points (of 1 product, 2 layers)
+        # at once so we split the points into chunks
+        # TODO load all files in output_dir
+        points_chunks = [
+            self.points[i : i + 500] for i in range(0, len(self.points), 500)
+        ]
+
+        files = []
+        for points_chunk in points_chunks:
+            file = self._root_dir / self._point_path(points_chunk)
+            if file.exists():
+                logger.info(f"Found {file}")
+            else:
+                # TODO wait for tasks to complete in parallel
+                logger.info(f"Downloading points to {file}")
+                self._run_point_task(points_chunk)
+
+            files.append(file)
+
+        return files
+
+
+    def load_points(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
         filter certain variables, remove data points with too many NaNs, reshape data.
         """
-        # TODO load all files in output_dir
-        points_chunks = [
-            self.points[i : i + 500] for i in range(0, len(self.points), 500)
-        ]
+        assert self.points, "Load points requires points input"
+
         dfs = []
         renames = {
             "Date": "datetime",
@@ -303,23 +285,21 @@ class AppeearsPoints(Appeears):
 
         raw_columns2keep = ["Latitude", "Longitude"] + list(renames.keys())
 
-        for points_chunk in points_chunks:
-            file = self._output_dir / self._path(points_chunk)
-            if not file.exists():
-                raise FileNotFoundError(file)
+        files = self.download_points()
+        for file in files:
             df = pd.read_csv(file, parse_dates=["Date"])
             columms2keep = filter(lambda x: x in raw_columns2keep, df.columns)
             df = df[columms2keep]
             df = df.rename(columns=renames)
             dfs.append(df)
+
         df = pd.concat(dfs)
-        gdf = geopandas.gpd.GeoDataFrame(
-            df,
-            geometry=geopandas.points_from_xy(
-                df.pop("Longitude"),
-                df.pop("Latitude"),
-            ),
-        )
+
+        lat = df.pop("Latitude")
+        lon = df.pop("Longitude")
+        df['geometry'] = gpd.points_from_xy(lon, lat)
+        gdf = gpd.GeoDataFrame(df)
+
         return gdf
 
 
@@ -392,7 +372,7 @@ class LayerInfo(BaseModel):
     OrigValidMin: int
     QualityLayers: str
     QualityProductAndVersion: str
-    ScaleFactor: str
+    ScaleFactor: float
     Units: str
     ValidMax: int
     ValidMin: int

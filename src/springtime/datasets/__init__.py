@@ -11,8 +11,7 @@ from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated
 
 from springtime.datasets.abstract import Dataset
-from springtime.datasets.appeears import (AppeearsArea, AppeearsPoints,
-                                          AppeearsPointsFromArea)
+from springtime.datasets.appeears import Appeears
 from springtime.datasets.daymet import Daymet
 from springtime.datasets.eobs import EOBS
 from springtime.datasets.pep725 import PEP725Phenor
@@ -25,9 +24,7 @@ Datasets = Annotated[
         RPPO,
         PEP725Phenor,
         Daymet,
-        AppeearsPoints,
-        AppeearsArea,
-        AppeearsPointsFromArea,
+        Appeears,
         EOBS,
         RNPN,
         Phenocam,

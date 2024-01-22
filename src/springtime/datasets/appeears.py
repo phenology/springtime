@@ -28,8 +28,8 @@ from shapely import to_geojson
 
 from springtime.config import CONFIG, CONFIG_DIR
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (NamedArea, Points, YearRange,
-                              points_from_cube)
+from springtime.utils import (NamedArea, Points, ResampleConfig, YearRange,
+                              points_from_cube, resample)
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,14 @@ class Appeears(Dataset):
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.
         points: List of points as [[longitude, latitude], ...], in WGS84
             projection.
+        infer_date_offset: for yearly variables given as day of year, transform
+            value to day of year.
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling. Else, should be a dictonary of the form {frequency:
+            'M', operator: 'mean', **other_options}. Currently supported
+            operators are 'mean', 'min', 'max', 'sum', 'median'. For valid
+            frequencies see [1]. Other options will be passed directly to
+            xr.resample [2]
 
     """
     dataset: Literal["appears"] = "appears"
@@ -73,21 +81,8 @@ class Appeears(Dataset):
     points: Points | None = None
     _token: Optional[TokenInfo] = None
     infer_date_offset: bool = True
-    # TODO resample?
+    resample: Optional[ResampleConfig] = None
 
-    def load(self):
-        """Load dataset into memory, including pre-processing."""
-        # TODO load should call download.
-        if self.points and self.area:
-            return self.load_points_from_area()
-        if self.points:
-            return self.load_points()
-        return self.raw_load_area()
-
-    def download(self):
-        """Download data if necessary and return file paths."""
-        # TODO rework signatures.
-        return []
 
     @model_validator(mode="after")
     def check_points_or_area(self):
@@ -95,6 +90,27 @@ class Appeears(Dataset):
             raise ValueError("Either points or area (or both) is required")
 
         return self
+
+    def download(self):
+        """Download data if necessary and return file paths."""
+        if self.area:
+            return self.download_area()
+        return self.download_points()
+
+    def raw_load(self):
+        """Load dataset into memory, including pre-processing."""
+        if self.area:
+            return self.raw_load_area()
+        return self.raw_load_points()
+
+    def load(self):
+        """Load dataset into memory, including pre-processing."""
+        if self.points and self.area:
+            return self.load_points_from_area()
+        if self.points:
+            return self.load_points()
+        return self.raw_load_area()
+
 
     def _check_token(self):
         token_fn = CONFIG.cache_dir / "appeears" / "token.json"
@@ -211,7 +227,10 @@ class Appeears(Dataset):
             df = df.drop(columns='time')
 
         else:
-            # Daily data: Split datetime in DOY and year, and pivot
+            if self.resample:
+                df = resample(df, freq=self.resample.frequency, operator=self.resample.operator)
+
+            # (Sub)daily data: Split datetime in DOY and year, and pivot
             df['year'] = df['time'].dt.year
             df['DOY'] = df['time'].dt.dayofyear
             df = df.drop(columns='time')
@@ -356,6 +375,9 @@ class Appeears(Dataset):
                     gdf[column] = value_as_timedelta.dt.days
 
         else:
+            if self.resample:
+                df = resample(df, freq=self.resample.frequency, operator=self.resample.operator)
+
             # Daily data: Split datetime in DOY and year, and pivot
             df['year'] = df['datetime'].dt.year
             df['DOY'] = df['datetime'].dt.dayofyear

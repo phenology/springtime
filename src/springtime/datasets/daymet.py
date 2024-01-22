@@ -133,6 +133,12 @@ class Daymet(Dataset):
             for North America. Use “pr” for Puerto Rico and “hi” for Hawaii.
         frequency: required when using `area`. Choose from "daily", "monthly",
             or "annual"
+        resample: Resample the dataset to a different time resolution. If None,
+            no resampling. Else, should be a dictonary of the form {frequency:
+            'M', operator: 'mean', **other_options}. Currently supported
+            operators are 'mean', 'min', 'max', 'sum', 'median'. For valid
+            frequencies see [1]. Other options will be passed directly to
+            xr.resample [2]
 
 
     """

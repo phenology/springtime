@@ -10,6 +10,7 @@ See <https://appeears.earthdatacloud.nasa.gov/>
 Credentials are read from `~/.config/springtime/appeears.json`.
 JSON file should look like `{"username": "foo", "password": "bar"}`.
 """
+from functools import partial
 import json
 import logging
 from datetime import datetime, timezone
@@ -71,6 +72,7 @@ class Appeears(Dataset):
     area: NamedArea | None = None
     points: Points | None = None
     _token: Optional[TokenInfo] = None
+    infer_date_offset: bool = True
     # TODO resample?
 
     def load(self):
@@ -80,7 +82,7 @@ class Appeears(Dataset):
             return self.load_points_from_area()
         if self.points:
             return self.load_points()
-        return self.load_area()
+        return self.raw_load_area()
 
     def download(self):
         """Download data if necessary and return file paths."""
@@ -120,7 +122,10 @@ class Appeears(Dataset):
     @property
     def _area_path(self):
         # MCD15A2H.061_500m_aid0001.nc
-        resolution = list(self.layers)[0].split("_")[1]
+        # aid = area id? Assumes one area per request.
+        product = next(filter(lambda p: p.Product == self.product, products()))
+        resolution = product.Resolution
+
         return f"{self.product}.{self.version}_{resolution}_aid0001.nc"
 
     @property
@@ -155,7 +160,7 @@ class Appeears(Dataset):
             if file.name == self._area_path:
                 file.download(task, self._area_dir, token=self._token)
 
-    def load_area(self):
+    def raw_load_area(self):
         """Load the dataset from disk into memory.
 
         This may include pre-processing operations as specified by the context, e.g.
@@ -173,21 +178,50 @@ class Appeears(Dataset):
         selected from the area. This could be quicker then directly downloading
         points, if the amount of points is large and in a small area.
         """
-        assert self.points, "Load points requires points input"
-        ds = self.load_area()
+        assert self.points, "Load points from area requires points input"
+        assert self.area, "Load points from area requires area input"
+        ds = self.raw_load_area()
 
         # Convert cftime.DatetimeJulian to datetime.datetime
         datetimeindex = ds.indexes["time"].to_datetimeindex()
         ds["time"] = datetimeindex
 
+        # Drop second growing cycle if present
+        # TODO: convert to two variables instead? Like DF?
+        if "Num_Modes" in ds.coords:
+            ds = ds.sel(Num_Modes=0, drop=True)
+
         # Coords are in geometric projection no need for crs variable
         ds = ds.drop_vars(["crs"])
         df = points_from_cube(ds, self.points)
 
-        # Drop QC variables
-        df = df.filter(regex="^(?!.*_QC$)")
-        df.rename({"time": "datetime"}, axis=1, inplace=True)
-        return df
+        # Drop QC & QA variables
+        df = df.filter(regex="^(?!.*_QC$)")  # exclude ending with _QC
+        df = df.filter(regex="^(?!QA_).*$")  # exclude starting with QA_
+
+        if self.infer_date_offset:
+            # For yearly data: express value as dayofyear and extract year
+            for column in df.columns:
+                if column not in ['time', 'geometry']:
+                    value_as_timedelta = df[column] - df['time']
+                    df[column] = value_as_timedelta.dt.days
+
+            # Convert datetime to 'year'
+            df['year'] = df['time'].dt.year
+            df = df.drop(columns='time')
+
+        else:
+            # Daily data: Split datetime in DOY and year, and pivot
+            df['year'] = df['time'].dt.year
+            df['DOY'] = df['time'].dt.dayofyear
+            df = df.drop(columns='time')
+
+            # Pivot
+            df = df.set_index(["year", "geometry", "DOY"]).unstack("DOY")
+            df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+            df = df.reset_index()
+
+        return gpd.GeoDataFrame(df)
 
     def _points_hash(self, points: Points):
         """Encode coordinates to a more manageable string."""
@@ -262,16 +296,24 @@ class Appeears(Dataset):
 
         return files
 
+    def raw_load_points(self):
+
+        files = self.download_points()
+        dfs = []
+        for file in files:
+            df = pd.read_csv(file, parse_dates=["Date"])
+            dfs.append(df)
+
+        df = pd.concat(dfs)
+
+        return df
+
 
     def load_points(self):
-        """Load the dataset from disk into memory.
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
-        """
-        assert self.points, "Load points requires points input"
+        df = self.raw_load_points()
 
-        dfs = []
+        # Filter and rename columns
         renames = {
             "Date": "datetime",
         }
@@ -284,24 +326,47 @@ class Appeears(Dataset):
             # Handle when layer consists out of even more columns
 
         raw_columns2keep = ["Latitude", "Longitude"] + list(renames.keys())
+        columms2keep = filter(lambda x: x in raw_columns2keep, df.columns)
+        df = df[columms2keep]
+        df = df.rename(columns=renames)
 
-        files = self.download_points()
-        for file in files:
-            df = pd.read_csv(file, parse_dates=["Date"])
-            columms2keep = filter(lambda x: x in raw_columns2keep, df.columns)
-            df = df[columms2keep]
-            df = df.rename(columns=renames)
-            dfs.append(df)
+        # Mask fill values
+        for layer in self.layers:
+            layer_props = layers("MCD12Q2.061")
+            fill_value = layer_props['Greenup'].FillValue
+            for column in df.columns:
+                if layer in column:
+                    df[column] = df[column].mask(df[column]==fill_value)
 
-        df = pd.concat(dfs)
+        # Drop columns with are completely filled with NaN
+        df = df.dropna(axis=1, how='all')
 
+        # Convert to geodataframe
         lat = df.pop("Latitude")
         lon = df.pop("Longitude")
         df['geometry'] = gpd.points_from_xy(lon, lat)
         gdf = gpd.GeoDataFrame(df)
 
-        return gdf
+        # Deduct date offset
+        if self.infer_date_offset:
+            for column in gdf.columns:
+                if column not in ['datetime', 'geometry']:
+                    value_as_datetime = gdf[column].map(partial(pd.Timestamp, unit='D'))
+                    value_as_timedelta = value_as_datetime - gdf['datetime']
+                    gdf[column] = value_as_timedelta.dt.days
 
+        else:
+            # Daily data: Split datetime in DOY and year, and pivot
+            df['year'] = df['datetime'].dt.year
+            df['DOY'] = df['datetime'].dt.dayofyear
+            df = df.drop(columns='time')
+
+            # Pivot
+            df = df.set_index(["year", "geometry", "DOY"]).unstack("DOY")
+            df.columns = df.columns.map("{0[0]}|{0[1]}".format)
+            df = df.reset_index()
+
+        return gdf
 
 def _read_credentials():
     # TODO get config dir from session
@@ -359,7 +424,7 @@ def products() -> list[ProductInfo]:
 class LayerInfo(BaseModel):
     """Layer information"""
 
-    AddOffset: str
+    AddOffset: str | float  # different for different products
     Available: bool
     DataType: str
     Description: str
@@ -372,7 +437,7 @@ class LayerInfo(BaseModel):
     OrigValidMin: int
     QualityLayers: str
     QualityProductAndVersion: str
-    ScaleFactor: float
+    ScaleFactor: float | str  # different for different products
     Units: str
     ValidMax: int
     ValidMin: int

@@ -155,26 +155,31 @@ class Appeears(Dataset):
     def download_area(self):
         """Download the data."""
         assert self.area, "Download area requires area input"
+        logger.info("Looking for data...")
 
         fn = self._area_dir / self._area_path
-        if (fn).exists():
-            logger.warning(f"File {fn} exists, not downloading again")
-            return
-        self._check_token()
-        task = _submit_area_task(
-            product=self.product,
-            version=self.version,
-            area=self.area,
-            layers=self.layers,
-            years=self.years,
-            token=self._token,
-        )
-        _poll_task(task, token=self._token)
-        logger.warning(f"Task {task} completed")
-        files = _list_files(task, token=self._token)
-        for file in files:
-            if file.name == self._area_path:
-                file.download(task, self._area_dir, token=self._token)
+        if (fn).exists() and not CONFIG.force_override:
+            logger.info(f"Found {fn}")
+        else:
+            logger.info(f"Downloading {fn}")
+            self._check_token()
+            task = _submit_area_task(
+                product=self.product,
+                version=self.version,
+                area=self.area,
+                layers=self.layers,
+                years=self.years,
+                token=self._token,
+            )
+            _poll_task(task, token=self._token)
+            logger.info(f"Task {task} completed")
+            files = _list_files(task, token=self._token)
+
+            for file in files:
+                if file.name == self._area_path:
+                    file.download(task, self._area_dir, token=self._token)
+
+        return fn
 
     def raw_load_area(self):
         """Load the dataset from disk into memory.
@@ -184,7 +189,9 @@ class Appeears(Dataset):
         """
         assert self.area, "Load area requires area input"
 
-        ds = xr.open_dataset(self._area_dir / self._area_path)
+        path = self.download_area()
+
+        ds = xr.open_dataset(path)
         return ds
 
     def load_points_from_area(self):
@@ -364,15 +371,16 @@ class Appeears(Dataset):
         lat = df.pop("Latitude")
         lon = df.pop("Longitude")
         df['geometry'] = gpd.points_from_xy(lon, lat)
-        gdf = gpd.GeoDataFrame(df)
 
         # Deduct date offset
         if self.infer_date_offset:
-            for column in gdf.columns:
+            for column in df.columns:
                 if column not in ['datetime', 'geometry']:
-                    value_as_datetime = gdf[column].map(partial(pd.Timestamp, unit='D'))
-                    value_as_timedelta = value_as_datetime - gdf['datetime']
-                    gdf[column] = value_as_timedelta.dt.days
+                    value_as_datetime = df[column].map(partial(pd.Timestamp, unit='D'))
+                    value_as_timedelta = value_as_datetime - df['datetime']
+                    df[column] = value_as_timedelta.dt.days
+            df['year'] = df['datetime'].dt.year
+            df = df.drop(columns='datetime')
 
         else:
             if self.resample:
@@ -381,14 +389,14 @@ class Appeears(Dataset):
             # Daily data: Split datetime in DOY and year, and pivot
             df['year'] = df['datetime'].dt.year
             df['DOY'] = df['datetime'].dt.dayofyear
-            df = df.drop(columns='time')
+            df = df.drop(columns='datetime')
 
             # Pivot
             df = df.set_index(["year", "geometry", "DOY"]).unstack("DOY")
             df.columns = df.columns.map("{0[0]}|{0[1]}".format)
             df = df.reset_index()
 
-        return gdf
+        return gpd.GeoDataFrame(df)
 
 def _read_credentials():
     # TODO get config dir from session

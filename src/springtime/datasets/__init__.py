@@ -10,7 +10,6 @@ import yaml
 from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated
 
-from springtime.datasets.abstract import Dataset
 from springtime.datasets.appeears import Appeears
 from springtime.datasets.daymet import Daymet
 from springtime.datasets.eobs import EOBS

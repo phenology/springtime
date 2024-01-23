@@ -43,4 +43,4 @@ def load_dataset(recipe: str) -> Datasets:
 
     dataset_loader = TypeAdapter(Datasets)
     dataset = dataset_loader.validate_python(model_dict)
-    return dataset  # mypy: ignore https://github.com/pydantic/pydantic/discussions/7094
+    return dataset  # type: ignore  # https://github.com/pydantic/pydantic/discussions/7094

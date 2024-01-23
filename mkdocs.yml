@@ -22,7 +22,7 @@ nav:
       - MODIS: user_guide/datasets/modis.ipynb
     - Workflows: user_guide/combining_data.ipynb
     - Modelling:
-      - Pycaret & sklearn: user_guide/models.md
+      - Springtime & pycaret: user_guide/models.md
       - Pyphenology: user_guide/models.md
       - Mixed effects: user_guide/models.md
     - Example use cases:

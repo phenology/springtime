@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
 """
 This module contains functionality to download and load MODIS land products
 subsets from AppEEARS

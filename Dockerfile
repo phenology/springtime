@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
 FROM --platform=amd64 jupyter/r-notebook:python-3.10
 
 # Most springtime dependencies can be added from conda channels

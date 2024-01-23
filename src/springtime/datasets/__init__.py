@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: AGPL-3.0-or-later
-# due to import of r dependencies
 """Functionality related to working with data sources."""
 
 from typing import Union

@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
 """
 This module contains functionality to download and load data from NPN. It uses
 [rnpn](https://rdrr.io/cran/rnpn/) as client.

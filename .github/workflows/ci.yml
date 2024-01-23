@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: Lint files and type checking
+name: Lint files and run tests
 
 on:
   push:
@@ -20,24 +20,17 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Conda environment from environment.yml
-      uses: mamba-org/setup-micromamba@v1
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        micromamba-version: '1.4.6-0'  # 1.4.7 has a bug
-        cache-environment: true
-        environment-file: environment.yml
-        create-args: >-
-          python=3.10
-    - name: Install R dependencies
-      run: |
-        Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
-        Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
-        Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
+        python-version: '3.11'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install hatch
+    - name: pytest
+      run: hatch run pytest
     - name: ruff
       run: hatch run ruff check src
     - name: mypy
@@ -46,6 +39,4 @@ jobs:
     - name: reuse
       if: success() || failure()
       run: hatch run reuse lint
-    - name: pytest
-      if: success() || failure()
-      run: hatch run pytest
+

@@ -6,55 +6,41 @@
 
 from typing import Union
 
-from pydantic import Field
+import yaml
+from pydantic import Field, TypeAdapter
 from typing_extensions import Annotated
 
-from springtime.datasets.meteo.daymet import (
-    DaymetBoundingBox,
-    DaymetMultiplePoints,
-    DaymetSinglePoint,
-)
-from springtime.datasets.meteo.eobs import (
-    EOBS,
-    EOBSBoundingBox,
-    EOBSMultiplePoints,
-    EOBSSinglePoint,
-)
-from springtime.datasets.satellite.modis.appeears import (
-    AppeearsPoints,
-    AppeearsPointsFromArea,
-    AppeearsArea,
-)
-from springtime.datasets.satellite.modis.modistools import (
-    ModisMultiplePoints,
-    ModisSinglePoint,
-)
-from springtime.datasets.insitu.npn.NPNPhenor import NPNPhenor
-from springtime.datasets.insitu.pep725 import PEP725Phenor
-from springtime.datasets.insitu.phenocam import PhenocamrBoundingBox, PhenocamrSite
-from springtime.datasets.insitu.ppo import RPPO
-from springtime.datasets.insitu.npn.rnpn import RNPN
+from springtime.datasets.appeears import Appeears
+from springtime.datasets.daymet import Daymet
+from springtime.datasets.eobs import EOBS
+from springtime.datasets.pep725 import PEP725Phenor
+from springtime.datasets.phenocam import Phenocam
+from springtime.datasets.ppo import RPPO
+from springtime.datasets.rnpn import RNPN
 
 Datasets = Annotated[
     Union[
         RPPO,
         PEP725Phenor,
-        DaymetSinglePoint,
-        DaymetMultiplePoints,
-        DaymetBoundingBox,
-        NPNPhenor,
-        ModisSinglePoint,
-        ModisMultiplePoints,
-        AppeearsPoints,
-        AppeearsArea,
-        AppeearsPointsFromArea,
+        Daymet,
+        Appeears,
         EOBS,
-        EOBSSinglePoint,
-        EOBSMultiplePoints,
-        EOBSBoundingBox,
         RNPN,
-        PhenocamrSite,
-        PhenocamrBoundingBox,
+        Phenocam,
     ],
     Field(discriminator="dataset"),
 ]
+
+
+def load_dataset(recipe: str) -> Datasets:
+    """Load a dataset formatted as (yaml) recipe.
+
+    Args:
+        recipe: the yaml representation of the dataset.
+
+    """
+    model_dict = yaml.safe_load(recipe)
+
+    dataset_loader = TypeAdapter(Datasets)
+    dataset = dataset_loader.validate_python(model_dict)
+    return dataset  # type: ignore  # https://github.com/pydantic/pydantic/discussions/7094

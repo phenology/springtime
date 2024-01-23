@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "Dormancy": 322, "Greenup": 66, "year": 2009 }, "geometry": { "type": "Point", "coordinates": [ 9.1, 49.1 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 318, "Greenup": 83, "year": 2010 }, "geometry": { "type": "Point", "coordinates": [ 9.1, 49.1 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 318, "Greenup": 26, "year": 2011 }, "geometry": { "type": "Point", "coordinates": [ 9.1, 49.1 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 220, "Greenup": 78, "year": 2009 }, "geometry": { "type": "Point", "coordinates": [ 9.6, 49.6 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 320, "Greenup": 81, "year": 2010 }, "geometry": { "type": "Point", "coordinates": [ 9.6, 49.6 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 213, "Greenup": 41, "year": 2011 }, "geometry": { "type": "Point", "coordinates": [ 9.6, 49.6 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 307, "Greenup": 81, "year": 2009 }, "geometry": { "type": "Point", "coordinates": [ 9.9, 49.9 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 278, "Greenup": 81, "year": 2010 }, "geometry": { "type": "Point", "coordinates": [ 9.9, 49.9 ] } },
+{ "type": "Feature", "properties": { "Dormancy": 250, "Greenup": 76, "year": 2011 }, "geometry": { "type": "Point", "coordinates": [ 9.9, 49.9 ] } }
+]
+}

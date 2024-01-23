@@ -1,0 +1,1384 @@
+"site","lat","lon","veg_type","roi_id_number","description","first_date","last_date","site_years","missing_data_pct"
+"aafcottawacfiaf14e",45.2921,-75.7664,"AG",1000,"Field in foreground","2020-04-28","2024-01-08",3.6,2
+"aafcottawacfiaf14n",45.2929,-75.767,"AG",1000,"Agricultural field","2021-09-02","2024-01-08",2.3,3
+"aafcottawacfiaf14w",45.2921,-75.7664,"AG",1000,"field in foreground","2020-05-01","2023-09-26",2.2,34
+"acadia",44.3769444444,-68.2608333333,"DB",1000,"Deciduous trees in foreground center","2007-03-15","2017-09-20",9.8,7
+"acadia",44.3769444444,-68.2608333333,"DB",2000,"Mixed forest in foreground.  Start new timeseries due to camera/FOV change.","2017-10-11","2021-09-23",3.7,6
+"admixpasture",-43.6493,172.3495,"AG",1000,"grass in foreground","2021-03-03","2022-09-08",1.5,2
+"adrycpasture",-43.6513,172.3501,"AG",1000,"Pasture","2021-06-10","2022-09-08",1.3,0
+"ahwahnee",37.7467,-119.5816,"GR",1000,"GR veg type in foreground. Multiple FOV shifts.","2008-08-29","2011-10-14",2.8,9
+"ahwahnee",37.7467,-119.5816,"GR",2000,"GR veg type in foreground.","2012-05-01","2015-07-01",3.2,0
+"ahwahnee",37.7467,-119.5816,"GR",3000,"GR veg type in foreground.","2015-07-28","2022-07-19",6.8,2
+"alercecosteroforest",-40.1726,-73.4439,"EN",1000,"Foreground evergreen needleleaf trees","2023-01-23","2023-09-26",0.4,42
+"alleypond",40.742843,-73.743035,"UN",1000,"understory plants","2014-11-04","2015-10-14",0.7,24
+"alligatorriver",35.7879,-75.9038,"DB",1000,"canopy level DB","2012-05-04","2021-12-22",9,7
+"amtsvenn",52.176,6.955,"SH",1000,"Foreground shrubs and some grasses","2023-08-09","2024-01-14",0.4,0
+"anisclo",42.55940876,0.050894316,"EB",1000,"Evergreen Broadleaf on Hillside","2023-04-17","2024-01-14",0.8,0
+"apvcontrol",50.8632,6.5311,"AG",1000,"Crop vegetation","2023-05-23","2023-09-17",0.3,22
+"apvcontrol",50.8632,6.5311,"AG",2000,"ROI on the right side of the image on the rapeseed field","2023-11-01","2024-01-14",0.2,0
+"apvexperiment",50.8634,6.5309,"AG",1000,"Crop vegetation under PV array","2023-05-26","2024-01-14",0.6,3
+"arbutuslake",43.98207,-74.23322,"DB",1000,"canopy level DB","2008-06-12","2014-08-24",5.4,13
+"arbutuslakeinlet",43.99336,-74.24527,"DB",1000,"canopy level DB (only a small part of FOV is DB)","2015-08-18","2017-12-07",1.9,18
+"arbutuslakeinlet",43.99336,-74.24527,"DB",2000,"canopy level DB after possible AWB change detected","2018-05-23","2023-12-31",3.1,44
+"arbutuslakeinlet",43.99336,-74.24527,"EN",1000,"canopy level evergreen","2015-08-18","2017-12-07",1.8,23
+"arbutuslakeinlet",43.99336,-74.24527,"EN",2000,"canopy level evergreen - AWB change","2018-05-23","2023-12-31",3,47
+"archboldavir",27.176064,-81.21958,"AG",1000,"entire AG in FOV","2016-11-18","2024-01-14",6.7,7
+"archboldavirx",27.166627,-81.219828,"AG",1000,"entire AG land in FOV","2016-05-16","2024-01-11",7.2,6
+"archboldbahia",27.1656,-81.216112,"AG",1000,"entire land in FOV","2017-03-21","2024-01-14",6.6,4
+"archboldpnot",27.187948,-81.200345,"AG",1000,"entire land in FOV","2016-05-13","2024-01-14",6.9,10
+"archboldpnotx",27.180677,-81.20068,"AG",1000,"entire land in FOV","2016-05-16","2024-01-11",6.8,12
+"archboldwet",27.19,-81.21,"AG",1000,"wetland AG site  (the site has too many FOV shifts, the time series was generated from small portion of FOV that is common across images)","2016-10-31","2024-01-14",4.7,35
+"arkansascornsoy",34.416,-91.6723,"AG",1000,"crops in farther field to avoid edge effects","2021-05-26","2024-01-14",2.6,2
+"arkansaswhitaker",33.6216,-91.4306,"AG",1000,"Field scale crop canopy","2022-03-24","2024-01-14",1.8,0
+"armoklahoma",36.6058,-97.4888,"AG",1000,"AG veg type.","2003-04-05","2014-05-08",10.4,6
+"arsbrooks10",41.9749,-93.6905,"AG",1000,"FOV is AG cover type","2019-07-10","2024-01-14",4.5,1
+"arsbrooks11",41.9744,-93.6937,"AG",1000,"AG land cover type.","2019-07-10","2024-01-14",4.1,9
+"arscolesnorth",42.4884,-93.5225,"AG",1000,"AG field bean/corn rotation.","2018-08-21","2024-01-14",4.6,15
+"arscolessouth",42.4816,-93.5235,"AG",1000,"AG land cover type.","2018-08-18","2024-01-14",4.8,12
+"arsgacp1",31.5109,-83.6179,"AG",1000,"canopy level AG, not the entire land is planted all the time","2016-05-10","2024-01-14",7.7,0
+"arsgacp2",31.4395,-83.591456,"AG",1000,"entire AG land in FOV (too many FOV shifts, only common portion of FOV is used across images)","2016-04-28","2018-01-23",1.8,0
+"arsgacp3",31.7563,-83.7516,"AG",1000,"field in foreground","2018-04-17","2024-01-14",5.6,2
+"arsgacp4",31.7093,-83.7287,"AG",1000,"foreground agriculture","2018-06-22","2019-11-19",0.8,46
+"arsgacp4",31.7093,-83.7287,"AG",2000,"foreground agriculture","2019-11-22","2024-01-14",3.9,5
+"arsgreatbasinltar098",43.1675,-116.7132,"SH",1000,"canopy level shrubland","2017-05-17","2022-03-06",4.7,2
+"arsgreatbasinltar098",43.1675,-116.7132,"SH",2000,"shrubland canopy","2022-03-24","2024-01-14",1.7,6
+"arsgreatbasinltar117",43.1432,-116.7357,"SH",1000,"shrubs in foreground, avoid bare soil","2021-03-09","2022-05-05",0.9,24
+"arsgreatbasinltar117",43.1432,-116.7357,"SH",2000,"Shrubs in middle ground","2022-05-05","2024-01-14",1.7,3
+"arsgreatbasinltar177",43.0645,-116.7484,"SH",1000,"SH vegetation type in foreground.","2019-04-02","2022-08-09",3.1,8
+"arsltarmdcr",39.0587,-75.8513,"AG",1000,"entire AG land in FOV","2017-05-11","2024-01-14",6.7,0
+"arsltarmdcrnatw",39.0575,-75.7531,"WL",1000,"Wetland vegetation in foreground. DB veg in the background.","2019-03-15","2024-01-14",4.9,0
+"arsltarmdcrnatw",39.0575,-75.7531,"WL",1001,"Alternative ROI trying to avoid non-WL vegetation.","2019-03-15","2024-01-14",4.9,0
+"arsltarmdcrprcw",39.0667,-75.7609,"AG",1000,"AG veg type in foreground of image.","2019-02-16","2024-01-14",4.9,0
+"arsltarmdcrresw",39.0549,-75.7532,"AG",1000,"WL vegetation in foreground of FOV.","2019-03-18","2024-01-14",4.8,0
+"arsltarucbec1",40.7537,-78.0057,"AG",1000,"AG veg type in FOV","2019-05-17","2024-01-14",4.6,1
+"arsltarucbec2",40.7558,-77.9999,"AG",1000,"Veg type in most of FOV. DB in background.","2019-06-13","2024-01-14",4.5,1
+"arsmnswanlake1",45.684508,-95.799703,"AG",1000,"entire AG land in FOV","2015-10-02","2024-01-14",8.3,0
+"arsmorris1",45.6167,-96.1269,"AG",1000,"AG field","2017-07-25","2024-01-08",6.5,0
+"arsmorris2",45.627,-96.127,"AG",1000,"AG field","2017-07-25","2024-01-08",6.4,0
+"arsmorris3",45.6091,-96.1265,"AG",1000,"agricultural field","2020-04-28","2024-01-08",3.7,1
+"arsope3ltar",39.0309,-76.8442,"AG",1000,"entire AG land in FOV","2017-04-11","2024-01-14",6.6,3
+"arsspltarc2",35.5685,-98.0558,"AG",1000,"Managed field","2018-02-10","2018-10-05",0.6,6
+"asa",57.164458,14.782468,"DB",1000,"Corresponds to Birch ROI from Ola Langvall for pre 2015 images.","2010-11-01","2014-02-16",2.9,13
+"asa",57.164458,14.782468,"GR",1000,"foreground grass","2010-10-29","2014-02-16",2.9,13
+"asa",57.164458,14.782468,"GR",2000,"foreground grass","2015-10-23","2017-01-08",1,18
+"asa2",57.164458,14.782468,"DB",1000,"two DB trees in the FOV (background EN and sky signals in winter)","2017-03-09","2023-12-10",6.3,7
+"ashbottoms",38.8668,-96.9028,"AG",1000,"entire AG land in FOV","2015-08-18","2017-01-14",1.4,3
+"ashbottoms",38.8668,-96.9028,"DB",1000,"Deciduous trees in back of field","2015-08-18","2017-01-14",1.4,3
+"ashburnham",42.6029,-71.926,"DB",1000,"DB in midleft of FOV (backgournd forest with foreground  tree)","2012-02-13","2016-06-21",4.1,6
+"ashburnham",42.6029,-71.926,"DB",2000,"canopy level DB (major FOV shift)","2017-04-20","2024-01-14",6.5,3
+"asuhighlands",36.2076,-81.7032,"DB",1000,"canopy level DB","2016-07-12","2024-01-14",7.5,1
+"asuhighlands",36.2076,-81.7032,"DB",1001,"maple in center foreground.","2016-07-12","2024-01-14",7.5,1
+"austincary",29.738,-82.2188,"EN",1000,"canopy level EN, understory may get in the background signal due to sparse canopy","2016-01-11","2021-06-28",5.1,6
+"barrocolorado",9.154,-79.848,"MX",1000,"canopy level mixed (DB and EB) forest in FOV","2013-03-21","2014-11-13",1.5,7
+"barrocolorado",9.154,-79.848,"MX",2000,"General canopy after FOV shift 2014-11-18","2014-11-19","2015-10-05",0.9,1
+"barrocolorado",9.154,-79.848,"MX",3000,"Mixed canopy","2019-01-20","2020-09-22",1.7,0
+"barrocolorado",9.154,-79.848,"MX",4000,"Mixed canopy","2022-02-13","2024-01-14",1.8,8
+"barrocolorado2",9.154,-79.848,"EB",1000,"canopy level EB in foreground","2014-11-22","2015-10-05",0.9,1
+"barrocolorado3",9.154,-79.848,"EB",1000,"canopy level EB","2014-11-22","2015-10-05",0.8,4
+"barrocolorado4",9.1563,-79.84835,"EB",1000,"trees in foreground","2019-10-05","2020-05-16",0.6,2
+"barrocolorado4",9.1563,-79.84835,"EB",2000,"New ROI after camera moved","2022-01-08","2023-12-07",1.6,16
+"barrow",71.28007453,-156.60914915,"TN",1000,"canopy level TN in fov","2013-05-23","2019-06-25",3,50
+"bartlett",44.0646,-71.2881,"DB",1000,"Deciduous trees in foreground","2006-01-02","2006-06-04",0.4,1
+"bartlett",44.0646,-71.2881,"DB",2000,"Deciduous trees in foreground","2006-07-01","2007-02-25",0.6,4
+"bartlett",44.0646,-71.2881,"DB",3000,"Deciduous trees in foreground","2007-03-03","2016-06-09",8.9,3
+"bartlettir",44.0646,-71.2881,"DB",1000,"canopy level DB in fov","2008-04-19","2016-12-18",8.5,2
+"bartlettir",44.0646,-71.2881,"DB",2000,"canopy level DB in fov (new camera)","2017-04-23","2024-01-11",6.2,7
+"bbc1",42.53508,-72.174359,"DB",1000,"foreground forests of deciduous","2015-05-05","2024-01-14",8.7,0
+"bbc2",42.542,-72.185,"DB",1000,"deciduous in the front","2015-05-05","2021-07-22",6.1,1
+"bbc5",41.5495,-70.6432,"DB",1000,"entire FOV","2015-06-22","2024-01-14",8.6,0
+"bbc6",44.0917,-71.152,"UN",1000,"understory plants","2015-05-23","2017-07-07",2.1,3
+"bbc7",44.0646,-71.2881,"DB",1000,"entire FOV","2015-11-01","2024-01-14",8.1,1
+"bezamahafaly",-23.6558,44.6289,"DB",1000,"Deciduous broadleaf canopy","2023-07-04","2024-01-14",0.5,4
+"bigtraillake",64.9194,-147.822,"EN",1000,"background evergreen","2020-08-14","2023-10-26",2.2,32
+"bitterbrush001",48.154,-119.9456,"GR",1000,"Grass in foreground.","2020-09-19","2023-10-29",2.9,6
+"bitterootvalley",46.507,-114.091,"DB",1000,"Deciduous trees in center","2007-08-30","2009-09-14",1.9,6
+"bitterootvalley",46.507,-114.091,"DB",2000,"Deciduous trees in center","2009-09-14","2011-09-14",2,0
+"bitterootvalley",46.507,-114.091,"DB",3000,"Deciduous trees in center","2011-09-17","2019-05-17",6.9,9
+"blackrockforest",41.3974,-74.0239,"DB",1000,"Deciduous trees in foreground","2020-05-22","2024-01-14",3.7,0
+"blueoakheadquarters",37.3827,-121.7393,"DB",1000,"trees in background","2022-03-09","2024-01-14",1.6,12
+"blueoakheadquarters",37.3827,-121.7393,"GR",1000,"meadow in foreground","2022-03-09","2024-01-14",1.8,1
+"bnzblackspruce",64.6963,-148.3235,"EN",1000,"trees in foreground and some in background","2021-02-07","2022-06-01",0.8,40
+"bnzblackspruce",64.6963,-148.3235,"EN",2000,"new ROI since camera view changed","2022-06-22","2023-11-01",1.1,19
+"bnzoldbog",64.6936,-148.33,"EN",1000,"EN canopy of middleground trees","2022-09-29","2023-11-01",0.8,24
+"bnzoldbog",64.6936,-148.33,"WL",1000,"Wetland in foreground","2022-09-29","2023-11-01",0.8,23
+"bnzrichfen",64.70134,-148.31195,"WL",1000,"Wetlands in foreground","2020-08-14","2023-11-01",1.2,62
+"bnzrichfen",64.70134,-148.31195,"WL",2000,"Wetlands in foreground","None","None",NA,NA
+"bnzthermokarstbog",64.6955,-148.3208,"EN",1000,"background EN","2020-10-28","2023-11-01",1.4,55
+"boglakepeatland",47.5051,-93.4893,"WL",1000,"Bog in foreground","2021-03-18","2024-01-08",2.6,6
+"borgocioffinorth",40.5237,14.9574,"AG",1000,"entire farmland in FOV","2017-02-16","2024-01-14",6.4,8
+"borgocioffisouth",40.5237,14.9574,"AG",1000,"entire field in FOV","2017-03-15","2024-01-14",6.3,8
+"bostoncommon",42.355912,-71.064145,"DB",1000,"canopy level DB in FOV","2010-05-05","2015-11-22",5.5,1
+"bostoncommon",42.355912,-71.064145,"DB",2000,"canopy level DB in FOV","2015-11-25","2017-12-28",1.8,15
+"bostoncommon",42.355912,-71.064145,"DB",3000,"canopy level DB in FOV; note sharp declines and subsequent recoveries in gcc during summer are due to flowering","2018-03-24","2024-01-14",5.7,2
+"bostonu",42.35041,-71.10438,"DB",1000,"canopy level DB in FOV, water signal may get through during winter","2012-09-13","2018-12-01",6.1,2
+"bostonu",42.35041,-71.10438,"DB",2000,"canopy level DB in FOV, water signal may get through during winter, new ROI for Fixed WB","2018-12-01","2024-01-14",5.1,0
+"bouldinalfalfa",38.0985,-121.4993,"AG",1000,"canopy level AG in FOV, too many FOV shifts so ROI is based on only the common part of FOV","2016-11-03","2024-01-05",6.8,6
+"bouldincorn",38.109,-121.535,"AG",1000,"canopy level AG in FOV","2017-07-13","2024-01-05",6,8
+"boundarywaters",47.946702,-91.495506,"DB",1000,"Deciduous tree in foreground","2006-01-02","2007-03-12",1.1,6
+"boundarywaters",47.946702,-91.495506,"DB",2000,"Deciduous tree in foreground","2007-03-27","2012-03-14",3.9,21
+"boundarywaters",47.946702,-91.495506,"DB",3000,"Deciduous tree in foreground","2012-03-14","2013-11-25",1.6,4
+"boundarywaters",47.946702,-91.495506,"DB",4000,"Deciduous tree in foreground","2013-11-28","2021-06-25",7,7
+"bozeman",45.783056,-110.777778,"EN",1000,"EN veg type in background of FOV. GR in foreground.","2016-11-12","2019-12-19",2.1,31
+"bozeman",45.783056,-110.777778,"GR",1000,"canopy level GR in FOV","2016-11-12","2019-12-19",2.1,31
+"brackishimpoundment",33.2015,-79.2973,"WL",1000,"middle ground veg","2020-03-26","2024-01-14",3.8,0
+"brazosfarmwest",30.5309,-96.4311,"AG",1000,"Crop canopy view","2022-08-15","2023-06-13",0.7,14
+"brazosfarmwest",30.5309,-96.4311,"AG",2000,"Crop canopy view","2023-06-13","2024-01-14",0.6,0
+"breedface2022control1",50.6247,6.983,"AG",1000,"winter wheat","2022-02-04","2022-07-07",0.4,1
+"breedface2022control2",50.62465,6.985,"AG",1000,"winter wheat field","2022-02-04","2022-11-16",0.4,43
+"breedface2022ring1",50.6247,6.9839,"AG",1000,"winter wheat","2022-02-04","2022-07-07",0.4,0
+"breedface2022ring2",50.6246,6.9858,"AG",1000,"winter wheat","2022-02-04","2022-09-08",0.5,21
+"breedface2023control1",50.6254,6.9848,"AG",1000,"Crops in control FACE ring","2023-01-11","2023-07-13",0.4,12
+"breedface2023control2",50.6254,6.9847,"AG",1000,"Crops in control FACE ring","2023-01-08","2023-07-13",0.5,0
+"breedface2023ring1",50.6254,6.9856,"AG",1000,"Crops inside FACE ring","2023-01-20","2023-07-13",0.5,0
+"breedface2023ring2",50.6253,6.9856,"AG",1000,"Crops inside FACE rig","2022-12-13","2023-07-10",0.6,0
+"breedface2023ring2",50.6253,6.9856,"AG",2000,"Crops inside FACE ring","2023-07-13","2023-10-17",0.3,0
+"breedfacectr1",50.6253,6.9837,"AG",1000,"winter wheat","2020-12-15","2021-10-08",0.8,0
+"breedfacectr2",50.6253,6.9837,"AG",1000,"center of FACE ring","2021-08-03","2021-10-08",0.2,0
+"breedfacering1",50.6252,6.9874,"AG",1000,"winter wheat","2020-12-15","2021-10-08",0.8,5
+"breedfacering2",50.6252,6.9874,"AG",1000,"plants in foreground","2021-08-03","2021-10-08",0.2,0
+"bridger",43.004,-109.756,"EN",1000,"EN veg type, canopy view. Lots of slight camera movement in time series.","2006-10-11","2020-11-06",10.6,25
+"bullshoals",36.562833,-93.06663,"DB",1000,"canopy level DB FOV","2013-11-19","2024-01-14",8.8,13
+"bullshoals",36.562833,-93.06663,"GR",1000,"grass in the foreground","2013-11-19","2024-01-14",8.8,13
+"burdetterice1",35.8284,-89.9879,"AG",1000,"Veg type in FOV","2019-07-25","2021-05-05",1.7,4
+"burdetterice2",35.8284,-89.9836,"AG",1000,"AG veg type in FOV.","2019-07-22","2021-07-28",1.8,11
+"burdetterice3",35.8209,-89.9837,"AG",1000,"AG veg type in FOV.","2019-07-25","2021-07-28",1.8,10
+"burdettericea",35.80890278,-90.03270833,"AG",1000,"canopy level AG in FOV","2015-06-19","2018-05-17",2.1,29
+"burdettericec",35.80890278,-90.02837778,"AG",1000,"canopy level AG in FOV","2015-07-01","2018-05-17",1.8,38
+"burnssagebrush",43.4712,-119.6909,"SH",1000,"canopy level SH in FOV","2012-10-13","2022-09-08",9.8,1
+"butte",45.95304,-112.47964,"GR",1000,"grassland in the foreground","2009-01-11","2020-04-19",10.8,4
+"butte",45.95304,-112.47964,"GR",2000,"New GR ROI to accomodate baseline shift","2020-04-25","2024-01-14",3.5,5
+"butterice",39.5793,-121.858,"AG",1000,"rice field","2021-01-23","2024-01-14",3,0
+"caes",23.4848,120.4738,"EB",1000,"Evergreen broadleaf lychee trees in foreground","2023-09-29","2024-01-14",0.3,0
+"cafboydnorthltar01",46.755104,-117.126052,"AG",1000,"Entire FOV","2017-09-14","2024-01-14",5.6,12
+"cafboydsouthltar01",46.751809,-117.128502,"AG",1000,"AG field in foreground","2018-05-23","2018-11-04",0.5,0
+"cafboydsouthltar01",46.751809,-117.128502,"AG",2000,"Resume AG timeseries after camera back on line.","2022-04-29","2024-01-14",0.8,51
+"cafcookeastltar01",46.78152,-117.0821,"AG",1000,"entire AG land in FOV","2017-05-08","2024-01-14",6.5,3
+"cafcookwestltar01",46.784037,-117.09083,"AG",1000,"entire AG in FOV","2017-06-25","2024-01-14",6.1,7
+"canadaOA",53.62889,-106.19779,"DB",1000,"canopy level DB  ***NOTE: decline in GCC June 2016 is real and due to tent caterpillar infestation","2011-06-16","2016-09-07",4.3,17
+"canadaoa2",53.62889,-106.19779,"DB",1000,"canopy level DB
+***NOTE: decline in GCC June 2016 is real and due to tent caterpillar infestation","2016-06-15","2018-07-22",2.1,0
+"canadaOBS",53.98717,-105.11779,"EN",1000,"canopy level EN (Picea mariana)","2011-07-04","2024-01-14",12.2,3
+"canadaojp",53.9163,-104.692,"EN",1000,"Canopy on near top left of image.","2016-01-02","2020-12-30",4.6,8
+"caryinstitute",41.7839,-73.7341,"DB",1000,"canopy level DB","2008-04-13","2024-01-14",15.4,2
+"cedarcreek",45.4019,-93.2042,"DB",1000,"Deciduous trees in foreground","2009-12-01","2010-08-09",0.7,1
+"cedarcreek2",45.4019,-93.2042,"DB",1000,"DB and EN veg types in FOV. DB is primary veg type.","2016-06-21","2016-09-04",0.2,0
+"cedarmesa",37.5241,-109.7471,"EN",1000,"EN trees in foreground. Short statured, may be closer to SH veg type.","2023-05-23","2024-01-14",0.7,0
+"cedarmesa",37.5241,-109.7471,"GR",1000,"Grasses in foreground, avoiding small shrubs","2023-05-23","2024-01-14",0.7,0
+"cedarmesa",37.5241,-109.7471,"SH",1000,"Small shrubs in foreground","2023-05-23","2024-01-14",0.7,0
+"centralredwoods1",38.632272,-123.301511,"EN",1000,"redwood trees","2022-01-08","2024-01-11",2,0
+"centralredwoods1",38.632272,-123.301511,"EN",1001,"Only tops of trees to avoid shadows","2022-01-08","2024-01-11",2,0
+"centralredwoods2",38.632272,-123.301511,"EN",1000,"redwood trees","2022-01-08","2024-01-11",2,0
+"centralredwoods2",38.632272,-123.301511,"EN",1001,"only tops of trees to avoid shadows","2022-01-08","2024-01-11",2,0
+"chibougamau",49.6924,-74.342,"EN",1000,"canopy level EN forest","2008-05-22","2011-05-29",2.9,4
+"chibougamau",49.6924,-74.342,"EN",1001,"canopy level EN forest","2008-03-20","2011-05-29",3.1,4
+"clareviewconvpasture",-43.7864,171.5953,"AG",1000,"Pasture field view","2022-12-07","2024-01-14",1.1,5
+"clareviewregenpasture",-43.7864,171.5953,"AG",1000,"Pasture field view","2022-12-07","2024-01-14",1.1,5
+"coaloilpoint",34.413695,-119.880226,"GR",1000,"foreground grass","2008-05-13","2012-12-06",4.2,9
+"coaloilpoint1",34.413695,-119.880226,"GR",1000,"Grassland field view","2022-10-17","2024-01-14",1.2,1
+"columbiamissouri",38.7441,-92.1997,"DB",1000,"Deciduous trees mid scene to horizon","2006-11-19","2007-12-31",1.1,3
+"columbiamissouri",38.7441,-92.1997,"EN",1000,"Small patch of EN veg type in foreground. DB is primary veg type in FOV.","2006-11-19","2009-01-23",1.6,25
+"congoflux",0.8144,24.5024,"EB",1000,"Canopy-level","2022-05-11","2024-01-14",0.7,56
+"contactcreek",58.2076,-155.9225,"TN",1000,"Foreground TN","2010-09-14","2013-12-01",2.9,9
+"coville",58.8025,-155.5629,"TN",1000,"forground TN","2010-09-17","2014-06-01",3.2,13
+"coweeta",35.0592,-83.4275,"DB",1000,"Deciduous trees in foreground","2011-04-14","2016-02-19",4.8,1
+"coweeta",35.0592,-83.4275,"DB",2000,"canopy level DB in foreground","2016-06-21","2024-01-14",7.2,4
+"cperagm",40.8402,-104.7672,"GR",1000,"entire grassland in FOV","2016-05-19","2024-01-14",7.6,1
+"cperheavy",40.8153,-104.7386,"GR",1000,"entire grassland in FOV","2018-05-23","2022-03-15",3.8,0
+"cpertgm",40.833,-104.76,"GR",1000,"entire grassland in FOV","2016-05-04","2024-01-14",7.7,0
+"cperuvb",40.8055764,-104.7558542,"GR",1000,"entire grassland in FOV","2015-07-16","2024-01-14",8.5,0
+"csutest",40.5748,-105.081,"GR",1000,"entire grassland in FOV","2014-09-05","2015-06-28",0.8,1
+"cucamongasouth",33.622,-116.867,"SH",1000,"shrubs in the lower left","2003-09-29","2019-01-26",8.4,45
+"cuny",40.8162,-73.9507,"DB",1000,"Forested region of field of view.","2021-11-16","2024-01-14",2.2,0
+"czdryredlake",32.7122,-106.8303,"NV",1000,"Playa with no vegetation","2022-09-29","2024-01-14",1.3,1
+"dangermondbunkerhill",34.4909,-120.4635,"GR",1000,"Foreground grassland","2022-04-02","2024-01-14",1.5,15
+"dangermondjalama",34.5163,-120.458,"GR",1000,"Foreground grassland","2022-02-16","2024-01-14",1.9,0
+"delnortecounty1",41.6,-124.1,"EN",1000,"foreground EN","2020-03-11","2023-12-10",3.7,1
+"delnortecounty2",41.6,-124.1,"EN",1000,"evergreen canopy in the foreground","2020-03-11","2024-01-11",3.4,12
+"distilleryfields",51.8996,-8.4881,"DB",1000,"Three trees in foreground.","2020-03-05","2024-01-14",3.1,20
+"dollysods",39.099529,-79.427041,"DB",1000,"Deciduous trees in foreground","2003-11-22","2014-04-17",9.4,10
+"donanafuenteduque",36.998553,-6.434595,"WL",1000,"entire wetland in FOV","2017-11-13","2024-01-14",6.1,1
+"donanapajarera",36.9962,-6.4432,"DB",1000,"deciduous trees in the top right and left of the FOV","2017-11-13","2024-01-14",6.1,1
+"donanaresoliman",37.0733,-6.4334,"WL",1000,"entire wetland in  FOV","2017-11-13","2024-01-14",5.9,4
+"doverdesaltmarsh",39.0888,-75.4368,"DB",1000,"Trees in background beyond marsh.","2020-06-09","2024-01-14",3.5,3
+"doverdesaltmarsh",39.0888,-75.4368,"WL",1000,"Salt marsh wetland in foreground.","2020-06-09","2024-01-14",3.5,2
+"downerwoods",43.07938,-87.88076,"DB",1000,"canopy level DB forest","2013-03-24","2021-07-16",8.3,0
+"downerwoods",43.07938,-87.88076,"DB",2000,"DB canopy after camera change 08/18/2021","2021-08-18","2024-01-14",2.4,0
+"drippingsprings",33.3,-116.8,"DB",1000,"Deciduous trees in riparian gully","2001-04-05","2009-05-26",7.3,10
+"dukehw",35.973583,-79.100371,"DB",1000,"canopy level DB forest at awesome Duke forest","2013-06-01","2024-01-14",9.7,8
+"eastend",38.10273,-121.641318,"WL",1000,"foreground wetland plants","2013-12-01","2016-09-28",2.2,21
+"eastend",38.10273,-121.641318,"WL",2000,"wetland visible in FOV","2018-10-05","2022-02-19",2.9,13
+"eastend2",38.10273,-121.641318,"WL",1000,"entire WL in FOV","2017-01-02","2018-08-30",1.5,11
+"ecb1",41.5348,-84.8068,"AG",1000,"Agricultural field","2020-08-11","2024-01-14",3.1,9
+"ecb2",41.5321,-84.808,"AG",1000,"entire AG field in the FOV","2020-06-24","2024-01-14",3.2,11
+"ecb4",41.1796,-83.0604,"AG",1000,"AG field in foreground","2021-09-02","2024-01-14",2.3,4
+"elora1",43.6408,-80.4141,"AG",1000,"foreground AG","2020-07-12","2024-01-14",3.5,0
+"elora3",43.6405,-80.4123,"AG",1000,"foreground EN","2020-09-16","2024-01-14",3.3,0
+"elverde",18.320654,-65.8199,"EB",1000,"canopy level EB","2014-11-13","2021-04-29",5.2,20
+"ericamera",51.8951,-8.516,"DB",1000,"native Salix sp.","2021-05-29","2024-01-14",1.1,57
+"esalb",38.701839,-6.785881,"EB",1000,"canopy level EB in left and right of FOV)","2016-01-14","2023-12-31",7.6,5
+"esalb",38.701839,-6.785881,"EB",1001,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1002,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1003,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1004,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1005,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1006,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1007,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1008,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1009,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"EB",1010,"individual tree","2016-01-14","2021-01-20",4.6,7
+"esalb",38.701839,-6.785881,"GR",1000,"grass in foreground","2015-11-04","2021-01-20",4.7,9
+"eslm1",39.9426889,-5.7786833,"EB",1000,"four exposed tree in left, right and center of FOV","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1001,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1002,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1003,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1004,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1005,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1006,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1007,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1008,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1009,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1010,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"EB",1011,"individual tree","2014-06-25","2023-12-31",9,5
+"eslm1",39.9426889,-5.7786833,"GR",1000,"grasses in left corner","2014-06-25","2023-12-31",9,5
+"eslm2",39.934592,-5.775881,"EB",1000,"few exposed trees, for canopy level EB","2014-06-22","2023-12-31",8.9,6
+"eslm2",39.934592,-5.775881,"EB",1001,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1002,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1003,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1004,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1005,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1006,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1007,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1008,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1009,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1010,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1011,"individual tree","2014-06-22","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"EB",1012,"individual tree","2014-06-25","2020-02-28",5.3,6
+"eslm2",39.934592,-5.775881,"GR",1000,"grasses in midground","2014-06-22","2023-12-31",8.9,6
+"eslm2",39.934592,-5.775881,"GR",1001,"grass in foreground - from khufkens","2014-06-22","2023-12-31",8.2,14
+"eslma",39.9403,-5.7746,"EB",1000,"canopy level EB","2015-02-01","2023-12-04",7.8,11
+"eslma",39.9403,-5.7746,"EB",1001,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1002,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1003,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1004,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1005,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1006,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1007,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1008,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1009,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1010,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1011,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"EB",1012,"individual tree","2016-01-02","2023-12-04",7.3,8
+"eslma",39.9403,-5.7746,"GR",1000,"grasses in midground","2015-12-01","2023-12-04",7.4,7
+"esporter",36.8558,-121.7487,"WL",1000,"WL vegetation entire FOV avoiding waterway","2022-06-16","2022-12-01",0.3,40
+"eucflux",-22.967875,-48.728009,"EB",1000,"entire EB in FOV  (Eucalyptus plantation)","2018-03-24","2024-01-08",5.5,6
+"exglsnotel",60.1903,-149.6212,"DB",1000,"DB veg type. View from below canopy. Opening in foreground. Understory prevalent during growing season.","2013-05-02","2021-06-25",5.1,37
+"fairmiemingaut1",47.3165,10.9701,"EN",1000,"Evergreen needleleaf canopy","2023-04-17","2024-01-14",0.8,0
+"fairmiemingaut2",47.3166,10.9703,"SH",1000,"Understory Erica shrubs in camera field of view","2023-05-23","2024-01-14",0.7,0
+"fairmiemingaut2",47.3166,10.9703,"SH",1001,"Understory Juniperus shrubs in camera field of view","2023-05-23","2024-01-14",0.7,0
+"farewellgap",36.453,-118.59,"SH",1000,"foreground shrubs","2013-05-14","2016-07-03",3,3
+"fernow",39.0542,-79.6875,"DB",1000,"Descidous trees across FOV","2014-05-02","2015-08-03",0.9,31
+"flagstaff",35.17961521,-111.60490323,"EN",1000,"Ponderosa pine in background","2019-06-16","2024-01-14",4.5,3
+"flagstaff",35.17961521,-111.60490323,"GR",1000,"Grasses and forbs in foreground","2019-06-16","2024-01-14",4.5,3
+"flagstaff2",35.179225,-111.604506,"EN",3000,"Pines on the right side of the frame","2023-04-14","2023-06-19",0.2,13
+"flagstaff2",35.179225,-111.604506,"EN",4000,"Trees on the left side of the frame","None","None",NA,NA
+"flagstaff2",35.179225,-111.604506,"GR",1000,"Foreground grass","2023-04-14","2023-06-19",0.2,13
+"flagstaff2",35.179225,-111.604506,"GR",2000,"Foreground Grass","None","None",NA,NA
+"flagstaff3",35.17961521,-111.60490323,"EN",1000,"Trees","2023-08-09","2024-01-14",0.5,3
+"flagstaff3",35.17961521,-111.60490323,"GR",1000,"Grass","2023-08-06","2023-09-08",0.1,0
+"flagstaff3",35.17961521,-111.60490323,"GR",2000,"grass on the right side of the frame","2023-09-08","2024-01-14",0.3,4
+"flagstaff4",35.17961521,-111.60490323,"EN",1000,"Trees","2023-08-09","2024-01-14",0.4,3
+"flagstaff4",35.17961521,-111.60490323,"GR",1000,"Foreground grass","2023-08-06","2024-01-14",0.4,3
+"flagstaff5",35.17961521,-111.60490323,"EN",1000,"Trees","2023-08-09","2024-01-14",0.4,3
+"flagstaff5",35.17961521,-111.60490323,"GR",1000,"Foreground grass","2023-08-09","2024-01-14",0.4,3
+"flagstaffchimneysprings",35.257296,-111.678542,"EN",1000,"EN trees in the foreground","2020-09-19","2024-01-14",3.3,1
+"flagstaffchimneysprings",35.257296,-111.678542,"GR",1000,"understory grass","2020-09-19","2024-01-14",3.3,1
+"forbes",39.232,-121.2972,"GR",1000,"entire grassland","2017-09-08","2023-07-01",4.7,20
+"forthgr",35.3045,25.0743,"AG",1000,"Olive orchard field scale","2023-03-24","2024-01-14",0.8,0
+"fortpaynealpasture1",34.3824,-85.6428,"AG",1000,"foreground AG","2019-11-10","2023-08-06",3.7,1
+"fortpaynealpasture2",34.3824,-85.6447,"AG",1000,"foreground AG","2019-11-19","2023-08-09",3.7,0
+"frchem",48.0011,7.8486,"DB",1000,"Urban DB tree canopy","2023-07-04","2024-01-14",0.5,4
+"freemangrass",29.93,-98.01,"GR",1000,"part of the grassland visible in FOV","2012-03-14","2014-02-28",1.9,2
+"freemansavanna",29.9495,-97.9962,"SH",1000,"entire FOV (mixed spp shrubs)","2014-06-22","2015-04-23",0.8,10
+"freemanwood",29.94,-97.99,"DB",1000,"DB trees in foreground","2012-06-30","2014-03-21",1.7,3
+"fsbcamera",51.8928,-8.4954,"DB",1000,"Main patch of trees","2023-03-24","2024-01-14",0.7,9
+"gatesofthemountains",46.8262,-111.7107,"GR",1000,"grassy path on the hill","2001-06-07","2009-05-20",7.6,4
+"gatesofthemountains",46.8262,-111.7107,"GR",2000,"Grassy patch in near left foreground","2011-08-12","2019-02-01",7.1,5
+"gcejuncus",31.3868,-81.275,"WL",1000,"Wetland entire FOV","2022-02-01","2024-01-14",1.8,8
+"gcesapelo",31.4440444,-81.283528,"WL",1000,"entire WL in FOV","2013-09-17","2024-01-14",9.9,4
+"gilberttract",38.0015,-121.6691,"WL",1000,"Emergent wetland vegetation in middle ground","2021-10-02","2024-01-05",1.9,14
+"glacier",48.501384,-113.986352,"GR",1000,"foreground grassland","2009-02-07","2022-03-21",12.9,1
+"glees",41.3644,-106.2394,"EN",1000,"canopy level EN (noisy data)","2016-04-04","2016-11-27",0.7,0
+"glees",41.3644,-106.2394,"EN",2000,"EN veg type.","2017-05-14","2024-01-11",5.6,15
+"glennorganicrice",39.6805,-122.0026,"AG",1000,"AG field-scale","2021-06-25","2024-01-14",2.6,0
+"glennrice",39.5944,-122.0253,"AG",1000,"AG in the FOV","2020-11-12","2024-01-14",3.2,0
+"goodnow",43.96018,-74.20994,"EN",1000,"EN forest","2014-12-01","2023-12-28",7.2,20
+"goodwater",39.22848,-92.11936,"AG",1000,"entire AG in FOV","2015-09-26","2024-01-14",8.2,1
+"goodwater",39.22848,-92.11936,"AG",1001,"Similar to 1000 but excluding more of foreground.","2015-09-26","2024-01-14",8.2,1
+"goodwaterbau",39.23115,-92.15216,"AG",1000,"agriculture in the background","2018-10-02","2024-01-14",5.3,0
+"goriz",42.6634,0.015,"GR",1000,"Grasses mixed with rock in foreground","2022-11-01","2024-01-14",1.2,0
+"grandrivergrass",40.695873,-94.090862,"GR",1000,"entire GR in FOV","2015-08-09","2018-05-14",2.3,17
+"grandteton",43.915017,-110.578036,"SH",1000,"shrubs/grass in mid ground","2015-07-28","2021-01-29",4.3,21
+"grca1pj",36.0241,-112.2211,"EN",1000,"EN trees in the FOV (background signals not good)","2017-08-21","2024-01-14",6.4,1
+"greenridge1",39.6905,-78.4067,"DB",1000,"canopy level DB","2016-06-18","2023-12-07",4.5,40
+"greenridge2",39.7025,-78.4638,"DB",1000,"canopy level DB","2016-06-24","2016-10-25",0.3,16
+"groundhog",48.2174,-82.1555,"DB",1000,"Scattered deciduous trees","2008-10-22","2012-03-05",2.8,16
+"groundhog",48.2174,-82.1555,"DB",2000,"Continuation of DB 1000 - baseline shift","2012-03-05","2014-05-17",2.2,0
+"groundhog",48.2174,-82.1555,"EN",1000,"Mixed forest, EN and DB.","2008-10-22","2012-03-05",2.8,16
+"groundhog",48.2174,-82.1555,"EN",2000,"Mixed forest, EN and DB.","2012-03-05","2014-05-17",2.2,0
+"gumpenstein",47.4939,14.1008,"GR",1000,"past of grassland in FOV","2018-03-24","2024-01-14",5.8,0
+"gumpenstein2",47.4938,14.1009,"GR",1000,"part of the grassland in FOV","2018-04-02","2024-01-14",5.8,0
+"haha",21.37,-158.17,"UN",1000,"understory plant with surronding","2017-10-20","2024-01-14",6.1,1
+"hanfordhn1",46.4089,-119.275,"GR",1000,"Grasses in foreground, avoiding small shrubs","2023-11-10","2024-01-14",0.2,0
+"hartheim1",47.9338,7.5981,"EN",1000,"mid-scene canopy","2018-11-07","2024-01-14",5.1,2
+"hartheim2",47.9338,7.5981,"UN",1000,"Below canopy FOV dominated by DB veg type. Classified as understory (UN).","2018-12-19","2024-01-14",4.9,3
+"hartheim3",47.9367,7.6006,"DB",1000,"background DB trees","2020-09-13","2024-01-14",3.3,0
+"hartheim3",47.9367,7.6006,"GR",1000,"foreground GR","2020-09-13","2024-01-14",3.3,0
+"hartprairie",35.3536,-111.7324,"GR",1000,"most of the grassland in FOV","2015-09-14","2017-03-09",0.9,41
+"harvard",42.5378,-72.1715,"DB",1,"Deciduous trees in foreground","2008-04-04","2024-01-14",15.7,0
+"harvard",42.5378,-72.1715,"DB",1000,"Deciduous trees in foreground","2008-04-04","2024-01-14",15.7,0
+"harvardbarn",42.53532,-72.1899,"DB",1000,"Part of the DB forest, (several shift in a mixed forest)","2012-03-26","2024-01-14",11.7,0
+"harvardbarn",42.53532,-72.1899,"EN",1000,"EN veg type. Canopy view.","2011-08-03","2024-01-14",12.4,0
+"harvardbarn2",42.53532,-72.1899,"DB",1000,"canopy level DB forest","2012-03-29","2020-07-15",8.3,0
+"harvardbarn2",42.53532,-72.1899,"DB",2000,"canopy level DB forest after camera reconfig","2020-07-21","2024-01-11",3.4,2
+"harvardbarn2",42.53532,-72.1899,"EN",1000,"Patch of EN veg type in DB canopy.","2012-03-23","2020-07-15",8.3,0
+"harvardbarn2",42.53532,-72.1899,"EN",2000,"Patch of EN veg type in DB canopy - after camera reconfig","2020-07-21","2024-01-11",3.4,2
+"harvardblo",42.5378,-72.1715,"UN",1000,"Understory DB trees in foreground","2009-04-08","2020-04-19",10.9,1
+"harvardblo",42.5378,-72.1715,"UN",2000,"Understory UN trees in foreground - after camera reconfig","2020-04-22","2024-01-14",3.7,0
+"harvardems2",42.5378,-72.1715,"DB",1000,"Deciduous trees in lower left of image.","2021-05-05","2024-01-14",2.6,4
+"harvardfarmnorth",42.520465,-72.182242,"AG",1000,"full FOV farm","2015-11-07","2024-01-14",8.1,1
+"harvardfarmsouth",42.522466,-72.182339,"AG",1000,"AG land in mid left","2015-11-07","2023-09-11",7.8,0
+"harvardfarmsouth",42.522466,-72.182339,"DB",1000,"midground DB trees","2015-11-10","2023-09-11",7.6,3
+"harvardgarden",42.5291,-72.1863,"AG",1000,"agriculture plots","2016-06-12","2020-11-18",4.4,1
+"harvardhemlock",42.539,-72.18,"DB",1000,"DB forest on the hill","2010-06-07","2020-04-01",9.5,3
+"harvardhemlock",42.539,-72.18,"DB",2000,"Small section of the canopy has DB vegetation in the background.","2020-04-04","2021-12-31",1.8,0
+"harvardhemlock",42.539,-72.18,"EN",1000,"Mixed forest, EN and DB.","2010-06-07","2012-09-16",2.3,0
+"harvardhemlock",42.539,-72.18,"EN",2000,"EN veg type, canopy view.","2012-08-08","2020-04-01",7.3,4
+"harvardhemlock",42.539,-72.18,"EN",3000,"EN veg type, canopy view.","2020-04-04","2022-03-21",2,0
+"harvardhemlock",42.539,-72.18,"EN",4000,"Evergreen needleleaf tree canopy","2022-04-29","2023-07-22",1.2,0
+"harvardhemlock2",42.539407,-72.177976,"EN",1000,"EN forest. Canopy level.","2015-09-05","2023-07-22",7.9,0
+"harvardlph",42.542,-72.185,"DB",1000,"DB forest in FOV","2010-06-16","2011-04-29",0.9,0
+"harvardlph",42.542,-72.185,"DB",2000,"DB forest in FOV","2011-07-01","2015-03-12",3.6,3
+"harvardlph",42.542,-72.185,"DB",3000,"DB forest in FOV, new shifts","2015-03-12","2021-07-19",6.2,2
+"hawbeckereddy",40.6608,-77.848849,"AG",1000,"AG field","2015-09-23","2019-05-14",3.4,6
+"hawbeckereddy",40.6608,-77.848849,"DB",1000,"Deciduous trees in row behind agricultural field.","2015-09-23","2018-04-23",2.5,3
+"heydenhof",53.8682,13.2686,"AG",1000,"AG field in center of image","2021-05-17","2024-01-14",2.7,0
+"hillslough",38.2368,-122.0209,"WL",1000,"grass/agriculture/wetland field","2021-03-12","2024-01-05",2.8,1
+"hobcawclearcutlongleaf",33.3486,-79.232,"EN",1000,"EN forest recovering from clear cut. Mix of regenerating trees and herbaceous vegetation.","2019-02-25","2024-01-14",4.9,0
+"hobcawmaturelongleaf",33.3242,-79.2439,"EN",1000,"evergreen canopy","2018-12-28","2024-01-14",5,1
+"homesteadsprings",37.2009,-92.9937,"DB",1000,"DB veg type in FOV.","2019-03-12","2024-01-11",3.9,19
+"honouliuli",21.37,-158.15,"EB",1000,"background forests on the hill","2017-09-29","2024-01-14",6.2,1
+"howland1",45.2041,-68.7403,"EN",1000,"EN veg type. Canopy view.","2007-01-02","2008-03-23",1.2,4
+"howland1",45.2041,-68.7403,"EN",2000,"EN veg type. Canopy view.","2008-04-28","2010-02-16",1.8,3
+"howland1",45.2041,-68.7403,"EN",3000,"EN veg type, canopy view.","2010-03-27","2024-01-14",13.2,4
+"howland2",45.2128,-68.7418,"DB",1000,"Deciduous tree in center foreground","2010-04-23","2014-01-23",3.4,9
+"howland2",45.2128,-68.7418,"DB",2000,"Deciduous tree in center foreground","2014-03-21","2022-01-08",6.5,16
+"hubbardbrook",43.9438,-71.701,"DB",1000,"canopy level DB","2009-01-20","2010-05-23",1.2,7
+"hubbardbrook",43.9438,-71.701,"DB",2000,"Deciduous trees in foreground left","2011-04-02","2017-04-02",6,0
+"hubbardbrook",43.9438,-71.701,"DB",2001,"New mask for upper tree canopy (no beech).","2011-04-11","2024-01-14",11.7,8
+"hubbardbrook",43.9438,-71.701,"DB",3000,"Deciduous trees in foreground left, new camera","2017-09-08","2024-01-14",5.8,9
+"hubbardbrooknfws",42.958,-71.7762,"DB",1000,"Deciduous trees in foreground right","2012-09-28","2013-12-31",1.1,12
+"hubbardbrooknfws",42.958,-71.7762,"DB",2000,"Deciduous trees in foreground right.","2014-12-10","2016-10-22",1.2,34
+"hubbardbrooksfws",43.9269,-71.7407,"DB",1000,"Deciduous tree in foreground center","2012-04-13","2012-12-27",0.7,6
+"hubbardbrooksfws",43.9269,-71.7407,"DB",2000,"Deciduous tree in foreground center","2013-02-16","2014-06-16",1.1,15
+"hubbardbrooksfws",43.9269,-71.7407,"DB",3000,"Deciduous tree in foreground.","2014-08-09","2021-01-29",6.2,5
+"humnokericea",34.585192,-91.751684,"AG",1000,"entire filed","2015-06-25","2024-01-14",6.6,22
+"humnokericec",34.588853,-91.7516729,"AG",1000,"lower part of the FOV (many FOV shifts, using only the overlapping area)","2015-06-25","2023-11-22",7.7,8
+"huntington",43.97105,-74.22184,"EN",1000,"EN veg type. Canopy view. Many FOV shifts.","2008-02-22","2014-11-25",5.6,17
+"huyckpreserveny",42.5266,-74.1587,"DB",1000,"Birch on right of FOV.","2015-04-05","2022-09-23",7.4,1
+"huyckpreserveny",42.5266,-74.1587,"EN",1000,"EN veg type. Canopy view.","2015-04-05","2024-01-14",8.6,1
+"hwmo1",20.0212,-155.7331,"DB",1000,"Mixed forest canopy","2019-06-16","2024-01-14",4.6,0
+"hwmo1",20.0212,-155.7331,"GR",1000,"Pennisetum cetaseum","2019-06-16","2024-01-14",4.6,0
+"hwmo2",19.9766,-155.8298,"DB",1000,"Prosopis pallida","2019-06-16","2019-12-13",0.4,16
+"hwmo2",19.9766,-155.8298,"DB",2000,"Prosopis pallida after camera change and refocus","2019-12-13","2023-05-11",3.4,0
+"hwmo2",19.9766,-155.8298,"GR",1000,"Pennisetum cillare","2019-06-16","2019-12-13",0.4,16
+"hwmo2",19.9766,-155.8298,"GR",2000,"Pennisetum collard after camera replacement and refocus","2019-12-13","2023-05-11",3.4,0
+"hwmo3",21.5984,-158.0985,"DB",1000,"Prosopis pallida","2019-06-22","2020-05-31",1,0
+"hwmo3",21.5984,-158.0985,"GR",1000,"Megathyrsus maximus","2019-06-22","2020-05-31",1,0
+"hwmo5",20.1117,-155.8151,"GR",1000,"Grass in mid scene.","2019-12-13","2024-01-14",4,2
+"ibp",32.589,-106.847,"GR",1,"Grass patches in center","2013-05-11","2014-02-04",0.7,7
+"ibp",32.589,-106.847,"GR",1000,"lower left grasses","2013-05-11","2024-01-14",10.5,2
+"ibp",32.589,-106.847,"SH",1,"Scattered shrubs in center right","2013-05-23","2014-02-04",0.7,8
+"ibp",32.589,-106.847,"SH",1000,"small shrubs in mid right","2014-04-29","2024-01-14",9.6,1
+"ibp",32.589,-106.847,"SH",1001,"test of larger ROI around shrubs","2014-02-16","2020-03-02",6,0
+"ibp",32.589,-106.847,"SH",1002,"Small shrubs in mid-right","2013-05-11","2024-01-14",10.3,3
+"ibp",32.589,-106.847,"XX",1000,"Landscape region","2013-05-11","2024-01-14",10.5,2
+"ibp0",32.589,-106.847,"GR",1000,"grass in the foreground","2012-02-04","2014-08-06",2.4,3
+"ICOSFR-Fon1",48.476336,2.7801,"DB",1000,"Predominantly deciduous trees in foreground.","2020-03-14","2024-01-14",3.6,5
+"imcrkfen",68.60583,-149.31101,"TN",1000,"Entire FOV","2012-06-06","2018-06-16",3.8,37
+"imcrkfen",68.60583,-149.31101,"TN",2000,"foreground","2023-04-29","2023-10-17",0.4,12
+"imcrkridge0",68.60681,-149.2958,"TN",1000,"Entire TN in FOV","2012-08-29","2019-06-10",3.6,47
+"imcrkridge1",68.60681,-149.2958,"TN",1000,"Entire TN in FOV","2012-06-03","2019-05-23",4.1,41
+"imcrkridge1",68.60681,-149.2958,"TN",2000,"Foreground","2023-04-29","2023-10-17",0.4,6
+"imcrktussock",68.60633,-149.30408,"TN",1000,"Entire TN in FOV","2012-07-09","2020-10-13",4.6,44
+"imcrktussock",68.60633,-149.30408,"TN",2000,"Entire TN in FOV","2023-04-29","2023-09-20",0.4,2
+"inden001",50.882,6.366,"AG",1000,"Agricultural field in foreground.","2020-10-31","2023-08-21",2.8,0
+"inden002",50.882,6.366,"AG",1000,"Agricultural field.","2020-10-28","2023-08-21",2.8,1
+"innsbruck",47.116171,11.320308,"GR",1000,"grass in the foreground on the left","2013-04-02","2022-07-13",8.5,8
+"institutekarnobat",42.6558,26.9837,"AG",1000,"Agricultural field","2021-11-01","2024-01-14",2.2,0
+"intervale",44.273525,-73.949244,"DB",1000,"Deciduous trees mid-center, left side of image.","2015-05-17","2016-03-29",0.8,4
+"intervale",44.273525,-73.949244,"GR",1000,"grass in the foreground","2015-05-17","2016-03-29",0.9,0
+"it25matschb2",46.6863,10.5798,"GR",1000,"grass in foreground","2015-03-21","2024-01-14",8.7,1
+"it25matschb3",46.6917,10.5919,"EN",1000,"evergreen needleleaf near top of FOV","2021-08-06","2024-01-08",2.2,9
+"it25matschb3",46.6917,10.5919,"GR",1000,"grass between instruments and evergreen trees","2021-11-28","2024-01-14",2.1,1
+"it25matschf6",46.6955,10.648,"DN",1000,"tree in foreground","2018-10-17","2024-01-14",5,4
+"it25matschf6",46.6955,10.648,"EN",1000,"trees in foreground","2018-10-17","2024-01-14",4.9,6
+"it25matschf6",46.6955,10.648,"GR",1000,"grass in background","2018-10-17","2024-01-14",5.1,3
+"it25matschp2",46.6842,10.5851,"AG",1000,"pasture in foregreground","2017-03-24","2024-01-14",6.8,1
+"it25matschs3",46.7667,10.7108,"TN",1000,"grass in foreground","2016-10-31","2024-01-14",6.9,4
+"it25matschs4",46.707,10.6023,"TN",1000,"grass in foreground","2016-12-06","2024-01-14",7.1,0
+"ivotuk",68.482874,-155.751664,"TN",1000,"foreground TN","2004-02-19","2011-09-11",3.9,48
+"ivotuk",68.482874,-155.751664,"TN",2000,"foreground TN","2011-09-14","2013-10-20",1.5,30
+"jadraas",60.8148,16.5063,"EN",1000,"EN veg type.","2017-01-23","2018-01-29",0.6,39
+"jadraas",60.8148,16.5063,"EN",2000,"EN veg type.","2018-02-01","2023-11-16",2.9,50
+"jasperridge",37.402028,-122.22104,"GR",1000,"entire grassland in FOV","2012-03-08","2017-03-09",5,0
+"jasperridge",37.402028,-122.22104,"GR",2000,"entire grassland in FOV","2017-03-18","2024-01-14",6.8,0
+"jerbajada",32.57992,-106.633793,"SH",1000,"Shrubs  in FOV","2014-04-20","2024-01-14",9.5,2
+"jergrassland",32.5833,-106.8333,"GR",1000,"GR is the primary veg type with SH as a secondary veg type.","2019-04-26","2023-05-26",4,3
+"jergrassland",32.5833,-106.8333,"XX",1000,"Landscape region","2019-02-22","2023-05-26",4.2,2
+"jergrassland2",32.5849,-106.8261,"GR",1000,"Landscape view of jergrassland2 site","2022-01-23","2024-01-14",1.9,4
+"jergrassland2",32.5849,-106.8261,"SH",1000,"Mesquite shrubs at jergrassland2","2022-01-23","2024-01-14",1.9,4
+"jergrassland2",32.5849,-106.8261,"XX",1000,"Landscape region","2022-01-23","2024-01-14",1.9,4
+"jernort",32.619,-106.788,"NV",1000,"bare ground in foreground","2014-03-03","2023-08-24",9.3,2
+"jernort",32.619,-106.788,"SH",1000,"shrubs in FOV","2014-11-22","2023-08-24",8.6,2
+"jernort",32.619,-106.788,"SH",2000,"shrubs in mid and foreground - break after cleaning lens","2019-08-03","2023-08-24",4,2
+"jernort",32.619,-106.788,"XX",1000,"Landscape region","2014-03-03","2023-08-24",9.3,2
+"jernovel",32.6335,-106.8334,"GR",1000,"MUPO grass in the jernovel foreground","2019-02-19","2024-01-14",4.7,4
+"jernovel",32.6335,-106.8334,"SH",1000,"SH is primary veg type with GR scattered throughout FOV.","2019-02-13","2024-01-14",4.7,4
+"jernovel",32.6335,-106.8334,"XX",1000,"Landscape view of jernovel","2019-02-19","2024-01-14",4.7,4
+"jernovel2",32.6465,-106.8333,"SH",1000,"Shrubs in foreground","2022-01-23","2024-01-14",1.9,4
+"jernovel2",32.6465,-106.8333,"XX",1000,"Landscape view of jernovel2 phenocam","2022-01-23","2024-01-14",1.9,4
+"jernwern",32.6271,-106.7387,"NV",1000,"non vegetated interspaces between shrubs","2017-11-07","2024-01-14",6,2
+"jernwern",32.6271,-106.7387,"SH",1000,"Shrubs in the mid FOV","2017-11-07","2024-01-14",6,2
+"jernwern",32.6271,-106.7387,"XX",1000,"Landscape region","2017-11-07","2024-01-14",6,2
+"jersand",32.515,-106.798,"SH",1000,"most shurbs in FOV","2014-02-28","2024-01-05",9.5,4
+"jershrubland",32.6502,-106.8334,"SH",1000,"SH is the primary veg type in FOV.","2019-03-03","2023-12-28",4.4,8
+"jershrubland",32.6502,-106.8334,"XX",1000,"Landscape region","2019-03-03","2023-12-28",4.4,8
+"jershrubland2",32.6638,-106.831,"SH",1000,"Mesquite shrubs at jershrubland2","2022-02-04","2023-08-15",1.5,0
+"jershrubland2",32.6638,-106.831,"SH",2000,"Mesquite shrubs","2023-08-15","2024-01-14",0.3,19
+"jershrubland2",32.6638,-106.831,"XX",1000,"Landscape view at jershrubland2","2022-02-04","2024-01-14",1.9,4
+"joycekilmer",35.257,-83.795,"DB",1000,"Deciduous trees in foreground, many shifts covered by only including the common ROI","2006-06-07","2013-06-25",6.2,12
+"joycekilmer",35.257,-83.795,"DB",2000,"Deciduous trees and shrubs in forground","2015-04-08","2019-11-10",4.2,8
+"juncabalejo",36.936193,-6.378451,"WL",1000,"wetland in FOV","2016-11-09","2024-01-14",5.9,18
+"junipersavannah",34.4254,-105.8615,"GR",1000,"Grasses between tree canopy","2020-11-30","2024-01-11",2.1,33
+"junipersavannah",34.4254,-105.8615,"SH",1000,"shrubs in foreground","2020-11-30","2024-01-11",2.1,33
+"jurong",31.8068,119.2173,"AG",1000,"entire field in  FOV","2017-10-23","2024-01-14",6.1,2
+"kamuela",20.015008,-155.661326,"GR",1000,"midground grassland","2010-02-22","2018-12-13",8.1,8
+"kamuela2",20.014959,-155.661139,"GR",1000,"GR veg type dominates FOV.","2018-12-16","2023-10-26",4.4,9
+"kansas",39.0561,-95.1907,"GR",1000,"forground grassland","2012-12-03","2019-12-31",6.7,5
+"kansas",39.0561,-95.1907,"GR",2000,"foreground grassland","2021-11-01","2024-01-14",2.2,0
+"kaweah",36.4435,-118.90925,"SH",1000,"shrubs on the hill","2011-07-13","2019-09-20",8.2,0
+"kelloggcorn",42.437536,-85.3225472,"AG",1000,"foreground corn field","2014-05-23","2019-10-05",4.9,9
+"kelloggcorn2",42.396,-85.3756,"AG",1000,"AG veg type. Camera view close to canopy. Building in background.","2015-07-16","2019-12-16",3.8,13
+"kelloggcorn3",42.39601,-85.37425,"AG",1000,"AG veg type.","2015-07-16","2020-04-28",3.8,20
+"kelloggcornsoy",42.39601,-85.37529,"AG",1000,"AG veg type.","2015-07-16","2020-06-15",3.4,30
+"kelloggcornsoy",42.39601,-85.37529,"AG",2000,"AG field in foreground.","2020-06-15","2021-12-31",1.5,1
+"kelloggcornsoy2",42.39576,-85.37425,"AG",1000,"AG veg type.","2015-07-16","2021-12-31",5.5,14
+"kelloggmiscanthus",42.39528,-85.37561,"AG",1000,"AG veg type.","2015-07-16","2021-08-30",4.9,19
+"kelloggnativegrass",42.39576,-85.37456,"AG",1000,"foreground AG","2015-08-18","2018-03-18",2.5,4
+"kelloggoldfield",42.39601,-85.37456,"AG",1000,"AG veg type.","2015-07-16","2020-05-10",4.3,10
+"kelloggrestoredprairie",42.39576,-85.37528,"AG",1000,"low - center view single mask","2018-05-26","2021-12-31",3.4,7
+"kempnrs",45.83992,-89.67755,"DB",1000,"Mixed DB trees in foreground","2021-05-17","2023-09-11",1.2,46
+"kendall",31.73652,-109.94185,"GR",1000,"mid ground grases","2012-07-06","2024-01-14",11.5,0
+"kendall",31.73652,-109.94185,"SH",1000,"Shrub vegetation at Kendall Grassland Site","2012-08-08","2024-01-14",11.4,0
+"kenyasavannahkcl",-1.6035,37.095,"GR",1000,"foreground land","2018-07-28","2018-08-24",0,50
+"keplerltar",40.7231,-77.9245,"AG",1000,"Selected plots.","2018-04-26","2019-05-17",1,10
+"kingmanfarm",43.1717,-70.9259,"AG",1000,"Hay/Corn field in mid-ground.","2016-07-15","2019-06-07",2.8,3
+"kingmanfarm",43.1717,-70.9259,"DB",1000,"Deciduous trees in background.","2016-07-06","2019-06-07",2.8,3
+"konza",39.0824,-96.5603,"GR",1000,"midground grassland","2012-03-17","2019-12-19",6.2,19
+"lacclair",46.95209167,-71.66957778,"DB",1000,"foreground trees mostly deciduous.","2014-08-24","2024-01-14",9.3,1
+"laclaflamme",47.322678,-71.121453,"EN",1000,"EN veg type.","2014-09-11","2024-01-14",9.3,1
+"laclaflamme",47.322678,-71.121453,"WL",1000,"foregrand  wetland vegetation","2014-09-14","2024-01-14",9.3,0
+"laselva",10.4303,-84.0071,"EB",1000,"Evergreen broadleaf forest canopy, with some deciduous broadleaf trees","2022-04-20","2023-06-04",1,13
+"laselva2",10.4303,-84.0071,"EB",1000,"EB forest canopy-level view","2023-11-19","2024-01-14",0.2,0
+"laselva2",10.4303,-84.0071,"EB",1001,"EB tree canopy (Pentaclethra macroloba)","2023-11-19","2024-01-14",0.2,0
+"laudernz01",-45.0383,169.6814,"AG",1000,"Pasture on other side of fence.","2021-04-08","2024-01-14",2.8,0
+"laudernz01",-45.0383,169.6814,"RF",1000,"Reference Panel in lower left -  gray butanol roofing material","2021-05-05","2024-01-14",2.7,0
+"laupahoehoe",19.9322,-155.2912,"EB",1000,"foreground forest","2016-11-15","2024-01-14",6.5,9
+"laurentides",45.9881,-74.0055,"DB",1000,"Deciduous tree in foreground center","2013-09-20","2021-09-14",7.7,3
+"laurentides",45.9881,-74.0055,"EN",1000,"individual tree on the left","2014-01-02","2024-01-14",9.8,2
+"ldeocam",41.0039,-73.9053,"DB",1000,"Deciduous forest in background","2020-10-13","2024-01-14",3.2,1
+"lethbridge",49.70919,-112.94025,"GR",1000,"entire grassland in FOV","2011-12-07","2022-01-20",10.1,0
+"lostcreek",46.0827,-89.9792,"WL",1000,"mixed shrubs  spp in the wetland","2015-07-28","2024-01-11",8.4,1
+"luckyhills",31.743896,-110.052023,"SH",1000,"shrubland in FOV","2013-04-29","2015-01-26",1.7,6
+"luckyhills",31.743896,-110.052023,"SH",2000,"shrubland in FOV, change in FOV","2015-01-26","2018-06-04",3.4,0
+"luckyhills",31.743896,-110.052023,"SH",3000,"New full scene after camera replacement.","2018-06-19","2019-06-10",1,0
+"luckyhills",31.743896,-110.052023,"SH",3001,"Test ROI to look at changes in AWB and camera lens during the summer of 2019.","2018-06-19","2019-08-12",1.2,0
+"luckyhills",31.743896,-110.052023,"SH",4000,"Full shrubland FOV - new camera.","2019-06-25","2024-01-14",4.6,0
+"macleish",42.4484,-72.6804,"DB",1000,"mexied deciduous trees","2017-02-10","2023-07-13",6.4,0
+"macordway",44.8106,-93.0272,"DB",1000,"Deciduous trees in background","2019-07-10","2024-01-14",4.5,0
+"macordway",44.8106,-93.0272,"GR",1000,"Grass in foreground","2019-07-10","2024-01-14",4.5,0
+"macordway",44.8106,-93.0272,"WL",1000,"Vegetation on edge of pond","2019-07-10","2024-01-14",4.5,0
+"mammothcave",37.1858333333,-86.1019444444,"DB",1000,"Deciduous trees in near background","2002-01-02","2003-05-05",1.3,1
+"mammothcave",37.1858333333,-86.1019444444,"DB",2000,"Deciduous trees in near background","2003-05-29","2006-06-01",3,0
+"mammothcave",37.1858333333,-86.1019444444,"DB",3000,"Deciduous trees in near background","2006-07-22","2010-04-02",3.6,3
+"mammothcave",37.1858333333,-86.1019444444,"DB",4000,"Deciduous trees in near background","2010-06-10","2020-06-15",9.8,2
+"mandanh5",46.775423,-100.95109,"AG",1000,"cropland  in near foreground","2015-09-17","2024-01-14",8.2,1
+"mandani2",46.7614,-100.9257,"AG",1000,"midground cropland","2016-04-22","2024-01-14",7.4,4
+"manilacotton",35.8872,-90.1371,"AG",1000,"midground cropland","2016-06-21","2024-01-14",6.7,12
+"marcell",47.5139,-93.46925,"DB",1000,"Deciduous trees on right of scene","2014-06-19","2021-01-29",6.2,7
+"marcell",47.5139,-93.46925,"DB",2000,"Deciduous trees trying to avoid regions where sky shows through canopy.","2021-03-24","2022-11-07",1.6,1
+"marena",36.06434,-97.21271,"GR",1000,"midground field of view","2012-06-12","2018-06-19",5.8,3
+"mayberry",38.04977222,-121.7650694,"WL",1000,"wetland plants in the foreground","2010-11-16","2021-10-20",9.7,11
+"mayberry",38.04977222,-121.7650694,"WL",2000,"wetland plants field view","2021-12-01","2024-01-05",2.1,1
+"mbayfireplot",17.3195,-88.5569,"AG",1000,"managed field/yard in foreground","2021-07-22","2024-01-14",2.3,6
+"mbayfireplot",17.3195,-88.5569,"GR",1001,"unmowed section of grassland","2021-07-28","2024-01-14",2.3,5
+"mbaysavanna",17.3192,-88.5671,"AG",1000,"mowed grass field in foreground","2021-07-28","2022-06-19",0.9,0
+"mbaysavanna",17.3192,-88.5671,"GR",1000,"unmowed section of grassland","2021-07-28","2022-06-19",0.9,0
+"mead1",41.1651,-96.4766,"AG",1000,"AG field between calibration sticks.","2016-07-12","2024-01-11",7.5,0
+"mead2",41.1649,-96.4701,"AG",1000,"Field between calibrarion sticks.","2016-07-12","2024-01-14",7.4,2
+"mead3",41.1797,-96.4397,"AG",1000,"AG field","2016-07-12","2024-01-14",7.5,0
+"meadpasture",41.1447,-96.4616,"AG",1000,"grasses in the farm, midground","2016-07-15","2024-01-14",7.4,1
+"meadpasturese",41.1447,-96.4616,"AG",1000,"AG veg type in foreground of FOV.","2018-07-25","2023-10-17",4.6,11
+"meadpasturesw",41.1447,-96.4616,"AG",1000,"AG veg type in foreground of FOV.","2018-07-25","2024-01-08",5.2,4
+"merbleue",45.4094,-75.5187,"WL",1000,"shrubs in the wetland","2012-11-18","2024-01-14",11,2
+"millhaft",52.800796,-2.29883,"DB",1000,"Canopy in foreground.  Herbivory investation in 2018 and 2019 caused disturbance of spring phenology.
+See site notes.","2016-05-16","2024-01-14",7.6,1
+"millhaft06",52.8008,-2.2988,"DB",1000,"Deciduous broadleaf trees within FACE ring","2022-11-10","2024-01-14",1.2,0
+"millhaft06",52.8008,-2.2988,"DB",1001,"Deciduous broadleaf trees outside FACE ring","2022-11-10","2024-01-14",1.2,0
+"millhaft07",52.8008,-2.2988,"DB",1000,"Deciduous broadleaf trees within FACE ring","2022-11-10","2024-01-14",1.2,0
+"millhaft07",52.8008,-2.2988,"DB",1001,"Deciduous broadleaf trees outside FACE ring","2022-11-10","2024-01-14",1.2,0
+"millhaft2",52.8008,-2.2988,"DB",1000,"Established DB growth near edge of field.","2019-12-16","2024-01-14",4,2
+"millhaft2",52.8008,-2.2988,"GR",1000,"grassy/regrowth area in foreground","2019-12-16","2024-01-14",4,2
+"millhaftmanormeadow",52.8029,-2.2975,"DB",1000,"Deciduous broadleaf trees left middleground","2023-03-15","2024-01-14",0.8,0
+"millhaftmanormeadow",52.8029,-2.2975,"DB",1001,"Deciduous broadleaf trees foreground","2023-03-15","2024-01-14",0.8,0
+"millhaftmanormeadow",52.8029,-2.2975,"DB",1002,"Deciduous broadleaf trees foreground and right middleground","2023-03-15","2024-01-14",0.8,0
+"missouriozarks",38.7441,-92.2,"DB",1000,"Deciduous trees in near background","2012-03-05","2024-01-14",11.6,2
+"missouriozarks",38.7441,-92.2,"EN",1000,"foreground evergreens","2012-03-05","2024-01-14",11.6,2
+"monteblanco",37.0224,-6.5549,"EB",1000,"trees in the center and left the FOV","2017-02-16","2024-01-14",6.7,3
+"monteblanco",37.0224,-6.5549,"GR",1000,"grass in the background","2017-02-16","2024-01-14",6.7,4
+"monteblanco",37.0224,-6.5549,"SH",1000,"shrubs in the foreground","2017-02-16","2024-01-14",6.7,3
+"montebondonegrass",46.0147,11.0458,"GR",1000,"entire FOV of grassland","2015-04-29","2024-01-14",8.2,6
+"montebondonepeat",46.0177,11.0409,"WL",1000,"grasses by the wetland","2015-04-29","2024-01-14",8.2,5
+"montenegro",36.992313,-6.482561,"SH",1000,"foreground shrubs","2016-03-17","2024-01-14",7.5,4
+"montmegmsj",45.4234,-71.1258,"DB",1000,"Predominately deciduous region in foreground.","2019-09-05","2024-01-14",3.2,27
+"monture",47.020187,-113.128323,"DB",1000,"Deciduous trees in foreground","2001-06-07","2010-07-07",8.1,11
+"monture",47.020187,-113.128323,"DB",2000,"Deciduous trees in foreground","2010-11-04","2019-02-01",8,3
+"monture",47.020187,-113.128323,"GR",1000,"Grassy field in foreground center","2001-06-07","2010-07-07",8.2,9
+"monture",47.020187,-113.128323,"GR",2000,"Grassy field in foreground center","2010-11-04","2019-02-01",8,3
+"moorefields",43.1383,-70.9609,"AG",1000,"midground crops","2016-07-06","2018-11-13",2.3,3
+"morganmonroe",39.3231,-86.4131,"DB",1000,"Deciduous trees in foreground","2008-09-01","2024-01-14",14.5,6
+"morganmonroe2",39.3231,-86.4131,"DB",1000,"canopy level DB","2017-04-05","2024-01-14",6.6,3
+"mountranier",46.7833333333,-121.733333333,"EN",1000,"EN veg type. (Excluded majority of fall 2009 due camera outages))","2003-09-20","2019-02-28",13.1,15
+"mtrobson",53.033,-119.1997,"GR",1000,"foreground grass","2015-02-16","2020-12-03",5.6,4
+"nahuku",19.415187,-155.238383,"EB",1000,"mixed evergreen broadleaf forest in FOV","2015-07-19","2022-05-05",6,12
+"nationalcapital",38.88818,-77.069496,"DB",1000,"Deciduous trees in foreground","2003-07-25","2009-09-17",5.1,17
+"nationalcapital",38.88818,-77.069496,"DB",2000,"Deciduous trees in foreground","2009-10-08","2019-03-27",8.4,12
+"nationalelkrefuge",43.488931,-110.737824,"GR",1000,"midground grassland","2015-08-12","2024-01-14",8.3,2
+"ncloblolly1994",35.8031,-76.6679,"EN",1000,"EN veg type. Less than 1 yr of data.","2017-05-23","2017-06-22",0.1,0
+"ncssm",36.018446,-78.92075,"DB",1000,"top of the DB tree","2013-03-21","2015-08-12",2.4,1
+"ncssm",36.018446,-78.92075,"DB",2000,"DB in Foreground (new camera)","2016-01-05","2024-01-14",8,0
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"DB",1,"Deciduous trees in foreground.","2016-12-15","2018-03-12",1.2,5
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"DB",1000,"canopy level ROI of deciduous trees","2016-12-15","2024-01-14",7,1
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"EN",1,"Pine in the middle","2016-12-15","2018-03-12",1.2,5
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"EN",2,"Pine in the right","2016-12-15","2018-03-12",1.2,5
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"EN",3,"Pines in the back","2016-12-15","2018-03-12",1.2,5
+"NEON.D01.BART.DP1.00033",44.063869,-71.287375,"EN",1000,"canopy level EN trees in the foreground","2016-12-15","2024-01-14",7,1
+"NEON.D01.BART.DP1.00042",44.063869,-71.287375,"UN",1000,"understory plants","2016-12-12","2024-01-14",7.1,0
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"DB",1,"deciduous trees in the foreground","2016-12-12","2018-03-12",1.2,2
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"DB",2,"deciduous trees in the back","2016-12-12","2018-03-12",1.2,2
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"DB",1000,"canopy level DB in foreground","2016-12-12","2024-01-14",6.9,2
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"EN",1,"pines in the back","2016-12-12","2018-03-12",1.2,2
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"EN",2,"pines in the back","2016-12-12","2018-03-12",1.2,2
+"NEON.D01.HARV.DP1.00033",42.536911,-72.17265,"EN",1000,"canopy level EN in foreground","2016-12-12","2024-01-14",6.9,2
+"NEON.D01.HARV.DP1.00042",42.536911,-72.17265,"UN",1000,"understory plants","2016-12-12","2024-01-14",6.9,3
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"DB",1,"Deciduous trees on right of FOV","2016-12-15","2018-03-12",1.2,3
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"DB",2,"front trees","2016-12-15","2018-03-12",1.2,3
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"DB",1000,"canopy level DB in foreground","2016-12-15","2024-01-14",7.1,0
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"EN",1,"pine in the bottom left of FOV","2016-12-15","2018-03-12",1.2,3
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"EN",2,"pines in the middle of FOV","2016-12-15","2018-03-12",1.2,3
+"NEON.D02.BLAN.DP1.00033",39.033698,-78.041788,"EN",1000,"canopy level EN in foreground","2016-12-15","2024-01-14",7.1,0
+"NEON.D02.BLAN.DP1.00042",39.033698,-78.041788,"UN",1,"mixed species of understory","2016-12-15","2018-03-12",1.1,11
+"NEON.D02.SCBI.DP1.00033",38.892925,-78.139494,"DB",1,"Deciduous trees in mid scene.","2016-12-12","2018-03-12",1.2,2
+"NEON.D02.SCBI.DP1.00033",38.892925,-78.139494,"DB",2,"trees in the middle of FOV","2016-12-12","2018-03-12",1.2,2
+"NEON.D02.SCBI.DP1.00033",38.892925,-78.139494,"DB",3,"trees near the horizon line","2016-12-12","2018-03-12",1.2,2
+"NEON.D02.SCBI.DP1.00033",38.892925,-78.139494,"DB",4,"trees near the horizon line","2016-12-12","2018-03-12",1.2,2
+"NEON.D02.SCBI.DP1.00033",38.892925,-78.139494,"DB",1000,"canopy level DB in foreground","2016-12-12","2024-01-14",7.1,0
+"NEON.D02.SCBI.DP1.00042",38.892925,-78.139494,"UN",1,"mixed species of understory","2016-12-12","2018-03-12",1.2,1
+"NEON.D02.SERC.DP1.00033",38.89008,-76.56001,"DB",1,"General canopy","2016-02-22","2018-03-12",1.8,11
+"NEON.D02.SERC.DP1.00033",38.89008,-76.56001,"DB",2,"front trees","2016-01-29","2018-03-12",1.9,11
+"NEON.D02.SERC.DP1.00033",38.89008,-76.56001,"DB",3,"background trees","2016-01-29","2018-03-12",1.9,11
+"NEON.D02.SERC.DP1.00033",38.89008,-76.56001,"DB",4,"background trees","2016-01-29","2018-03-12",1.9,11
+"NEON.D02.SERC.DP1.00033",38.89008,-76.56001,"DB",1000,"canopy level DB in foreground","2016-01-29","2024-01-14",7.7,3
+"NEON.D02.SERC.DP1.00042",38.89008,-76.56001,"UN",1000,"Understory UN trees in foreground","2016-02-25","2024-01-14",7.8,1
+"NEON.D03.BARC.DP1.20002",29.676473,-82.009089,"WL",1000,"plants and water, reflection of the sky","2017-10-29","2018-12-13",1.1,0
+"NEON.D03.BARC.DP1.20002",29.676473,-82.009089,"WL",2000,"plants and water, reflection of the sky","2018-12-13","2024-01-14",5.1,0
+"NEON.D03.DSNY.DP1.00033",28.12505,-81.43619,"EN",1,"near horizon","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.DSNY.DP1.00033",28.12505,-81.43619,"GR",1,"grassland in topleft corner","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.DSNY.DP1.00033",28.12505,-81.43619,"GR",1000,"canopy level GR","2016-12-15","2024-01-14",7.1,0
+"NEON.D03.DSNY.DP1.00033",28.12505,-81.43619,"SH",1,"shrubs in foreground","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.DSNY.DP1.00042",28.12505,-81.43619,"GR",1000,"canopy level GR","2016-12-15","2024-01-14",7,1
+"NEON.D03.DSNY.DP1.00042",28.12505,-81.43619,"WL",1,"marsh species","2016-12-15","2018-03-12",1.2,2
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"DB",1,"tree in the right","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"DB",2,"tree in the right","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"DB",1000,"canopy level DB in foreground","2017-02-10","2024-01-14",6.7,2
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"EN",1,"background pines","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"EN",2,"background pines","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"EN",1000,"canopy level EN in foreground","2017-02-10","2018-10-11",1.7,1
+"NEON.D03.JERC.DP1.00033",31.194839,-84.468623,"EN",2000,"EN veg, canopy view. Significant loss of trees after 2018-10-10 in foreground.","2018-10-23","2024-01-14",5.1,2
+"NEON.D03.JERC.DP1.00042",31.194839,-84.468623,"UN",1,"mixed species of understory","2016-12-15","2018-03-12",1.2,1
+"NEON.D03.JERC.DP1.00042",31.194839,-84.468623,"UN",1000,"understory plants","2016-12-15","2024-01-14",6.9,3
+"NEON.D03.OSBS.DP1.00033",29.689282,-81.993431,"EN",1,"pines in the background","2016-12-15","2018-03-12",1,17
+"NEON.D03.OSBS.DP1.00033",29.689282,-81.993431,"EN",2,"pines in the background","2016-12-15","2018-03-12",1,17
+"NEON.D03.OSBS.DP1.00033",29.689282,-81.993431,"EN",1000,"canopy level EN in foreground","2016-12-15","2024-01-14",6.8,3
+"NEON.D03.OSBS.DP1.00033",29.689282,-81.993431,"EN",1001,"Alternate ROI for EN","2016-12-15","2024-01-14",6.8,3
+"NEON.D03.OSBS.DP1.00033",29.689282,-81.993431,"EN",1002,"Custom EN ROI","2016-12-15","2024-01-14",6.8,3
+"NEON.D03.OSBS.DP1.00042",29.689282,-81.993431,"GR",1000,"grasses and saplings in foreground","2016-12-15","2023-05-05",6.3,1
+"NEON.D03.OSBS.DP1.00042",29.689282,-81.993431,"UN",1,"mixed species of understory","2016-12-15","2018-03-12",1.2,4
+"NEON.D04.GUAN.DP1.00033",17.96955,-66.8687,"EB",1000,"canopy level EB","2016-12-15","2024-01-14",6.6,7
+"NEON.D04.GUAN.DP1.00033",17.96955,-66.8687,"EN",1,"plants in the bottom part of FOV","2016-12-15","2018-03-12",0.9,30
+"NEON.D04.GUAN.DP1.00033",17.96955,-66.8687,"EN",2,"plants in the left","2016-12-15","2018-03-12",0.9,30
+"NEON.D04.GUAN.DP1.00033",17.96955,-66.8687,"EN",3,"plants in the middle","2016-12-15","2018-03-12",0.9,30
+"NEON.D04.GUAN.DP1.00033",17.96955,-66.8687,"EN",4,"plants in the middle","2016-12-15","2018-03-12",0.9,30
+"NEON.D04.GUAN.DP1.00042",17.96955,-66.8687,"UN",1000,"Uncerstory veg in FOV.","2016-12-15","2024-01-14",6.5,8
+"NEON.D04.LAJA.DP1.00033",18.021261,-67.076889,"AG",1,"farm","2017-05-11","2018-03-12",0.5,39
+"NEON.D04.LAJA.DP1.00033",18.021261,-67.076889,"AG",1000,"farm in the foreground","2016-12-15","2024-01-14",6.6,6
+"NEON.D04.LAJA.DP1.00033",18.021261,-67.076889,"DB",1,"single tree/shrub in the right corner","2017-05-11","2018-03-12",0.5,39
+"NEON.D04.LAJA.DP1.00033",18.021261,-67.076889,"EN",1,"trees in the back of the farm","2017-05-11","2018-03-12",0.5,39
+"NEON.D04.LAJA.DP1.00042",18.021261,-67.076889,"GR",1,"mixed grass species of understory","2016-12-15","2018-03-12",0.9,27
+"NEON.D04.LAJA.DP1.00042",18.021261,-67.076889,"GR",1000,"GR veg type.","2016-12-15","2024-01-14",6.6,7
+"NEON.D05.CRAM.DP1.20002",46.21111,-89.47825,"WL",1000,"foreground wetland plants","2017-10-29","2019-07-19",1.6,6
+"NEON.D05.CRAM.DP1.20002",46.21111,-89.47825,"WL",2000,"wetland vegetation in foreground of image.","2019-07-22","2024-01-14",4.5,0
+"NEON.D05.STEI.DP1.00033",45.50894,-89.58637,"DB",1000,"canopy level DB in foreground","2017-10-29","2024-01-14",6.2,0
+"NEON.D05.STEI.DP1.00033",45.50894,-89.58637,"EN",1000,"canopy level DB in foreground","2017-10-29","2024-01-14",6.2,0
+"NEON.D05.STEI.DP1.00042",45.50894,-89.58637,"UN",1000,"Understory veg. in FOV.","2017-10-29","2024-01-14",6.2,0
+"NEON.D05.TREE.DP1.00033",45.49373,-89.58572,"DB",4,"mixed red deciduous trees in the middle","2016-12-15","2018-03-12",1.2,1
+"NEON.D05.TREE.DP1.00033",45.49373,-89.58572,"DB",1000,"canopy level DB in foreground","2016-12-15","2024-01-14",7.1,0
+"NEON.D05.TREE.DP1.00042",45.49373,-89.58572,"UN",1000,"understory plants","2016-12-15","2024-01-14",7,0
+"NEON.D05.UNDE.DP1.00033",46.23391,-89.537254,"DB",1,"red species in bottom right","2016-12-15","2018-03-12",1.2,1
+"NEON.D05.UNDE.DP1.00033",46.23391,-89.537254,"DB",2,"early green-up tree in the front","2016-12-15","2018-03-12",1.2,1
+"NEON.D05.UNDE.DP1.00033",46.23391,-89.537254,"DB",3,"late green up in the left","2016-12-15","2018-03-12",1.2,1
+"NEON.D05.UNDE.DP1.00033",46.23391,-89.537254,"DB",4,"late green up in the left","2016-12-15","2018-03-12",1.2,1
+"NEON.D05.UNDE.DP1.00033",46.23391,-89.537254,"DB",1000,"canopy level DB in foreground","2016-12-15","2024-01-14",7,1
+"NEON.D05.UNDE.DP1.00042",46.23391,-89.537254,"UN",1000,"Understory veg. in FOV.","2017-02-22","2024-01-14",6.8,1
+"NEON.D06.KING.DP1.20002",39.10506,-96.60336,"UN",1,"mixed species of understory","2016-12-15","2018-03-12",1.2,1
+"NEON.D06.KING.DP1.20002",39.10506,-96.60336,"WL",1000,"understory plants by the creek","2017-09-02","2019-08-30",2,0
+"NEON.D06.KING.DP1.20002",39.10506,-96.60336,"WL",2000,"understory plants by the creek","2019-08-30","2024-01-14",4.4,0
+"NEON.D06.KONA.DP1.00033",39.110446,-96.612935,"AG",1,"Ag field in foreground.","2016-05-07","2018-03-12",1.8,4
+"NEON.D06.KONA.DP1.00033",39.110446,-96.612935,"AG",2,"top part of the farm","2016-05-07","2018-03-12",1.8,4
+"NEON.D06.KONA.DP1.00033",39.110446,-96.612935,"AG",3,"bottom part of the farm","2016-05-07","2018-03-12",1.8,4
+"NEON.D06.KONA.DP1.00033",39.110446,-96.612935,"AG",4,"the entire field","2016-05-07","2018-03-12",1.8,4
+"NEON.D06.KONA.DP1.00033",39.110446,-96.612935,"AG",1000,"foreground AG","2016-05-07","2024-01-14",7.5,2
+"NEON.D06.KONA.DP1.00042",39.110446,-96.612935,"AG",2,"vegetation in the foreground, left","2016-05-07","2018-03-12",1.8,0
+"NEON.D06.KONA.DP1.00042",39.110446,-96.612935,"AG",1000,"foreground agriculture","2016-05-07","2024-01-14",7.5,2
+"NEON.D06.KONZ.DP1.00033",39.10077,-96.56309,"AG",1,"vegetation in the foreground, left","2017-02-25","2018-03-12",1,1
+"NEON.D06.KONZ.DP1.00033",39.10077,-96.56309,"AG",2,"entire FOV","2017-02-25","2018-03-12",1,1
+"NEON.D06.KONZ.DP1.00033",39.10077,-96.56309,"EN",1,"evergreens in the back","2017-02-25","2018-03-12",1,1
+"NEON.D06.KONZ.DP1.00033",39.10077,-96.56309,"GR",1000,"canopy level GR in foreground","2017-02-25","2024-01-14",6.6,4
+"NEON.D06.KONZ.DP1.00042",39.10077,-96.56309,"GR",1000,"foreground agriculture","2017-02-25","2024-01-14",6.8,2
+"NEON.D06.UKFS.DP1.00033",39.040431,-95.19215,"DB",1000,"DB veg type in foreground of FOV.","2018-11-13","2024-01-14",5.1,1
+"NEON.D06.UKFS.DP1.00042",39.040431,-95.19215,"UN",1000,"Understory veg. in FOV.","2017-11-01","2024-01-14",6,3
+"NEON.D07.GRSM.DP1.00033",35.68896,-83.50195,"DB",1,"trees on the slope","2017-01-23","2018-03-12",1.1,6
+"NEON.D07.GRSM.DP1.00033",35.68896,-83.50195,"DB",1000,"canopy level DB in foreground; There was a disturbance by wind at the site between 2017-05-04 to 2017-05-07, which caused dropping the GCC data.","2017-01-23","2024-01-14",6.9,1
+"NEON.D07.GRSM.DP1.00033",35.68896,-83.50195,"XX",1,"dried/burnt trees on top of the mountain","2017-01-23","2018-03-12",1.1,6
+"NEON.D07.GRSM.DP1.00042",35.68896,-83.50195,"UN",1,"mixed species of understory","2017-01-23","2018-03-12",1.1,7
+"NEON.D07.GRSM.DP1.00042",35.68896,-83.50195,"UN",1000,"understory plants","2017-01-23","2024-01-14",6.9,1
+"NEON.D07.MLBS.DP1.00033",37.378314,-80.524847,"DB",1,"deciduous forest","2016-12-15","2018-03-12",1,17
+"NEON.D07.MLBS.DP1.00033",37.378314,-80.524847,"DB",2,"deciduous forest in the background","2016-12-15","2018-03-12",1,17
+"NEON.D07.MLBS.DP1.00033",37.378314,-80.524847,"DB",1000,"canopy level DB in foreground","2016-12-15","2018-03-30",0.1,89
+"NEON.D07.MLBS.DP1.00033",37.378314,-80.524847,"DB",2000,"canopy level DB in foreground (AWB off)","2018-03-30","2024-01-14",5.6,3
+"NEON.D07.MLBS.DP1.00033",37.378314,-80.524847,"EN",1,"pine tree in the right bottom corner","2017-01-05","2018-03-12",1.1,6
+"NEON.D07.MLBS.DP1.00042",37.378314,-80.524847,"UN",1000,"Understory veg. focused on ferns.","2016-12-15","2024-01-14",5.8,18
+"NEON.D07.ORNL.DP1.00033",35.964128,-84.282588,"DB",1,"deciduous trees in mid-distance","2017-02-28","2018-03-12",1,3
+"NEON.D07.ORNL.DP1.00033",35.964128,-84.282588,"DB",2,"deciduous trees before shift in FOV","2016-12-15","2017-02-13",0.2,0
+"NEON.D07.ORNL.DP1.00033",35.964128,-84.282588,"DB",1000,"canopy level DB in foreground","2016-12-15","2024-01-14",7,1
+"NEON.D07.ORNL.DP1.00033",35.964128,-84.282588,"EN",1,"pine in midright","2017-02-16","2018-03-12",1,3
+"NEON.D07.ORNL.DP1.00042",35.964128,-84.282588,"UN",1000,"understory plants","2016-12-15","2024-01-14",7,1
+"NEON.D07.WALK.DP1.20002",35.95947,-84.28041,"WL",1000,"understory plants by the creek","2016-06-30","2024-01-14",7.2,4
+"NEON.D08.DELA.DP1.00033",32.541727,-87.803877,"DB",1,"large tree in the middle","2016-12-15","2018-03-12",1.2,1
+"NEON.D08.DELA.DP1.00033",32.541727,-87.803877,"DB",2,"tree in mid left","2016-12-15","2018-03-12",1.2,1
+"NEON.D08.DELA.DP1.00033",32.541727,-87.803877,"DB",3,"part of a tree in upper right","2016-12-15","2018-03-12",1.2,1
+"NEON.D08.DELA.DP1.00033",32.541727,-87.803877,"DB",4,"part of a tree in upper right","2016-12-15","2018-03-12",1.2,1
+"NEON.D08.DELA.DP1.00033",32.541727,-87.803877,"DB",1000,"canopy level DB in foreground","2016-12-15","2024-01-14",6.9,2
+"NEON.D08.DELA.DP1.00042",32.541727,-87.803877,"UN",1000,"Understory veg. in FOV.","2017-10-29","2024-01-14",5.5,11
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"DB",1,"tree in the middle","2016-05-07","2018-03-12",1.7,7
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"DB",2,"deciduous in the back","2016-05-07","2018-03-12",1.7,7
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"DB",3,"deciduous in the back","2016-05-07","2018-03-12",1.7,7
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"DB",1000,"canopy level DB in foreground","2016-06-15","2024-01-11",6.9,9
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"EN",1,"pines in the middle","2016-05-07","2018-03-12",1.7,7
+"NEON.D08.LENO.DP1.00033",31.85388,-88.16122,"EN",2,"pine in the right","2016-05-07","2018-03-12",1.7,7
+"NEON.D08.LENO.DP1.00042",31.85388,-88.16122,"UN",1000,"Understory veg. in FOV.","2017-10-29","2024-01-08",5.3,15
+"NEON.D08.TALL.DP1.00033",32.95047,-87.393259,"EN",1,"pine in lower left","2016-12-15","2018-03-12",1.2,4
+"NEON.D08.TALL.DP1.00033",32.95047,-87.393259,"EN",2,"pines in the back","2016-12-15","2018-03-12",1.2,4
+"NEON.D08.TALL.DP1.00033",32.95047,-87.393259,"EN",3,"whole FOV","2016-12-15","2018-03-12",1.2,4
+"NEON.D08.TALL.DP1.00033",32.95047,-87.393259,"EN",4,"whole FOV","2016-12-15","2018-03-12",1.2,4
+"NEON.D08.TALL.DP1.00033",32.95047,-87.393259,"EN",1000,"canopy level EN in foreground","2016-12-15","2024-01-14",6.9,2
+"NEON.D08.TALL.DP1.00042",32.95047,-87.393259,"UN",1,"mixed species of understory","2016-12-15","2018-03-12",1.1,11
+"NEON.D08.TALL.DP1.00042",32.95047,-87.393259,"UN",1000,"understory plants","2016-12-15","2024-01-14",6.8,3
+"NEON.D08.TOMB.DP1.20002",31.853431,-88.158872,"DB",1000,"deciduous tree on the right","2018-07-25","2019-10-05",1.1,6
+"NEON.D08.TOMB.DP1.20002",31.853431,-88.158872,"DB",1001,"ROI trying to match same region as in DB_2000","2018-07-25","2024-01-11",5.2,5
+"NEON.D08.TOMB.DP1.20002",31.853431,-88.158872,"DB",2000,"deciduous tree on the right","2019-11-01","2024-01-11",4,5
+"NEON.D08.TOMB.DP1.20002",31.853431,-88.158872,"GR",1000,"grasses on side of the road","2018-07-25","2024-01-11",5.1,6
+"NEON.D09.DCFS.DP1.00033",47.161647,-99.106556,"GR",1000,"entire land FOV (not yet clear if vegetated)","2017-11-01","2023-06-22",5.7,0
+"NEON.D09.DCFS.DP1.00042",47.161647,-99.106556,"GR",1000,"grasses in the foreground","2018-03-24","2024-01-14",5.7,2
+"NEON.D09.NOGP.DP1.00033",46.76972,-100.91535,"GR",1000,"entire land in fov","2017-10-29","2024-01-14",6.1,1
+"NEON.D09.NOGP.DP1.00042",46.76972,-100.91535,"GR",1000,"grasses in the foreground","2017-11-01","2024-01-14",6,3
+"NEON.D09.PRLA.DP1.20002",47.15909,-99.11388,"GR",1000,"grasses in the background","2017-10-29","2024-01-14",6.2,0
+"NEON.D09.PRLA.DP1.20002",47.15909,-99.11388,"WL",1000,"grasses on the shore","2017-10-29","2024-01-14",6.2,0
+"NEON.D09.PRPO.DP1.20002",47.12999,-99.250551,"GR",1,"lower left","2016-12-21","2018-03-12",1.2,2
+"NEON.D09.PRPO.DP1.20002",47.12999,-99.250551,"GR",2,"grasses by the water","2016-12-21","2018-03-12",1.2,2
+"NEON.D09.PRPO.DP1.20002",47.12999,-99.250551,"GR",3,"grasses in the back","2016-12-21","2018-03-12",1.2,2
+"NEON.D09.PRPO.DP1.20002",47.12999,-99.250551,"WL",1000,"grasses by the water","2018-03-21","2024-01-14",5.8,0
+"NEON.D09.WOOD.DP1.00033",47.1282,-99.241334,"EN",1,"upper right corner","2016-12-24","2018-03-12",0.9,27
+"NEON.D09.WOOD.DP1.00033",47.1282,-99.241334,"GR",1,"upper prairie","2016-12-18","2018-03-12",1.2,3
+"NEON.D09.WOOD.DP1.00033",47.1282,-99.241334,"GR",2,"upper grassland","2016-12-18","2018-03-12",1.2,3
+"NEON.D09.WOOD.DP1.00033",47.1282,-99.241334,"GR",3,"upper grassland","2016-12-18","2018-03-12",1.2,3
+"NEON.D09.WOOD.DP1.00033",47.1282,-99.241334,"GR",1000,"most of the land in FOV","2016-12-18","2024-01-14",7.1,0
+"NEON.D09.WOOD.DP1.00042",47.1282,-99.241334,"EN",1,"upper right evergreens","2016-12-18","2018-03-09",0.8,36
+"NEON.D09.WOOD.DP1.00042",47.1282,-99.241334,"GR",1,"entire FOV","2016-12-18","2018-03-12",1,21
+"NEON.D10.ARIK.DP1.20002",39.758246,-102.447103,"GR",1,"entire FOV","2016-12-18","2018-03-12",1.2,7
+"NEON.D10.ARIK.DP1.20002",39.758246,-102.447103,"GR",1000,"grasses in the background","2016-12-18","2024-01-14",6.5,8
+"NEON.D10.CPER.DP1.00033",40.81553,-104.7456,"GR",1,"grassland in mid FOV","2016-06-30","2018-03-12",1.7,0
+"NEON.D10.CPER.DP1.00033",40.81553,-104.7456,"GR",2,"backhill grassland","2016-06-30","2018-03-12",1.7,0
+"NEON.D10.CPER.DP1.00033",40.81553,-104.7456,"GR",3,"backhill grassland","2016-06-30","2018-03-12",1.7,0
+"NEON.D10.CPER.DP1.00033",40.81553,-104.7456,"GR",1000,"most land in FOV","2016-06-30","2024-01-14",7.5,0
+"NEON.D10.CPER.DP1.00042",40.81553,-104.7456,"GR",1,"entire FOV","2016-06-30","2018-03-12",1.7,1
+"NEON.D10.RMNP.DP1.00033",40.275903,-105.545955,"EN",1,"tree in front of the cabin","2016-12-18","2018-03-12",1.2,3
+"NEON.D10.RMNP.DP1.00033",40.275903,-105.545955,"EN",2,"forest in the background","2016-12-18","2018-03-12",1.2,3
+"NEON.D10.RMNP.DP1.00033",40.275903,-105.545955,"EN",3,"evergreens in the middle","2016-12-18","2018-03-12",1.2,3
+"NEON.D10.RMNP.DP1.00033",40.275903,-105.545955,"EN",4,"forest in the background","2016-12-18","2018-03-12",1.2,3
+"NEON.D10.RMNP.DP1.00033",40.275903,-105.545955,"EN",1000,"canopy level EN in foreground","2016-12-18","2024-01-14",7,1
+"NEON.D10.RMNP.DP1.00042",40.275903,-105.545955,"UN",1,"a single plant","2016-12-18","2018-03-12",1.1,11
+"NEON.D10.STER.DP1.00033",40.461894,-103.02929,"AG",1,"entire field","2016-12-18","2018-03-12",1.2,1
+"NEON.D10.STER.DP1.00033",40.461894,-103.02929,"AG",1000,"foreground farmland","2016-12-18","2024-01-14",7,1
+"NEON.D10.STER.DP1.00042",40.461894,-103.02929,"GR",1,"grasses","2016-12-18","2018-03-12",1.2,1
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",1,"mixed deciduous species, entire FOV","2017-02-13","2018-03-09",1,5
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",2,"tree in the front","2017-02-13","2018-03-09",1,5
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",3,"deciduous tree in lower right","2017-02-13","2018-03-09",1,5
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",4,"deciduous tree in lower right","2017-02-13","2018-03-09",1,5
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",1000,"canopy level DB in forground","2017-02-13","2017-12-07",0.8,4
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"DB",2000,"canopy level DB","2017-12-07","2024-01-08",6.1,0
+"NEON.D11.CLBJ.DP1.00033",33.40123,-97.57,"EN",1,"pine in lower left","2017-02-13","2018-03-09",1,7
+"NEON.D11.CLBJ.DP1.00042",33.40123,-97.57,"EN",1,"evergreen tree in the middle","2017-02-13","2018-03-09",1,6
+"NEON.D11.CLBJ.DP1.00042",33.40123,-97.57,"UN",1000,"understory woody plant","2017-02-13","2024-01-14",6.9,0
+"NEON.D11.OAES.DP1.00033",35.41059,-99.05879,"GR",1,"lower grassland","2017-02-28","2018-03-09",1,3
+"NEON.D11.OAES.DP1.00033",35.41059,-99.05879,"GR",2,"upper land of grass","2017-02-28","2018-03-09",1,3
+"NEON.D11.OAES.DP1.00033",35.41059,-99.05879,"GR",3,"lower grassland","2017-02-28","2018-03-09",1,3
+"NEON.D11.OAES.DP1.00033",35.41059,-99.05879,"GR",1000,"canopy level GR in foreground","2017-02-28","2024-01-14",6.8,2
+"NEON.D11.OAES.DP1.00033",35.41059,-99.05879,"SH",1,"shrubby  plants in upper left","2017-02-28","2018-03-09",0.9,14
+"NEON.D11.OAES.DP1.00042",35.41059,-99.05879,"GR",1,"mixed grassy species","2017-02-28","2018-03-09",1,5
+"NEON.D11.OAES.DP1.00042",35.41059,-99.05879,"GR",1000,"foreground","2017-02-28","2024-01-14",6.7,2
+"NEON.D11.PRIN.DP1.20002",33.37859,-97.78226,"WL",1,"plants by the water","2017-02-25","2018-03-09",1,2
+"NEON.D12.BLDE.DP1.20002",44.95011,-110.58715,"GR",1000,"riverside grass","2018-10-08","2024-01-14",5.1,3
+"NEON.D12.YELL.DP1.00033",44.95348,-110.53914,"EN",1000,"foreground evergreens","2018-09-29","2024-01-14",5.2,1
+"NEON.D12.YELL.DP1.00042",44.95348,-110.53914,"UN",1000,"understory grass","2018-11-07","2024-01-14",5.1,1
+"NEON.D13.MOAB.DP1.00033",38.24833,-109.38827,"GR",1,"very sparse grassland","2017-02-25","2018-03-09",1,1
+"NEON.D13.MOAB.DP1.00033",38.24833,-109.38827,"GR",1000,"canopy level GR in foreground","2017-02-25","2024-01-14",6.8,0
+"NEON.D13.MOAB.DP1.00042",38.24833,-109.38827,"GR",1000,"foreground","2017-02-25","2024-01-14",6.9,0
+"NEON.D13.NIWO.DP1.00033",40.05425,-105.58237,"TN",1000,"Entire TN in FOV","2017-04-26","2024-01-14",6.7,0
+"NEON.D13.NIWO.DP1.00033",40.05425,-105.58237,"TN",1001,"Left TN in FOV","2017-04-26","2024-01-14",6.7,0
+"NEON.D13.NIWO.DP1.00033",40.05425,-105.58237,"TN",1002,"TN on right  FOV","2017-04-26","2024-01-14",6.7,0
+"NEON.D13.NIWO.DP1.00042",40.05425,-105.58237,"SH",1,"shrubs","2017-03-09","2018-03-09",1,4
+"NEON.D13.NIWO.DP1.00042",40.05425,-105.58237,"TN",1000,"All TN in FOV","2017-03-09","2020-06-06",3.2,2
+"NEON.D13.NIWO.DP1.00042",40.05425,-105.58237,"TN",1001,"Shurbs in FOV","2017-03-09","2024-01-14",6.3,8
+"NEON.D13.NIWO.DP1.00042",40.05425,-105.58237,"TN",2000,"All TN in FOV","2021-01-29","2024-01-14",3,0
+"NEON.D14.JORN.DP1.00033",32.59068,-106.84254,"GR",1,"main grass area","2017-02-25","2018-03-09",1,4
+"NEON.D14.JORN.DP1.00033",32.59068,-106.84254,"GR",1000,"canopy level GR in foreground","2017-02-25","2024-01-14",6.7,2
+"NEON.D14.JORN.DP1.00033",32.59068,-106.84254,"SH",1,"shrubland/grassland","2017-02-25","2018-03-09",1,4
+"NEON.D14.JORN.DP1.00042",32.59068,-106.84254,"GR",1000,"foreground grass","2017-02-25","2024-01-14",6.9,0
+"NEON.D14.JORN.DP1.00042",32.59068,-106.84254,"SH",1,"plant in the middle of image","2017-02-25","2018-03-09",1,3
+"NEON.D14.JORN.DP1.00042",32.59068,-106.84254,"SH",2,"sparse upper shrub land","2017-02-25","2018-03-09",1,3
+"NEON.D14.JORN.DP1.00042",32.59068,-106.84254,"SH",3,"scrubland in the foreground","2017-02-25","2018-03-09",1,3
+"NEON.D14.SRER.DP1.00033",31.91068,-110.83549,"SH",1,"scrubland","2017-02-25","2018-03-09",1,4
+"NEON.D14.SRER.DP1.00033",31.91068,-110.83549,"SH",1000,"canopy level SH in foreground","2017-02-25","2024-01-14",6.9,0
+"NEON.D14.SRER.DP1.00042",31.91068,-110.83549,"SH",1000,"foregrounnd shrub","2017-02-25","2024-01-14",6.9,0
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"GR",1000,"grasses in the foreground","2016-12-18","2024-01-14",7,1
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"NV",1,"mountain in the back","2016-12-18","2018-03-09",1.2,1
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"SH",1,"upper shrubs","2016-12-18","2018-03-09",1.2,1
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"SH",2,"upper shrubs","2016-12-18","2018-03-09",1.2,1
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"SH",1000,"canopy level shrubs in foreground (might be mixed with GR)","2016-12-18","2024-01-14",7,1
+"NEON.D15.ONAQ.DP1.00033",40.177599,-112.452452,"SH",1001,"shruby patch in the midground","2016-12-18","2024-01-14",7,1
+"NEON.D15.ONAQ.DP1.00042",40.177599,-112.452452,"GR",1000,"grasses in the foreground","2016-12-18","2024-01-14",6.9,3
+"NEON.D15.ONAQ.DP1.00042",40.177599,-112.452452,"SH",1,"shrubs","2016-12-18","2018-03-09",1.2,2
+"NEON.D15.ONAQ.DP1.00042",40.177599,-112.452452,"SH",1000,"midground shrubs","2016-12-18","2024-01-14",6.9,3
+"NEON.D15.ONAQ.DP1.00042",40.177599,-112.452452,"SH",1001,"shruby patch in the midground","2016-12-18","2024-01-14",6.9,3
+"NEON.D16.ABBY.DP1.00033",45.76243,-122.33033,"EN",1,"price forests in the foreground","2017-05-29","2018-03-09",0.8,2
+"NEON.D16.ABBY.DP1.00033",45.76243,-122.33033,"EN",2,"trees in the back","2017-05-29","2018-03-09",0.8,2
+"NEON.D16.ABBY.DP1.00033",45.76243,-122.33033,"EN",1000,"canopy level EN in foreground","2017-05-29","2024-01-14",6.5,2
+"NEON.D16.ABBY.DP1.00042",45.76243,-122.33033,"UN",1000,"Understory veg in FOV.","2017-11-01","2024-01-14",6.1,2
+"NEON.D16.WREF.DP1.00033",45.82049,-121.95191,"EN",1000,"canopy level EN in foreground","2018-02-01","2024-01-14",6,0
+"NEON.D16.WREF.DP1.00042",45.82049,-121.95191,"UN",1000,"understory","2018-02-01","2024-01-14",6,0
+"NEON.D17.SJER.DP1.00033",37.10878,-119.73228,"EN",1000,"EN veg type in foreground of FOV.","2018-07-16","2022-01-23",3.5,2
+"NEON.D17.SJER.DP1.00033",37.10878,-119.73228,"EN",2000,"EN veg type in foreground of FOV.","2018-09-29","2024-01-14",5.2,1
+"NEON.D17.SJER.DP1.00042",37.10878,-119.73228,"GR",1000,"foreground grass","2018-07-13","2024-01-14",5.5,1
+"NEON.D17.SOAP.DP1.00033",37.03337,-119.26219,"EN",1000,"canopy level EN in foreground","2017-11-01","2024-01-14",5.7,8
+"NEON.D17.SOAP.DP1.00042",37.03337,-119.26219,"UN",1000,"midground understory plants","2017-11-01","2024-01-14",5.7,7
+"NEON.D17.TEAK.DP1.00033",37.00583,-119.00602,"EN",1000,"EN veg type in FOV. ROI focused on foreground.","2019-06-04","2022-06-25",2.7,13
+"NEON.D17.TEAK.DP1.00042",37.00583,-119.00602,"UN",1000,"Understory FOV, ROI focused on ground.","2018-07-25","2024-01-14",5.2,6
+"NEON.D18.BARR.DP1.00033",71.28241,-156.61936,"TN",1,"entire FOV","2017-02-25","2017-10-14",0.6,1
+"NEON.D18.BARR.DP1.00033",71.28241,-156.61936,"TN",1000,"canopy level TN in foreground","2018-09-14","2023-10-14",2.8,44
+"NEON.D18.BARR.DP1.00042",71.28241,-156.61936,"TN",1000,"Entire TN in FOV","2018-09-14","2023-10-14",3,41
+"NEON.D18.OKSR.DP1.20002",68.669753,-149.143018,"TN",1000,"Tundra/Grass along creek","2020-07-21","2022-07-31",0.6,69
+"NEON.D18.TOOK.DP1.20002",68.629562,-149.610509,"GR",1000,"grass by the water","2018-07-19","2021-10-23",2.3,29
+"NEON.D18.TOOL.DP1.00033",68.66109,-149.37047,"TN",1000,"Entire TN in FOV","2017-02-25","2023-10-23",4.6,30
+"NEON.D18.TOOL.DP1.00042",68.66109,-149.37047,"TN",1000,"Entire TN in FOV","2017-02-25","2023-10-23",4.1,38
+"NEON.D19.BONA.DP1.00033",65.15401,-147.50258,"EN",1000,"Primarily EN veg type in FOV. ROI focused on foreground.","2019-02-07","2023-09-23",3.5,23
+"NEON.D19.BONA.DP1.00042",65.15401,-147.50258,"UN",1000,"Ground cover on edge of site clearing.","2017-11-01","2023-11-01",4.3,28
+"NEON.D19.DEJU.DP1.00033",63.88112,-145.75136,"EN",1,"upper part of the FOV","2017-02-04","2018-03-09",0.8,23
+"NEON.D19.DEJU.DP1.00033",63.88112,-145.75136,"EN",2,"entire FOV","2017-02-04","2018-03-09",0.8,23
+"NEON.D19.DEJU.DP1.00033",63.88112,-145.75136,"EN",1000,"canopy level EN in foreground","2017-02-04","2023-11-07",5.3,21
+"NEON.D19.DEJU.DP1.00042",63.88112,-145.75136,"UN",1000,"understory plants","2017-02-04","2023-11-07",5.3,21
+"NEON.D19.HEAL.DP1.00033",63.87569,-149.21334,"TN",1000,"Entire TN in FOV","2016-05-07","2023-11-07",5.8,23
+"NEON.D19.HEAL.DP1.00042",63.87569,-149.21334,"TN",1000,"Entire TN in FOV","2016-05-07","2023-11-07",5.8,23
+"NEON.D20.PUUM.DP1.00033",19.55309,-155.31731,"EB",1000,"tropical forest","2019-05-02","2024-01-14",4.5,4
+"NEON.D20.PUUM.DP1.00042",19.55309,-155.31731,"UN",1000,"Fern undergrowth on right side of image.","2019-05-02","2024-01-14",4.3,8
+"nevcansnk3a",39.0099,-114.3095,"EN",1000,"EN forest below canopy.","2016-09-19","2024-01-11",6.4,13
+"nevcanspg1a",38.9253,-114.4082,"SH",1000,"SH vegetation in foreground of FOV","2018-06-28","2024-01-14",4.5,18
+"nevcanspg2a",38.8921,-114.3521,"EN",1000,"EN veg in foreground of FOV","2018-06-28","2024-01-14",5.5,1
+"nevcanspg3a",38.8898,-114.3314,"EN",1000,"EN veg type.","2016-09-22","2019-09-02",2.9,1
+"nevcanspg3a",38.8898,-114.3314,"EN",2000,"EN Veg Type","2022-10-05","2024-01-14",1.3,2
+"nevcanspg4a",38.9061,-114.3089,"EN",1000,"EN veg type.","2016-09-19","2024-01-14",7.1,4
+"nhjel",43.092355,-70.861613,"EN",1000,"EN veg type. Less than 1 yr of data.","2011-03-18","2011-10-29",0.6,9
+"nhshphighwayview",43.3096,-71.6055,"AG",1000,"Managed AG field.","2018-09-29","2019-06-16",0.4,42
+"ninemileprairie",40.86801886,-96.822080664,"DB",1000,"DB tree behind the prairie","2015-05-02","2017-04-17",1.8,6
+"ninemileprairie",40.86801886,-96.822080664,"DB",2000,"DB tree behind the prairie","2017-05-08","2024-01-14",6.1,8
+"ninemileprairie",40.86801886,-96.822080664,"GR",1000,"foreground grass","2015-05-02","2017-04-17",1.9,3
+"ninemileprairie",40.86801886,-96.822080664,"GR",2000,"foreground grass","2017-05-08","2024-01-14",6.1,9
+"nist",39.139,-77.2125,"DB",1000,"foreground trees","2017-06-13","2024-01-14",6.5,1
+"nist",39.139,-77.2125,"GR",1000,"foreground grass","2017-06-13","2024-01-14",6.5,1
+"nistturf",39.1389,-77.2169,"AG",1000,"lawn around weather station","2022-09-17","2024-01-02",1.3,0
+"nistturf",39.1389,-77.2169,"DB",1000,"tree in left foreground","2022-09-17","2024-01-02",1.3,0
+"niwot2",40.03286358,-105.54697017,"EN",1000,"EN veg type.","2009-07-22","2015-07-16",6,0
+"niwot3",40.03286358,-105.54697017,"EN",1000,"EN veg type.","2015-07-16","2024-01-14",8.5,0
+"niwot4",40.03286358,-105.54697017,"EN",1000,"EN veg type. Canopy view.","2015-08-30","2016-02-16",0.5,1
+"niwot4",40.03286358,-105.54697017,"EN",2000,"EN veg type. Canopy view.","2016-02-16","2016-07-06",0.4,0
+"niwot5",40.03286358,-105.54697017,"EN",1000,"foreground forest","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1001,"P1 tree in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1002,"P2 tree in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1003,"P3 tree at niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1004,"F1, F2 and F3  trees in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1005,"S2  tree in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1006,"S3  tree in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1007,"P9  tree in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwot5",40.03286358,-105.54697017,"EN",1008,"Fir  trees in the left in niwot project","2016-07-06","2024-01-14",7.5,0
+"niwotridge",40.03286358,-105.54697017,"EN",1000,"EN veg type. Canopy view.","2008-01-02","2010-08-30",2.6,1
+"nlloobs",52.1666,5.7435,"EN",1000,"Evergreen needleleaf canopy","2023-02-13","2024-01-14",0.9,0
+"nlloobs",52.1666,5.7435,"EN",1001,"Evergreen needleleaf trees left-foreground","2023-02-13","2024-01-14",0.9,0
+"nlloobs",52.1666,5.7435,"EN",1002,"Evergreen needleleaf trees in center-foreground","2023-02-13","2024-01-14",0.9,0
+"nlloobs",52.1666,5.7435,"EN",1003,"Evergreen needleleaf trees right foreground/middleground","2023-02-13","2024-01-14",0.9,0
+"nlloobs",52.1666,5.7435,"EN",1004,"Evergreen needleleaf trees left middleground","2023-02-13","2024-01-14",0.9,0
+"northattleboroma",41.98369,-71.31056,"DB",1000,"Deciduous trees in backgroud","2012-04-13","2020-12-30",8.7,0
+"northinletsaltmarsh",33.3455,-79.1957,"WL",1000,"foreground wetland plants","2017-10-11","2024-01-14",5.9,6
+"nphtin",47.1111,12.4265,"GR",1000,"Grasses corresponding to high zone along snowmelt gradient","2021-08-18","2024-01-11",1.8,27
+"nphtin",47.1111,12.4265,"GR",1001,"Grasses corresponding to medium zone along snowmelt gradient","2021-08-18","2024-01-11",1.8,27
+"nphtin",47.1111,12.4265,"GR",1002,"Grasses corresponding to low zone along snowmelt gradient","2021-08-18","2024-01-11",1.8,27
+"ntupinyongarden",35.6867,-108.1471,"SH",1000,"foregournd shrubs","2019-04-20","2019-08-09",0.3,0
+"nwohiocrop",41.6285,-83.3470833,"AG",1000,"AG veg type.","2012-04-07","2014-04-02",1.7,13
+"oakridge1",35.9311,-84.3323,"DB",1000,"Deciduous trees in foreground","2008-02-22","2009-11-10",1.1,39
+"oakridge1",35.9311,-84.3323,"DB",2000,"Deciduous trees in foreground","2010-01-05","2016-07-06",6.4,2
+"oakridge2",35.9311,-84.3323,"DB",1000,"Deciduous trees in foreground","2008-01-17","2016-07-06",7.6,10
+"oakville",47.899334,-97.316139,"GR",1000,"foreground grass","2014-08-06","2024-01-14",7.8,17
+"oppenwehe",52.504,8.514,"SH",1000,"Field-scale peatland vegetation","2023-08-09","2023-11-04",0.2,0
+"ordesa",42.65105157,-0.068269393,"DB",1000,"Mixed Forest Vegetation Primarily Deciduous Broadleaf","2023-04-17","2023-11-28",0.6,0
+"oregonMP",44.4523,-121.5574,"EN",1000,"EN veg type. Canopy view.","2011-06-16","2020-08-20",8.8,4
+"oregonmp1",44.4523,-121.5574,"EN",1000,"EN veg type. Up close view of individual needles. Short time series.","2018-04-29","2020-08-05",2.2,5
+"oregonYP",44.32384,-121.605993,"EN",1000,"EN veg type. Canopy veiw.","2011-11-13","2015-01-29",3.1,4
+"oregonYP",44.32384,-121.605993,"EN",2000,"EN veg type, canopy view. Open forest, forest floor visible in field of view.","2015-03-18","2024-01-11",8.4,5
+"oregonYPbud",44.3238,-121.606,"EN",1000,"Needles on right side of image","2019-05-23","2024-01-11",3.7,20
+"othshardwood",44.934805,-68.6655,"UN",1000,"understory of mixed deciduous stand","2019-04-08","2023-11-13",3.9,14
+"othssoftwood",44.934527,-68.664888,"UN",1000,"test ROI for center of scene avoiding major trunks","2019-04-08","2023-11-13",4.1,11
+"pace",37.9229,-78.2739,"DB",1000,"Deciduous trees in foreground.","2017-06-28","2024-01-11",5.3,19
+"palamanui",19.7423,-156.0115,"GR",1000,"grass in foreground","2017-04-17","2020-02-07",2.8,1
+"palamanui2",19.7404,-155.9952,"DB",1000,"trees in background","2022-02-19","2024-01-14",1.7,12
+"palamanui2",19.7404,-155.9952,"SH",1000,"shrubs in foreground","2022-02-19","2024-01-14",1.7,12
+"parkschoolbuffalo",42.9637,-78.7834,"DB",1000,"Mixed DB in background","2021-04-08","2024-01-14",2.8,0
+"peinpcavendish1",46.4968,-63.4073,"EN",1000,"View of small cluster of EN trees from below","2020-03-05","2020-08-26",0.5,1
+"piedmontalpasture2",33.8875,-85.6935,"GR",1000,"Grass in foreground","2019-11-07","2023-10-17",3,24
+"pineta",42.67967677,0.085065954,"DB",1000,"Fagus sylvatica behind Building","2023-04-17","2024-01-14",0.8,0
+"pointreyes",37.9963888889,-123.021111111,"SH",1000,"Shrubs and grasses in foreground right","2004-01-23","2019-03-18",13.3,12
+"portal",31.9385,-109.0823,"SH",1000,"shrubs in FOV, gradual FOV shift","2017-04-02","2024-01-14",4.2,38
+"poudreriver",40.443398,-104.8141,"GR",1000,"grass in midground right","2014-09-02","2016-12-06",1.2,45
+"proctor",44.525,-72.866,"DB",1000,"Deciduous trees in near background","2008-09-10","2024-01-11",15.3,0
+"queens",44.565,-76.324,"DB",1000,"Deciduous trees in foreground center","2008-05-25","2014-04-11",5.5,6
+"queens",44.565,-76.324,"DB",2000,"Deciduous trees in foreground center","2014-05-08","2024-01-14",8.7,10
+"quickbird",41.928871,-109.30387,"SH",1000,"shrublands in foreground","2014-05-26","2015-12-16",1.4,9
+"readingma",42.5304,-71.1272,"DB",1000,"Deciduous trees in background center left","2012-03-05","2020-06-03",8.2,1
+"richmondbrackishmarsh",49.1312,-123.1963,"WL",1000,"Wetland vegetation in foreground","2022-09-29","2024-01-14",1.3,1
+"riverton",42.9886,-108.4001,"GR",1000,"grass in foreground","2020-11-18","2023-11-01",2.3,23
+"robinson",37.4671,-83.1576,"DB",1000,"forground DB trees","2017-04-08","2024-01-14",6.3,7
+"robinson2",37.4671,-83.1576,"DB",1000,"deciduous forest in foreground","2017-04-08","2024-01-14",6.5,4
+"romainville",48.8853,2.4224,"DB",1000,"Urban tree canopy (mostly DB)","2023-09-26","2024-01-14",0.3,0
+"rosalia",47.7027,16.3015,"EN",1000,"foreground evergreen trees","2019-07-04","2024-01-14",4.5,0
+"rosemount",44.7143,-93.0898,"AG",1000,"AG veg type.","2008-04-01","2008-11-15",0.6,5
+"rosemountc6",44.7288,-93.0888,"AG",1000,"AG veg type in foreground of FOV.","2015-10-29","2017-01-02",1.2,0
+"rosemountcons",44.6946,-93.0578,"AG",1000,"AG field avoiding instrumentation","2017-05-02","2020-12-15",3.6,0
+"rosemountcons",44.6946,-93.0578,"AG",2000,"AG field avoiding instrumentation","2021-01-29","2024-01-14",2.7,10
+"rosemountconv",44.691,-93.0576,"AG",1000,"AG field avoiding instruments.","2017-05-17","2020-12-21",3.6,1
+"rosemountconv",44.691,-93.0576,"AG",2000,"AG field avoiding instruments","2021-01-29","2024-01-14",3,0
+"rosemountg21",44.7143,-93.0898,"AG",1000,"AG veg type in fore ground.","2015-10-29","2017-01-02",1.2,0
+"rosemountnprs",44.6781,-93.0723,"AG",1000,"AG veg type in fore ground.","2015-10-29","2024-01-14",8.1,1
+"rothberurb",52.457232,13.315827,"DB",1000,"Urban DB tree canopy","2022-11-07","2024-01-14",1.2,0
+"russellsage",32.456961,-91.974322,"DB",1000,"Deciduous trees in foreground","2013-11-19","2024-01-14",7.7,24
+"sabinar",36.99555,-6.513228,"EN",1000,"foreground right trees","2016-06-24","2022-07-13",5.3,12
+"sabinar",36.99555,-6.513228,"EN",2000,"foreground right trees","2022-07-13","2024-01-14",1.3,11
+"sagehen",39.4315,-120.2398,"EN",1000,"EN forest. Field of view above canopy.","2017-10-05","2024-01-14",6.3,0
+"sagehen2",39.4307,-120.2407,"GR",1000,"foreground grass","2017-10-14","2022-12-07",5.1,1
+"sagehen3",39.4311,-120.2405,"GR",1000,"subcanopy grass area","2019-05-11","2024-01-14",4.7,0
+"sagehen3",39.4311,-120.2405,"GR",1001,"grassy area in lower right","2019-05-11","2024-01-14",4.7,0
+"sanford",42.726777,-84.464482,"DB",1000,"Deciduous trees in near background","2014-06-07","2024-01-14",9.6,0
+"santacruz1",36.9741,-122.0308,"EN",1000,"Upper part of FOV.","2021-04-08","2024-01-14",2.7,4
+"santacruz2",36.9741,-122.0308,"EN",1000,"Foreground trees","2021-04-08","2024-01-14",2.5,9
+"santaluciapreserve1",36.5265,-121.8682,"EN",1000,"Mixed conifers in center right of FOV","2020-07-12","2023-09-23",2.4,26
+"saskatoon1",52.1552,-106.6064,"AG",1000,"Field scale AG","2022-05-17","2024-01-08",1.5,8
+"saskatoon2",52.1552,-106.6064,"AG",1000,"Field scale AG","2022-05-17","2023-12-22",1.5,9
+"sedgwick",34.69685,-120.0484,"GR",1000,"grass in the foreground","2008-09-19","2013-04-26",4,13
+"sedgwick",34.69685,-120.0484,"SH",1000,"SH veg type in background of FOV.","2008-09-19","2013-04-26",3.8,17
+"sedgwick1",34.6969,-120.0484,"GR",1000,"Grasses in middleground","2022-08-15","2024-01-14",1.4,0
+"sedgwick1",34.6969,-120.0484,"SH",1000,"Shrubs in background","2022-08-15","2024-01-14",1.4,0
+"sedgwick2",34.7012,-120.037,"DB",1000,"Deciduous broadleaf trees","2022-08-09","2024-01-14",1.4,0
+"sedgwick2",34.7012,-120.037,"GR",1000,"Grasses in foreground","2022-08-09","2024-01-14",1.4,0
+"segaarboretum10",35.16209,-111.73151,"GR",1000,"Whole-plot ROI","2019-05-14","2023-05-23",3.6,10
+"segaarboretum2",35.16209,-111.73151,"GR",1000,"Whole-plot ROI","2018-11-16","2023-01-20",4,3
+"segaarboretum3",35.16209,-111.73151,"GR",1000,"Whole-plot ROI","2019-05-29","2023-01-20",3.5,4
+"segaarboretum4",35.16214,-111.73153,"GR",1000,"Whole-plot ROI","2018-11-16","2023-01-20",4.1,3
+"segaarboretum6",35.16209,-111.73151,"GR",1000,"Whole-plot ROI","2019-05-17","2023-01-20",3.5,4
+"segaarboretum9",35.16222,-111.73158,"GR",1000,"Whole-plot ROI","2018-11-16","2023-01-20",4.1,3
+"segaarboretumforest",35.1613,-111.7359,"EN",1000,"ponderosa pines","2019-05-29","2024-01-14",4.5,2
+"segaarboretumforest",35.1613,-111.7359,"GR",1000,"foreground grass","2019-05-29","2024-01-14",4.5,2
+"segaarboretummeadow",35.1621,-111.7316,"EN",1000,"background ponderosa pines","2017-10-20","2018-11-07",1.1,0
+"segaarboretummeadow",35.1621,-111.7316,"EN",2000,"background ponderosa pines","2019-04-05","2024-01-11",4.3,10
+"segaarboretummeadow",35.1621,-111.7316,"GR",1000,"foreground grass","2017-10-20","2018-11-07",1.1,0
+"segaarboretummeadow",35.1621,-111.7316,"GR",2000,"GR in foreground of FOV","2019-04-05","2024-01-14",4.3,9
+"segabearsprings",36.3629,-112.1722,"EN",1000,"EN veg type","2017-11-10","2018-03-12",0.1,57
+"segabearsprings",36.3629,-112.1722,"EN",2000,"EN forest. GR in foreground.","2019-08-21","2020-09-01",0.8,19
+"segablackpoint",35.6814,-111.4754,"GR",1000,"grass in the background","2016-01-29","2018-03-12",1.8,13
+"segablackpoint",35.6814,-111.4754,"GR",2000,"grass in the background","2018-05-11","2024-01-14",5.7,0
+"segabluechute",35.5876,-111.9716,"EN",1000,"EN veg type. Short statured, may be closer to SH veg type.","2018-02-28","2024-01-11",5.3,9
+"segabluechute",35.5876,-111.9716,"GR",1000,"grass in the foreground","2018-02-28","2024-01-14",5.4,9
+"segabluechute1",35.58759,-111.97115,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabluechute2",35.58759,-111.97115,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabluechute4",35.58759,-111.9716,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabluechute6",35.58759,-111.97115,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabluechute7",35.58759,-111.97115,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabluechute8",35.58759,-111.97115,"GR",1000,"Whole-plot ROI","2019-05-17","2024-01-14",4.7,0
+"segabradshaw",34.9109,-111.9285,"EN",1000,"EN veg type. Short statured, shrub like.","2018-11-28","2020-09-22",1.8,0
+"segabradshaw",34.9109,-111.9285,"EN",2000,"EN veg type. Short statured, shrub like.","2020-09-22","2024-01-14",3.3,1
+"segahartprairie",35.3536,-111.7324,"DB",1000,"DB veg in background","2019-08-03","2024-01-14",4.3,4
+"segahartprairie",35.3536,-111.7324,"GR",1000,"GR in foreground.","2019-08-03","2024-01-14",4.3,4
+"segalcr",35.7231,-111.321,"GR",1000,"foreground grass","2019-01-05","2024-01-14",5,0
+"segalcr2",35.7069,-111.36,"SH",1000,"SH by the river","2019-07-31","2024-01-14",4.5,0
+"segalittlemountain",36.5865,-112.3634,"EN",1000,"EN veg type. Canopy view","2018-06-28","2022-12-28",3.7,17
+"segalittlemountain",36.5865,-112.3634,"GR",1000,"foreground grass, left corner","2018-06-28","2022-12-28",3.7,17
+"segasoapcreek",36.751,-111.716,"SH",1000,"shrub in FOV","2019-07-10","2022-08-12",3.1,0
+"segawalnutcreek",34.9215,-112.8458,"EN",1000,"EN veg type in background of field of view.","2017-06-10","2018-03-12",0.7,8
+"segawalnutcreek",34.9215,-112.8458,"GR",1000,"foreground grass","2017-06-10","2018-03-12",0.7,8
+"segawhitepockets",36.6081,-112.4082,"EN",1000,"EN veg type.","2018-06-28","2024-01-08",5.4,3
+"segawhitepockets",36.6081,-112.4082,"GR",1000,"foreground grass","2017-05-05","2024-01-14",6.4,4
+"sendadarwinforest",-41.8832,-73.676,"EB",1000,"Evergreen broadleaf forest canopy","2023-01-17","2024-01-14",0.9,14
+"sendadarwinpeatland",-41.8793,-73.6655,"WL",1000,"Peatland vegetation canopy view- avoiding boardwalk and small trees","2023-01-17","2024-01-14",0.9,9
+"sequoia",36.5658333333,-118.777222222,"EN",1000,"EN veg type in foreground.","2012-01-02","2015-11-19",3.7,5
+"sequoia",36.5658333333,-118.777222222,"EN",2000,"EN veg type in foreground.","2015-11-19","2018-11-28",2.8,7
+"sequoia1",37.51,-119.63,"EN",1000,"EN tree canopy","2023-09-14","2024-01-11",0.3,0
+"sevilletagrass",34.360444,-106.700186,"GR",1000,"foreground grass","2014-11-07","2024-01-14",8.9,3
+"sevilletanewgrass",34.358,-106.6799,"GR",1000,"grass in FOV","2018-12-07","2024-01-14",4.6,10
+"sevilletashrub",34.334956,-106.744469,"SH",1000,"shrubs in FOV","2014-10-29","2024-01-14",8.8,4
+"sevMRME10L",34.3438,-106.7269,"SH",1000,"foreground shrubs","2018-12-22","2023-12-19",4.9,2
+"sevMRME11C",34.3438,-106.7268,"SH",1000,"foreground shrubs","2018-12-22","2023-12-19",4.9,2
+"sevMRME1S",34.3442,-106.7272,"SH",1000,"foreground shrubs","2018-12-22","2023-12-19",4.8,4
+"sevMRME1S",34.3442,-106.7272,"SH",2000,"foreground shrubs, new camera","2019-08-09","2023-12-19",4.3,2
+"sevmveblack13redinc",34.3357,-106.7275,"GR",1000,"Plot of Grass Vegetation in FOV","2023-04-08","2024-01-14",0.8,2
+"sevmveblack14redinc",34.3356,-106.7275,"GR",1000,"Sevilleta Plot in FOV","2023-04-08","2024-01-14",0.8,2
+"sevmveblack15redamb",34.3356,-106.7274,"GR",1000,"Sevilleta Plot in FOV","2023-04-08","2024-01-14",0.8,2
+"sevmveblack16ambinc",34.3355,-106.7276,"GR",1000,"Sevilleta Plot avoiding Creosote bush in lower right half of frame","2023-04-08","2024-01-14",0.8,2
+"sevmveblack17ambinc",34.3355,-106.7275,"GR",1000,"Sevilleta Plot avoiding Bush in Upper Right Background","2023-04-08","2024-01-14",0.8,2
+"sevmveblack18ambamb",34.3355,-106.7273,"GR",1000,"Sevilleta Plot w/ Hose Running Through FOV","2023-04-08","2024-01-14",0.8,2
+"sevmveblack19ambamb",34.3356,-106.7272,"GR",1000,"Sevilleta Plot in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack20ambinc",34.3356,-106.727,"GR",1000,"Sevilleta Plot w/ Various Tags in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack21ambinc",34.3356,-106.7269,"GR",1000,"Sevilleta Plot in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack22redamb",34.3355,-106.7272,"GR",1000,"Sevilleta Plot avoiding Creosote Bush in Upper left FOV","2023-04-11","2024-01-14",0.7,3
+"sevmveblack23redinc",34.3355,-106.7271,"GR",1000,"Sevilleta Plot w/ Vegetation along Borders of FOV","2023-04-08","2024-01-14",0.3,56
+"sevmveblack24redinc",34.3354,-106.727,"GR",1000,"Sevilleta Plot w/ Rocks Entering FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack25redamb",34.3354,-106.7275,"GR",1000,"Sevilleta Plot w/ Various Grass Bunches in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack26redinc",34.3354,-106.7273,"GR",1000,"Sevilleta Plot avoiding Creosote in Right Half of FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack27redinc",34.3353,-106.7272,"GR",1000,"Sevilleta plot w/ Vegetation and Rocks in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack28ambinc",34.3353,-106.7275,"GR",1000,"Sevilleta Plot in FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack29ambinc",34.3352,-106.7274,"GR",1000,"Sevilleta Plot w/ Grass Bunches Filling FOV","2023-04-08","2024-01-14",0.8,3
+"sevmveblack30ambamb",34.3352,-106.7272,"GR",1000,"Sevilleta Plot shot from above","2023-04-08","2024-01-14",0.8,3
+"sevmveblue10ambinc",34.3341,-106.6311,"GR",1000,"Drought experiment plot - entire FOV","2022-06-04","2024-01-14",1.6,1
+"sevmveblue11ambinc",34.3341,-106.631,"GR",1000,"Drought experiment plot - entire FOV","2022-06-04","2024-01-14",1.6,1
+"sevmveblue12ambamb",34.334,-106.6309,"GR",1000,"Drought experiment plot - entire FOV","2022-06-04","2024-01-14",1.6,1
+"sevmveblue13ambamb",34.334,-106.6311,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue14ambinc",34.334,-106.6313,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue15ambinc",34.334,-106.6314,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue16redamb",34.3339,-106.6314,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue17redinc",34.3339,-106.6313,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,2
+"sevmveblue18redinc",34.3338,-106.6312,"GR",1000,"Drought experiment plot - entire FOV","2022-06-04","2024-01-11",1.4,13
+"sevmveblue1ambinc",34.3344,-106.6307,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.3,19
+"sevmveblue2ambinc",34.3344,-106.6308,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.3,19
+"sevmveblue3ambamb",34.3345,-106.6309,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.3,19
+"sevmveblue4redinc",34.3344,-106.631,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.3,19
+"sevmveblue5redinc",34.3343,-106.6308,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",0.8,49
+"sevmveblue6redamb",34.3342,-106.6307,"GR",1000,"Drought experiment plot - entire FOV","2022-06-04","2024-01-14",1.3,19
+"sevmveblue7redinc",34.3341,-106.6308,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue8redinc",34.3342,-106.631,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2024-01-14",1.6,1
+"sevmveblue9redamb",34.3342,-106.6311,"GR",1000,"Drought experiment plot - entire FOV","2022-06-01","2023-04-05",0.5,45
+"sevmveblue9redamb",34.3342,-106.6311,"GR",2000,"Drought experiment plot - entire FOV","2023-06-04","2024-01-14",0.6,1
+"sevmvecreo12redinc",34.3382,-106.7385,"SH",1000,"Single Creosote Bush in Plot in FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo19redamb",34.3386,-106.739,"SH",1000,"Various Creosote Bushes within Plot","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo1redinc",34.3382,-106.7392,"SH",1000,"Creosote Bushes in FOV","2023-06-04","2024-01-14",0.6,1
+"sevmvecreo20redinc",34.3386,-106.739,"SH",1000,"Creosote Bushes fill lower portion of FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo21redinc",34.3386,-106.739,"SH",1000,"Two Creosote Bushes filling Left of FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo22ambinc",34.3386,-106.739,"SH",1000,"Creosote Bushes fill entirety of Right FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo23ambinc",34.3386,-106.739,"SH",1000,"Creosote Bushes in Plot and FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo24ambamb",34.3386,-106.739,"SH",1000,"Creosote Bush filling Right Half of FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo2redinc",34.3382,-106.7391,"SH",1000,"Creosote Bushes fill FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo3redamb",34.3382,-106.7389,"SH",1000,"Creosote Bush enters lower right FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo4ambinc",34.3384,-106.7392,"SH",1000,"Creosotes within Sevilleta Plot","2023-06-04","2024-01-14",0.6,1
+"sevmvecreo5ambinc",34.3384,-106.739,"SH",1000,"Creosote Bush within Plot in right of FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo6ambamb",34.3383,-106.7389,"SH",1000,"Creosote Bush in plot","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo7ambinc",34.3381,-106.7388,"SH",1000,"Creosote Bush in far end of Plot","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo8ambinc",34.3381,-106.7387,"SH",1000,"Creosote Bushes in corner of plot and bottom right FOV","2023-06-01","2024-01-14",0.6,1
+"sevmvecreo9ambamb",34.3381,-106.7385,"SH",1000,"Group of Creosote Bushes in Plot","2023-06-01","2024-01-14",0.6,1
+"sevpjrm12",34.38615,-106.52621,"EN",1000,"canopy level EN","2020-03-14","2023-05-11",3,6
+"sevpjrm12",34.38615,-106.52621,"EN",1001,"juniper plot 12","2020-03-14","2023-05-11",3,6
+"sevpjrm12",34.38615,-106.52621,"EN",1002,"tree no 12-2","2020-03-11","2023-05-11",3,6
+"sevpjrm12",34.38615,-106.52621,"EN",1003,"tree no 12-5","2020-03-11","2023-05-11",3,5
+"sevpjrm12",34.38615,-106.52621,"EN",1004,"tree no 12-8","2020-03-11","2023-05-11",3,5
+"sevpjrm12",34.38615,-106.52621,"EN",1005,"tree no 12-10","2020-03-11","2023-05-11",3,5
+"sevpjrm13",34.38631,-106.52791,"EN",1000,"canopy level EN","2020-03-11","2023-05-11",2.6,17
+"sevpjrm13",34.38631,-106.52791,"EN",1001,"juniper plot 13","2019-12-16","2023-05-11",2.8,17
+"sevpjrm13",34.38631,-106.52791,"EN",1002,"tree no 13-1","2020-03-11","2023-05-11",2.6,17
+"sevpjrm13",34.38631,-106.52791,"EN",1003,"tree no 13-6","2019-12-16","2023-05-11",2.8,16
+"sevpjrm13",34.38631,-106.52791,"EN",1004,"tree no 13-8","2020-03-11","2023-05-11",2.6,17
+"sevpjrm13",34.38631,-106.52791,"EN",1005,"tree no 13-9","2020-03-11","2023-05-11",2.6,18
+"sevpjrm15",34.38615,-106.52838,"EN",1000,"canopy level","2019-12-16","2021-09-05",1.6,9
+"sevpjrm15",34.38615,-106.52838,"EN",1001,"juniper plot 15","2019-12-16","2021-09-05",1.6,8
+"sevpjrm15",34.38615,-106.52838,"EN",1002,"tree no 15-1","2019-12-16","2021-09-05",1.6,8
+"sevpjrm15",34.38615,-106.52838,"EN",1003,"tree no 15-2","2019-12-16","2021-09-05",1.6,9
+"sevpjrm15",34.38615,-106.52838,"EN",1004,"tree no 15-3","2019-12-16","2021-09-05",1.6,9
+"sevpjrm16",34.38577,-106.52897,"EN",1000,"canopy level EN","2019-12-16","2021-09-23",1.6,10
+"sevpjrm16",34.38577,-106.52897,"EN",1001,"juniper plot 16","2019-12-16","2021-09-23",1.6,10
+"sevpjrm16",34.38577,-106.52897,"EN",1002,"tree no 16-8","2019-12-16","2021-09-23",1.6,9
+"sevpjrm16",34.38577,-106.52897,"EN",1003,"tree no 16-9","2019-12-16","2021-09-23",1.6,10
+"sevpjrm16",34.38577,-106.52897,"EN",1004,"tree no 16-11","2019-12-16","2021-09-23",1.6,10
+"sevpjrm16",34.38577,-106.52897,"EN",1005,"tree no 16-15","2019-12-16","2021-09-23",1.6,10
+"sevpjrm17",34.38676,-106.52837,"EN",1000,"canopy level EN","2020-01-05","2021-08-21",1.5,9
+"sevpjrm17",34.38676,-106.52837,"EN",1001,"juniper plot 17","2020-01-05","2021-08-21",1.5,9
+"sevpjrm17",34.38676,-106.52837,"EN",1002,"tree no 17-5","2020-01-05","2021-08-21",1.5,8
+"sevpjrm17",34.38676,-106.52837,"EN",1003,"tree no 17-6","2020-01-05","2021-08-21",1.4,16
+"sevpjrm17",34.38676,-106.52837,"EN",1004,"tree no 17-7","2020-01-05","2021-08-21",1.5,9
+"shahariya",31.599908,34.832867,"EN",1000,"EN veg type.","2011-07-01","2013-05-14",1.8,3
+"shahariya",31.599908,34.832867,"GR",1000,"grass in the foreground","2011-07-01","2013-05-14",1.8,3
+"shalehillsczo",40.6658,-77.9041,"DB",1000,"Deciduous trees in foreground center","2012-05-19","2016-02-19",3.4,10
+"shalehillsczo",40.6658,-77.9041,"DB",2000,"Deciduous trees in foreground center","2016-02-22","2024-01-14",7.8,2
+"shangqiu",34.5155,115.595,"AG",1000,"EN veg type. Tower shadow in center of FOV.","2018-01-23","2019-02-07",1,1
+"shangqiu",34.5155,115.595,"AG",2000,"AG site.","2019-02-16","2019-12-19",0.8,3
+"shangqiu",34.5155,115.595,"AG",3000,"AG site, camera moved","2020-05-19","2021-12-31",0.6,60
+"shenandoah",38.6167,-78.35,"DB",1000,"Deciduous trees in foreground right","2009-09-14","2024-01-08",13.8,4
+"sherman",38.03661389,-121.7540028,"GR",1000,"grass in the foreground","2014-01-02","2015-05-02",1.3,1
+"shermanbarn",38.04,-121.727,"AG",1000,"Field in foreground.","2018-07-10","2020-07-09",1.9,4
+"shiningrock",35.390159,-82.774967,"DB",1000,"Deciduous trees, shrubs and forbs in foreground","2000-08-08","2002-03-12",1.3,16
+"shiningrock",35.390159,-82.774967,"DB",2000,"Deciduous trees, shrubs and forbs in foreground","2003-08-09","2009-06-13",5.1,13
+"shiningrock",35.390159,-82.774967,"DB",3000,"Deciduous trees, shrubs and forbs in foreground","2009-09-14","2020-01-17",9.4,9
+"si04brdo",46.2872,14.4,"EN",1000,"EN canopy","2022-09-14","2024-01-14",1.2,10
+"si11murska",46.4969,16.5127,"DB",1000,"DB canopy","2022-07-16","2023-07-10",0.9,12
+"si97kras1",45.5432,13.9162,"DB",1000,"DB canopy","2022-05-11","2022-12-01",0.4,23
+"siikanevabog",61.8385,24.1703,"WL",1000,"Bog vegetation in foreground","2022-06-25","2023-10-05",1.1,18
+"siikanevabogforest",61.8383,24.172,"EN",1000,"EN tree in foreground","2022-09-26","2023-11-13",0.9,20
+"siikanevabogforest",61.8383,24.172,"UN",1000,"Understory vegetation in foreground","2022-09-26","2023-11-13",0.9,20
+"siikanevabogintermediate",61.8384,24.1717,"UN",1000,"Understory vegetation","2022-07-01","2023-11-13",1.2,16
+"silaslittle",39.9137,-74.596,"DB",1000,"Deciduous canopy in foreground.","2012-05-01","2018-11-10",5.7,12
+"siljansfors2",60.881233,14.383535,"EN",1000,"EN veg type.","2017-01-23","2023-11-16",5.6,17
+"silverplains",-42.0912,147.0871,"GR",1000,"Grassland avoid rocks","2021-09-02","2024-01-14",1.8,22
+"silverplainsexpt",-42.0908,147.0875,"GR",1000,"Foreground grass","2021-11-10","2024-01-14",1.7,20
+"silversalmonlks",59.9737,-152.6713,"GR",1000,"foreground grass","2013-07-10","2021-06-07",4.7,40
+"silverton",44.9986,-122.6948,"AG",1000,"AG veg type in foreground of FOV.","2013-07-22","2022-05-02",7.2,18
+"sirta",48.7173,2.2089,"DB",1000,"Deciduous broadleaf canopy","2023-04-26","2024-01-14",0.7,0
+"siwetland",38.0369,-121.7546,"WL",1000,"wetland plants in the foreground","2016-06-06","2021-09-02",4.8,9
+"slatefloodplain",38.9094,-107.0282,"EN",1000,"EN Forest in background","2020-07-30","2024-01-11",1.5,56
+"slatefloodplain",38.9094,-107.0282,"WL",1000,"Shrubs near river.","2020-07-30","2024-01-14",1.9,45
+"slatefloodplain",38.9094,-107.0282,"WL",1001,"All vegetation included on OBJ floodplain, excluding evergreen trees in background","2020-07-30","2024-01-14",1.9,45
+"slovenia1karstgrassland",45.5508,13.9187,"GR",1000,"foreground grass","2019-03-30","2020-09-10",1.5,0
+"slovenia2karstsecforest",45.5432,13.9162,"DB",1000,"forests in foreground","2019-04-02","2024-01-14",4.5,5
+"slovenia3moskanjci",46.4098,15.9963,"AG",1000,"foreground agriculture","2019-04-02","2022-05-14",2.8,11
+"smokylook",35.632529,-83.943113,"DB",1000,"Deciduous trees in foreground left","2000-02-13","2002-07-01",2.3,4
+"smokylook",35.632529,-83.943113,"DB",2000,"Deciduous trees in foreground left","2002-07-04","2016-06-03",13.3,4
+"smokylook",35.632529,-83.943113,"DB",3000,"Deciduous trees in foreground left","2016-06-06","2021-09-23",5.2,2
+"smokypurchase",35.586,-83.0733,"DB",1000,"Deciduous trees in near background center","2003-08-21","2006-03-12",2.3,9
+"smokypurchase",35.586,-83.0733,"DB",2000,"Deciduous trees in near background center","2006-03-15","2008-06-06",2,8
+"smokypurchase",35.586,-83.0733,"DB",3000,"Deciduous trees in near background center","2008-07-03","2015-12-31",7.3,2
+"smokypurchase",35.586,-83.0733,"DB",4000,"Deciduous trees in near background center","2016-01-02","2019-03-30",3.1,5
+"smokypurchase",35.586,-83.0733,"DB",5000,"DB forest in background of image. GR in foreground.","2019-03-30","2021-09-23",2.5,0
+"smokypurchase",35.586,-83.0733,"GR",1000,"foreground grass lower right","2003-08-21","2015-12-31",11.7,5
+"smokypurchase",35.586,-83.0733,"GR",2000,"foreground grass lower right","2016-01-02","2019-03-30",3.1,6
+"smokypurchase",35.586,-83.0733,"GR",3000,"GR in foreground.","2019-03-30","2021-09-23",2.5,0
+"snakerivermn",46.120556,-93.24467,"DB",1000,"Deciduous trees in background center","2010-03-27","2010-12-28",0.6,19
+"snakerivermn",46.120556,-93.24467,"DB",2000,"Deciduous trees in background center","2011-01-08","2018-06-16",6,19
+"snipelake",60.6103,-154.3199,"TN",1000,"TN in FOV","2010-08-12","2012-11-18",1.9,15
+"snipelake",60.6103,-154.3199,"TN",2000,"TN in FOV (AWB on?)","2013-01-23","2014-07-01",1.3,13
+"snodgrass1",38.92619636,-106.97143762,"DB",1000,"Snodgrass lower aspen_aspen roi. Open canopy of aspen trees","2021-06-25","2024-01-14",2.6,0
+"snodgrass1",38.92619636,-106.97143762,"UN",1000,"Snodgrass lower aspen_aspen roi. understory of aspen trees","2021-06-25","2024-01-14",2.6,0
+"snodgrass2",38.92619636,-106.97143762,"UN",1000,"Snodgrass lower aspen_Understory_2","2021-06-22","2024-01-14",2.5,4
+"snodgrass3",38.92839978,-106.97811962,"DB",1000,"Snodgrass mid aspen_canopy_1","2021-06-28","2024-01-14",2.5,0
+"snodgrass3",38.92839978,-106.97811962,"UN",1000,"Snodgrass mid aspen_understory_1","2021-06-25","2024-01-14",2.5,0
+"snodgrass4",38.92839978,-106.97811962,"DB",1000,"Snodgrass mid aspen_aspen_2","2021-06-25","2023-07-25",2.1,1
+"snodgrass4",38.92839978,-106.97811962,"DB",2000,"Snodgrass mid aspen_aspen_2","2023-09-26","2024-01-14",0.3,0
+"snodgrass4",38.92839978,-106.97811962,"UN",1000,"Snodgrass mid aspen_understory_2","2021-06-25","2024-01-14",2.4,7
+"snodgrass5",38.92744789,-106.97852093,"EN",1000,"Snodgrass mid Conifer_conifer_ mixed conifer stand","2021-06-25","2024-01-14",2.2,13
+"snodgrass5",38.92744789,-106.97852093,"UN",1000,"Snodgrass mid Conifer_ground cover","2021-06-25","2024-01-14",2.6,0
+"snodgrass6",38.92744789,-106.97852093,"EN",1000,"Snodgrass mid Conifer_conifer foreground_2","2021-06-25","2024-01-14",2.4,5
+"snodgrass6",38.92744789,-106.97852093,"UN",1000,"Snodgrass mid Conifer_conifer ground cover_2","2021-06-25","2024-01-14",2.6,0
+"snodgrass7",38.93142134,-106.98523878,"EN",1000,"Snodgrass High Conifer_conifer foreground","2021-06-25","2024-01-14",2.5,1
+"snodgrass7",38.93142134,-106.98523878,"UN",1000,"Snodgrass High Conifer_understory","2021-06-25","2024-01-14",2.5,1
+"snodgrass8",38.93142134,-106.98523878,"EN",1000,"Snodgrass High Conifer_conifer foreground","2021-06-25","2024-01-14",2.5,2
+"snodgrass8",38.93142134,-106.98523878,"UN",1000,"Snodgrass High Conifer_understory","2021-06-25","2024-01-14",2.5,1
+"soltis",10.3827,-84.6209,"EB",1000,"foreground forest","2018-07-10","2022-05-29",3.5,10
+"southerngreatplains",36.6058,-97.4888,"AG",1000,"AG veg type.","2012-05-16","2024-01-14",11.3,3
+"springfieldma",42.135162,-72.585972,"DB",1000,"Deciduous tree in center upper-right","2012-04-04","2017-04-17",4.9,3
+"springfieldma",42.135162,-72.585972,"DB",2000,"DB tree in left FOV","2017-04-17","2018-03-15",0.8,9
+"springfieldma",42.135162,-72.585972,"DB",3000,"DB trees in the left (FOV not stable)","2018-04-26","2019-08-21",1.3,2
+"spruceA0EMI",47.5049,-93.4541,"EN",1000,"evergreens in the foreground","2016-04-01","2024-01-14",7.8,0
+"spruceA0EMI",47.5049,-93.4541,"SH",1000,"shrubs in the foreground","2016-04-01","2024-01-14",7.8,0
+"spruceA0EMT",47.5049,-93.4541,"EN",1,"evergreens in left foreground","2014-10-17","2018-03-27",3.3,4
+"spruceA0EMT",47.5049,-93.4541,"EN",2,"duplicate of EN_0001 with different min_sunelev value.","2014-10-17","2018-03-27",3.4,1
+"spruceA0EMT",47.5049,-93.4541,"SH",1,"low shrubs in right foreground","2014-10-17","2018-03-27",3.4,1
+"spruceA0EMT",47.5049,-93.4541,"SH",1000,"shrubs in the foreground","2014-10-17","2024-01-14",9.2,0
+"spruceA0P07",47.50493,-93.45314,"EN",1000,"evergreens from top","2016-03-29","2024-01-14",7.8,0
+"spruceA0P07",47.50493,-93.45314,"SH",1000,"shrubs in the foreground","2016-03-29","2024-01-14",7.8,0
+"spruceA0P07SH",47.50493,-93.45314,"SH",1000,"entire FOV","2017-11-28","2024-01-14",6.1,0
+"spruceA0P21SH",47.50625,-93.45275,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.1,0
+"spruceT0P06",47.5051,-93.4535,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT0P06",47.5051,-93.4535,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"DN",1001,"Individual tree of  DN_1000","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"DN",1002,"Individual tree of DN_1000","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"DN",1003,"Individual of DN_1000","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"DN",1004,"Individual tree of DN_1000","2015-08-24","2022-06-25",6.9,0
+"spruceT0P06",47.5051,-93.4535,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT0P06",47.5051,-93.4535,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT0P06",47.5051,-93.4535,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT0P06",47.5051,-93.4535,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,1
+"spruceT0P06SH",47.5051,-93.4535,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.2,0
+"spruceT0P19E",47.5065,-93.4535,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.5,3
+"spruceT0P19E",47.5065,-93.4535,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.3,0
+"spruceT0P19E",47.5065,-93.4535,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.5,3
+"spruceT0P19E",47.5065,-93.4535,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.3,0
+"spruceT0P19E",47.5065,-93.4535,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.5,3
+"spruceT0P19ESH",47.5065,-93.4535,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.1,0
+"spruceT2P11E",47.5053,-93.4527,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P11E",47.5053,-93.4527,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT2P11E",47.5053,-93.4527,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P11E",47.5053,-93.4527,"EN",1000,"Black spruce trees in chamber","2015-08-24","2020-02-01",4.5,0
+"spruceT2P11E",47.5053,-93.4527,"EN",2000,"Black spruce tree in enclosure","2019-12-01","2024-01-14",4.1,0
+"spruceT2P11E",47.5053,-93.4527,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P11E",47.5053,-93.4527,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT2P11E",47.5053,-93.4527,"XX",1,"Mix of evergreens, deciduous needle leaf and shrubs.","2015-08-24","2018-03-27",2.6,0
+"spruceT2P11ESH",47.5053,-93.4527,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.2,0
+"spruceT2P20",47.5064,-93.4532,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P20",47.5064,-93.4532,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT2P20",47.5064,-93.4532,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P20",47.5064,-93.4532,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT2P20",47.5064,-93.4532,"GR",1,"grass in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P20",47.5064,-93.4532,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT2P20",47.5064,-93.4532,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT2P20",47.5064,-93.4532,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,0
+"spruceT2P20SH",47.5064,-93.4532,"SH",1000,"shrubs in the chamber","2017-11-28","2024-01-14",6.1,0
+"spruceT4P04E",47.5052,-93.454,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT4P04E",47.5052,-93.454,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT4P04E",47.5052,-93.454,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT4P04E",47.5052,-93.454,"EN",1000,"Black spruce trees in chamber","2015-08-24","2020-02-01",4.5,0
+"spruceT4P04E",47.5052,-93.454,"EN",2000,"Black spruce in enclosure","2019-12-01","2024-01-14",4.1,0
+"spruceT4P04E",47.5052,-93.454,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT4P04E",47.5052,-93.454,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT4P04E",47.5052,-93.454,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,0
+"spruceT4P04ESH",47.5052,-93.454,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.2,0
+"spruceT4P13",47.5057,-93.453,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT4P13",47.5057,-93.453,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT4P13",47.5057,-93.453,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT4P13",47.5057,-93.453,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT4P13",47.5057,-93.453,"GR",1,"grass in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT4P13",47.5057,-93.453,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT4P13",47.5057,-93.453,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT4P13",47.5057,-93.453,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,1
+"spruceT4P13SH",47.5057,-93.453,"SH",1000,"entire plot","2017-11-28","2024-01-14",6.2,0
+"spruceT6P08",47.5056,-93.4539,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT6P08",47.5056,-93.4539,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2020-02-01",4.5,0
+"spruceT6P08",47.5056,-93.4539,"DN",2000,"Larch in enclosure","2019-12-01","2024-01-14",4.1,0
+"spruceT6P08",47.5056,-93.4539,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT6P08",47.5056,-93.4539,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT6P08",47.5056,-93.4539,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT6P08",47.5056,-93.4539,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2019-12-31",4.4,0
+"spruceT6P08",47.5056,-93.4539,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,1
+"spruceT6P08SH",47.5056,-93.4539,"SH",1000,"shrubs in the plot","2017-11-28","2024-01-14",6.2,0
+"spruceT6P16E",47.5061,-93.4532,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT6P16E",47.5061,-93.4532,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT6P16E",47.5061,-93.4532,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT6P16E",47.5061,-93.4532,"EN",1000,"Black spruce trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT6P16E",47.5061,-93.4532,"EN",2000,"Black spruce in enclosure","2019-12-01","2024-01-14",4.1,0
+"spruceT6P16E",47.5061,-93.4532,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT6P16E",47.5061,-93.4532,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT6P16E",47.5061,-93.4532,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,0
+"spruceT6P16ESH",47.5061,-93.4532,"SH",1000,"shrubs in the plot","2017-11-28","2024-01-14",6.1,0
+"spruceT9P10E",47.5054,-93.4532,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT9P10E",47.5054,-93.4532,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT9P10E",47.5054,-93.4532,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT9P10E",47.5054,-93.4532,"EN",1000,"Black spruce trees in chamber","2015-08-24","2018-03-30",2.6,0
+"spruceT9P10E",47.5054,-93.4532,"EN",2000,"Black spruce trees in chamber","2018-01-02","2024-01-14",6.1,0
+"spruceT9P10E",47.5054,-93.4532,"GR",1,"grass in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT9P10E",47.5054,-93.4532,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,1
+"spruceT9P10E",47.5054,-93.4532,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT9P10E",47.5054,-93.4532,"XX",1,"Mix of Evergreens and shrubs in chamber.","2015-08-24","2018-03-27",2.6,1
+"spruceT9P10ESH",47.5054,-93.4532,"SH",1000,"shrubs in the plot","2017-11-28","2024-01-14",6.2,0
+"spruceT9P17",47.506,-93.4527,"DN",1,"larch crowns in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT9P17",47.506,-93.4527,"DN",1000,"Larch (deciduous conifer) trees in chamber","2015-08-24","2024-01-14",8.4,0
+"spruceT9P17",47.506,-93.4527,"EN",1,"black spruce in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT9P17",47.506,-93.4527,"EN",1000,"Black spruce trees in chamber","2015-08-24","2018-03-30",2.6,0
+"spruceT9P17",47.506,-93.4527,"EN",2000,"Black spruce trees in chamber","2017-11-01","2024-01-14",6.2,0
+"spruceT9P17",47.506,-93.4527,"GR",1,"grass in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT9P17",47.506,-93.4527,"SH",1,"bog labrador tea and leatherleaf shrubs in chamber","2015-08-24","2018-03-27",2.6,0
+"spruceT9P17",47.506,-93.4527,"SH",1000,"Mixed shrub layer at ground level; dominated by leatherleaf and Labrador tea","2015-08-24","2024-01-14",8.4,0
+"spruceT9P17",47.506,-93.4527,"XX",1,"General chamber vegetation.","2015-08-24","2018-03-27",2.6,0
+"spruceT9P17SH",47.506,-93.4527,"SH",1000,"shrubs in the plot","2017-11-28","2024-01-14",6.1,0
+"srg",31.7894,-110.8276,"GR",1000,"GR field with scattered shrubs.","2019-09-11","2024-01-14",4,7
+"srm",31.8214,-110.8661,"GR",1000,"grasses in the midground","2018-07-19","2024-01-14",5.4,2
+"srm",31.8214,-110.8661,"SH",1000,"mesquite in the background","2018-07-19","2024-01-14",5.4,2
+"stanislausforage",37.6994,-121.1367,"AG",1000,"Field view of forage crop","2023-03-09","2024-01-14",0.9,0
+"statenrice1",38.1235,-121.549,"AG",1000,"Foreground vegetation","2021-08-03","2024-01-14",2.3,7
+"stevensonoaks001",34.4566,-119.2426,"AG",1000,"Vineyard row - control treatment","2023-03-24","2023-07-10",0.3,0
+"stjones",39.088222,-75.43725,"GR",1000,"foreground grass","2015-09-20","2023-10-26",7.7,5
+"summit1",37.9167,-81.1221,"DB",1000,"Foreground trees","2021-08-12","2023-08-09",2,0
+"sweetbriar",37.57341,-79.08482,"DB",1000,"canopy level DB in the background","2014-09-08","2024-01-14",9.4,0
+"sweetbriar",37.57341,-79.08482,"EN",1000,"EN veg type. Canopy view. Logging occurs on 2022-07-05","2014-09-11","2024-01-14",9.4,0
+"sweetbriarclearcut",37.5753,-79.0872,"EN",1000,"EN forest recovering from clear cut. Mix of regenerating trees and herbaceous vegetation.","2019-01-17","2024-01-11",4.9,1
+"sweetbriargrass",37.5605,-79.0884,"AG",1000,"AG veg type.","2016-03-23","2022-07-07",6,5
+"swisscanopycrane2e",47.4386,7.7762,"DB",1000,"Deciduous trees in foreground","2020-01-23","2024-01-14",3.8,5
+"swisscanopycrane2n",47.4386,7.7762,"DB",1000,"Deciduous trees in foreground","2020-01-23","2024-01-14",4,0
+"swisscanopycrane2s",47.4386,7.7762,"DB",1000,"Deciduous trees in foreground
+(Originally made by Tom)","2020-01-23","2024-01-14",3.8,4
+"swisscanopycrane2w",47.4386,7.7762,"DB",1000,"Deciduous trees in foreground","2020-01-23","2024-01-14",3.9,1
+"sylvania",46.242,-89.348,"DB",1000,"DB forest foreground canopy view","2015-08-21","2024-01-14",7.6,10
+"sylvania",46.242,-89.348,"EN",1000,"EN veg type. Canopy view. Forest appears to be primarily DB, with patches of EN.","2015-08-21","2024-01-14",7.5,11
+"taosmountain",36.4283958812,-105.573034286,"GR",1000,"foreground grass","2009-07-28","2011-01-14",0.8,45
+"teddy",46.8947222222,-103.3775,"GR",1000,"mixed shrubs and grass in the background","2010-01-02","2019-03-27",8.5,8
+"teddy",46.8947222222,-103.3775,"SH",1000,"entire FOV (mixed shrubs and grasses)","2003-05-11","2019-03-27",14.4,9
+"templefieldstation1",40.1667,-75.1894,"DB",1000,"Focusing on deciduous trees on the right below the buildings","2021-04-14","2024-01-14",2.7,0
+"templefieldstation2",40.1637,-75.1944,"DB",1000,"DB forest vegetation recovering from disturbance","2022-05-05","2024-01-14",1.5,9
+"testcamnau",35,-111,"EN",1000,"Pines on the left of the frame","None","None",NA,NA
+"testcamnau",35,-111,"GR",1000,"Foreground grass","None","None",NA,NA
+"testcamnau2",35,-111,"EN",1000,"Trees on the left side of the frame","None","None",NA,NA
+"testcamnau2",35,-111,"GR",1000,"Foreground Grass","None","None",NA,NA
+"tfforest",43.1086,-70.9505,"DB",1000,"Single tree in foreground right side.","2016-12-09","2024-01-14",7,1
+"tfforest",43.1086,-70.9505,"DB",1001,"Hickory in mid field of view.","2016-12-09","2024-01-14",7,1
+"tfforest",43.1086,-70.9505,"DB",1002,"Oaks in foreground","2016-12-09","2024-01-14",7,1
+"tfforest",43.1086,-70.9505,"EN",1000,"evergreen canopy","2016-12-09","2024-01-14",7,1
+"tfforest",43.1086,-70.9505,"EN",2000,"Mixed forest of EN and DB.","2019-09-26","2024-01-14",4.2,2
+"thompsonfarm2N",43.1086,-70.9505,"DB",1000,"Deciduous trees in foreground right","2009-01-11","2010-01-11",1,0
+"thompsonfarm2N",43.1086,-70.9505,"DB",2000,"Deciduous trees in foreground right","2010-05-17","2016-12-09",6.4,3
+"thompsonfarm2N",43.1086,-70.9505,"EN",1000,"Patch of EN veg type in foreground.","2009-01-11","2010-01-11",1,0
+"thompsonfarm2N",43.1086,-70.9505,"EN",2000,"Patch of EN veg type in foreground.","2010-05-17","2016-12-09",6.4,3
+"tidewater",35.8504,-76.6501,"AG",1000,"Crop canopy view","2023-04-26","2024-01-14",0.6,23
+"tidmarshplymouth",41.9157,-70.5754,"AG",1000,"foreground field","2018-08-15","2024-01-14",5.1,6
+"tonnersjoheden",56.7142,13.1214,"GR",1000,"foreground grass","2006-12-28","2011-09-26",4,15
+"tonnersjoheden2",56.7142,13.1214,"GR",1000,"foreground grass","2017-01-17","2024-01-11",6.7,3
+"tonzi",38.43091667,-120.9658861,"DB",1000,"Deciduous trees in background","2011-10-26","2024-01-02",11.1,9
+"tonzi",38.43091667,-120.9658861,"GR",1000,"grasses in left and right","2011-10-26","2024-01-02",11.1,9
+"torgnon-ld",45.82376,7.56089,"DN",1000,"larch forest in the foreground","2012-03-14","2023-01-17",9.3,14
+"torgnon-nd",45.8444,7.5781,"GR",1000,"grass in the foreground","2013-04-14","2024-01-14",9.8,8
+"torrepalacio",36.9905,-6.4426,"WL",1000,"wetland plants in the foreground","2017-03-27","2021-03-30",4,1
+"torrepalacio",36.9905,-6.4426,"WL",2000,"Wetlands in the foreground.  New ROI after camera reconfig.","2021-05-26","2024-01-14",2.5,4
+"townsenddemeadow",39.3917,-75.6281,"GR",1000,"Grass/Ag on both sides of central path","2020-06-03","2024-01-14",2.5,32
+"tsubiology",36.1671,-86.8295,"DB",1000,"DB tree out of window","2019-04-20","2019-11-19",0.6,1
+"tsubiology",36.1671,-86.8295,"DB",2000,"DB veg in foreground.","2019-11-22","2024-01-14",4.1,1
+"tsubiology2",36.1171,-86.8295,"DB",1000,"Deciduous broadleaf tree in foreground","2020-03-14","2024-01-14",3.8,1
+"tsubiology2",36.1171,-86.8295,"GR",1000,"foreground grass/lawn","2020-03-14","2024-01-14",2.4,37
+"tubberurb",52.512283,13.327855,"DB",1000,"Urban DB tree canopy","2023-06-01","2024-01-14",0.6,0
+"tuckerprairie",38.9491,-91.9952,"GR",1000,"Center of FOV","2018-10-02","2024-01-14",5.2,2
+"turkeypointdbf",42.6353,-80.5576,"DB",1000,"Deciduous trees in center right","2012-02-13","2019-01-11",6.5,6
+"turkeypointdbf",42.6353,-80.5576,"DB",2000,"Deciduous trees in foreground.","2020-02-25","2024-01-14",3.4,12
+"turkeypointenf02",42.6617,-80.5599,"AG",1000,"AG veg type in background of FOV.","2012-05-01","2018-12-31",6.4,3
+"turkeypointenf02",42.6617,-80.5599,"EN",1000,"EN veg type.","2012-05-07","2024-01-14",11.4,3
+"turkeypointenf39",42.7102,-80.3573,"EN",1000,"EN veg type. Canopy view.","2012-02-01","2024-01-14",11.3,6
+"turkeypointenf74",42.70736,-80.3485,"EN",1000,"EN veg type. Canopy view.","2012-02-04","2017-06-01",5.2,2
+"turkeypointenf74",42.70736,-80.3485,"EN",2000,"EN veg type. Canopy view.","2017-08-18","2023-04-11",5.5,2
+"turkeypointenf74",42.70736,-80.3485,"EN",3000,"EN veg type. Canopy view.","2023-06-22","2024-01-14",0.6,0
+"turtleback",37.7133333333,-119.706111111,"EN",1000,"EN veg type in foreground.","2014-05-08","2016-08-20",2.2,6
+"turtleback",37.7133333333,-119.706111111,"EN",2000,"EN veg type in foreground.","2016-08-23","2018-11-01",1.9,14
+"twitchell",38.10872778,-121.6530167,"AG",1000,"AG veg type.","2011-11-16","2017-04-05",4,25
+"twitchellalfalfa",38.11542167,-121.64666623,"AG",1000,"AG veg type.","2013-05-23","2016-09-22",2.7,19
+"twitchellalfalfa2",38.11542167,-121.64666623,"AG",1000,"AG veg type.","2016-11-30","2018-06-04",1.3,16
+"twodafo",29.1658,-95.829,"DB",1000,"Foreground trees","2019-07-13","2021-05-11",1.6,13
+"twolcsh",27.665,-98.2007,"SH",1000,"entire FOV  shrubs","2018-06-28","2019-04-05",0.6,21
+"tworfaa",31.4777,-96.8882,"AG",1000,"AG field.","2018-04-20","2023-05-26",5.1,0
+"tworfpr",31.4802,-96.8826,"AG",1000,"Foreground of FOV","2018-04-17","2024-01-14",3.9,32
+"tworfta",31.4693,-96.8864,"AG",1000,"AG field in upper image","2018-04-20","2023-12-01",5.2,7
+"twosfpr",30.6176,-97.2938,"AG",1000,"Pasture in foreground","2018-04-05","2023-11-04",3.6,35
+"twotfpr",30.5327,-96.4252,"AG",1000,"agriculture in the background","2018-04-17","2019-07-04",0.9,24
+"ucnrsanzaborrego",33.2401,-116.3886,"SH",1000,"foreground shrubs on the hillslope","2019-04-17","2024-01-14",3.6,24
+"ufona",27.3836,-81.950856,"SH",1000,"shrubs in FOV back and foreground","2017-01-05","2024-01-14",7,1
+"uiefmaize",40.0628222,-88.1961277,"AG",1000,"AG veg type.","2008-11-06","2017-12-31",9.1,0
+"uiefmaize2",40.0628,-88.1961,"AG",1000,"agriculture sideview","2018-08-30","2024-01-14",5.4,0
+"uiefmiscanthus",40.06281,-88.198428,"AG",1000,"multi-plant agriculture","2008-11-12","2018-04-29",9.2,2
+"uiefmiscanthus",40.06281,-88.198428,"AG",2000,"multi-plant agriculture","2018-05-02","2022-06-16",3.9,6
+"uiefmiscanthus2",40.0628,-88.1984,"AG",1000,"AG in foreground","2019-04-02","2024-01-14",4.5,5
+"uiefprairie",40.064624,-88.198469,"GR",1000,"foreground grass","2008-10-22","2018-12-31",10.1,1
+"uiefprairie2",40.0637,-88.1973,"AG",1000,"AG in foreground","2018-08-30","2024-01-14",5.3,1
+"uiefsorghum",40.0065,-88.2032,"AG",1000,"AG in foreground","2019-04-05","2024-01-14",3.9,18
+"uiefswitchgrass",40.064654,-88.196063,"AG",1000,"foreground agrciculture","2008-10-22","2018-12-31",9.4,7
+"uiefswitchgrass2",40.0637,-88.1973,"AG",1000,"sideview AG","2018-08-30","2024-01-14",5.4,0
+"umichbiological",45.55984,-84.71382,"DB",1000,"Deciduous trees in near background","2008-12-03","2014-03-27",4.9,8
+"umichbiological",45.55984,-84.71382,"DB",2000,"Deciduous trees in near background","2014-03-30","2024-01-14",9.8,0
+"umichbiological",45.55984,-84.71382,"EN",1000,"EN veg type in foreground. FOV is primarily DB veg type.","2009-09-02","2014-03-27",4.2,8
+"umichbiological",45.55984,-84.71382,"EN",2000,"EN veg type in foreground. FOV is primarily DB veg type.","2014-03-30","2024-01-14",9.7,1
+"umichbiological2",45.5625,-84.6976,"DB",1000,"Deciduous trees in background (note: girdling experiment in foreground)","2008-11-24","2014-03-27",5.2,2
+"umichbiological2",45.5625,-84.6976,"DB",2000,"Deciduous trees in background (note: girdling experiment in foreground)","2014-04-08","2022-09-02",8.1,3
+"umichbiological2",45.5625,-84.6976,"DB",3000,"Deciduous trees in background (note: girdling experiment in foreground)","2022-09-26","2024-01-14",1.3,0
+"unca",35.5951,-82.5515,"DB",1000,"Large deciduous tree in foreground right.","2016-08-02","2024-01-14",7.5,0
+"upperbuffalo",35.863732,-93.493222,"DB",1000,"Patch of deciduous trees in background","2006-01-05","2007-01-11",0.9,15
+"upperbuffalo",35.863732,-93.493222,"DB",2000,"DB patch in background","2007-01-20","2009-02-16",1.3,35
+"upperbuffalo",35.863732,-93.493222,"DB",3000,"DB patch in background","2009-02-19","2012-12-15",3.2,15
+"upperbuffalo",35.863732,-93.493222,"DB",4000,"DB patch in background","2012-12-24","2014-03-03",1.2,2
+"upperbuffalo",35.863732,-93.493222,"DB",5000,"DB patch in background","2014-03-12","2016-02-13",1.2,38
+"usdadfrc",43.3448,-89.7117,"AG",1000,"Field view crop in middleground","2022-07-07","2024-01-14",1.5,2
+"usgseros",43.7343,-96.6234,"DB",1000,"trees near horizon","2014-09-11","2017-10-02",3.1,0
+"usgseros",43.7343,-96.6234,"DB",2000,"trees near horizon","2018-08-24","2024-01-14",5.3,2
+"usgseros",43.7343,-96.6234,"GR",1000,"grass in foreground","2014-09-11","2017-10-02",3.1,0
+"usgseros",43.7343,-96.6234,"GR",2000,"grass in foreground","2018-08-15","2024-01-14",5.4,1
+"usgsreston",38.9471,-77.3676,"DB",1000,"Deciduous trees in foreground","2012-03-08","2014-06-16",2.2,3
+"usmpj",34.43845,-106.2543606,"EN",1000,"entire FOV mixed pinyons and junipers","2013-10-08","2024-01-14",9.4,8
+"usof1",35.7371,-90.0492,"AG",1000,"AG vet type. Heavily flooded in November 2017.","2017-05-23","2017-11-22",0.5,0
+"usof2",35.7406,-90.0489,"AG",1000,"AG veg type.","2017-05-23","2017-11-22",0.5,0
+"usof3",35.7372,-90.0444,"AG",1000,"AG veg type. Flooded in beginning of time series (summer 2017)","2017-06-22","2018-05-08",0.7,18
+"usof4",35.7344,-90.0381,"AG",1000,"AG veg type.","2018-05-20","2018-08-24",0.3,0
+"usof5",35.7297,-90.0406,"AG",1000,"AG veg type.","2018-05-20","2021-07-28",2.3,27
+"usof6",35.7333,-90.0403,"AG",1000,"AG veg type.","2018-05-20","2021-07-16",2.5,22
+"utepgreenroof",31.7686,-106.5039,"GR",1000,"Foreground areas","2022-01-14","2023-12-13",1.5,23
+"utwente1",52.240077,6.850103,"DB",1000,"Deciduous trees on left of FOV.","2019-06-28","2024-01-14",4.6,0
+"utwente1",52.240077,6.850103,"GR",1000,"Grass/AG area in lower left of FOV.","2019-06-28","2024-01-14",4.6,0
+"utwente2",52.237472,6.86078,"DB",1000,"Deciduous trees in far canopy.","2019-06-28","2024-01-14",4.6,0
+"utwente2",52.237472,6.86078,"DB",1001,"Deciduous trees across water along path.","2019-06-28","2024-01-14",4.6,0
+"uwmfieldsta",43.38709,-88.0229,"DB",1000,"Deciduous trees in center left","2013-03-15","2024-01-11",10.8,0
+"uwmfieldsta",43.38709,-88.0229,"GR",1000,"lower left  grass","2013-03-15","2024-01-11",10.8,0
+"vaira",38.41328056,-120.9506361,"GR",1000,"foreground grass","2011-10-17","2024-01-02",11.5,5
+"vallesburnedconifer",35.8884,-106.5321,"EN",1000,"canopy level EN","2020-10-01","2024-01-14",3.1,5
+"vallesmixedconifer",35.9192,-106.6142,"EB",1000,"background forest","2018-12-19","2024-01-14",4.2,17
+"vallesponderosapine",35.864,-106.5964,"EN",1000,"canopy level EN","2020-10-01","2024-01-11",1.8,45
+"vancouverisland",49.53624,-124.901994,"EN",1000,"EN veg type. Canopy view.","2011-12-01","2015-07-07",3.6,0
+"vancouverisland",49.53624,-124.901994,"EN",2000,"EN veg type. Canopy view.","2017-03-15","2024-01-14",6.2,9
+"vancouversaltmarsh",49.0888,-122.8954,"WL",1000,"WL vegetation in foreground","2022-06-22","2024-01-14",1.6,0
+"vejrumbro",56.4374,9.5468,"AG",1000,"Ag plot near lower right of image","2021-06-22","2024-01-14",2.5,4
+"vindeln2",64.2437,19.7673,"MX",1000,"Trees in background","2016-05-10","2023-11-04",5.7,23
+"vindeln2",64.2437,19.7673,"SH",1000,"shrubs in the foreground","2016-05-10","2023-11-04",5.7,23
+"voulundgaard",56.0377,9.1609,"AG",1000,"AG field","2020-03-14","2024-01-14",2.7,29
+"waahila",21.3017,-157.8152,"GR",1000,"foreground grass","2016-11-15","2024-01-14",7.1,1
+"wallersorghum",30.0958,-95.9695,"AG",1000,"Sorghum crop in middle ground","2022-05-20","2022-12-07",0.6,1
+"warrenwilson",35.6069,-82.4421,"EN",1000,"EN veg type. View of few trees in foreground.","2016-05-19","2017-09-05",1.2,8
+"warrenwilson",35.6069,-82.4421,"EN",2000,"EN veg type. View of few trees in foreground.","2017-09-11","2024-01-11",5.9,8
+"westedge",43.1421,-70.9544,"DB",1000,"trees in the background","2016-07-09","2016-11-15",0.4,0
+"westpond",38.10741944,-121.6468694,"WL",1000,"wetland plants in the foreground","2012-07-06","2023-12-25",10.1,11
+"willamettegrass",45.1129,-122.656,"AG",1000,"AG veg type.","2015-04-29","2016-09-13",1.4,0
+"willamettepoplar",44.1368,-123.1823,"DB",1000,"forground poplar plantation","2015-04-08","2018-09-14",3.1,10
+"willamettewheat",45.1089,-122.6662,"AG",1000,"AG veg type. ROI centered on foreground. Multiple FOV shifts covered by one ROI.","2015-04-29","2016-06-30",0.6,50
+"willowcreek",45.805986,-90.07912,"DB",1000,"Deciduous trees in foreground and near background","2012-04-25","2024-01-11",11.2,4
+"windriver",45.8212833,-121.9520833,"EN",1000,"EN veg type. Canopy view.","2010-05-05","2014-08-24",4.2,1
+"windriver",45.8212833,-121.9520833,"EN",2000,"EN veg type. Canopy view.","2014-08-24","2017-01-11",2.4,0
+"windriverunderstory",45.8212833,-121.9520833,"EN",1000,"EN veg type. Understory view.","2013-04-17","2024-01-14",8.1,24
+"witnesstree",42.53556197,-72.18956997,"DB",1000,"upward looking ROI","2014-11-25","2024-01-14",8.9,2
+"wolfesneckfarm",43.8305,-70.0715,"AG",1000,"AG veg type.","2017-03-18","2023-02-01",4.8,17
+"woodshole",41.5495,-70.6432,"DB",1000,"Deciduous trees in foreground","2011-04-14","2019-10-23",8.1,5
+"woodshole",41.5495,-70.6432,"DB",2000,"Deciduous trees in foreground","2019-10-26","2022-09-23",2.9,0
+"woodstockvt",43.613153,-72.54449,"DB",1000,"DB veg type, canopy view. Almost daily movement of camera after 2016-11-02. Did not process for these dates.","2015-09-14","2016-08-08",0.9,0
+"worcester",42.2697,-71.8428,"DB",1000,"Deciduous trees in near background","2013-05-20","2024-01-14",10.7,0
+"yakimabasin1",46.9216,-120.6585,"GR",1000,"grass patches between shrubs","2022-03-30","2024-01-14",1.7,5
+"yakimabasin1",46.9216,-120.6585,"SH",1000,"shrubs in foreground","2022-03-30","2024-01-14",1.7,5
+"yakimabasin2",46.9045,-120.6241,"GR",1000,"grass/forbs in foreground","2022-04-02","2024-01-14",1.5,15
+"yatir",31.347,35.052,"EN",1000,"EN veg type.","2011-07-01","2014-11-19",2.4,28
+"zarnekow1",53.876,12.8891,"WL",1000,"Vegetation near in lower FOV.","2021-04-14","2024-01-14",2.7,1

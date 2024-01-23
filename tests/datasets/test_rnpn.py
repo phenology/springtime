@@ -1,97 +1,105 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
-from datetime import datetime
+import shutil
+from textwrap import dedent
 
 import geopandas as gpd
-from shapely import Point
-from pandas.testing import assert_frame_equal
+import pandas as pd
+import pytest
 
-from springtime.datasets.insitu.npn.rnpn import RNPN, _reformat
+from springtime.config import CONFIG
+from springtime.datasets import RNPN, load_dataset
+
+"""
+To update reference data, run one of the following:
+
+    pytest tests/datasets/test_rnpn.py --update-reference
+    pytest tests/datasets/test_rnpn.py --update-reference --redownload
 
 
-def test_reformat_given_phenophase_ids_and_side_first_and_single_row():
-    dataset = RNPN(
-        phenophase_ids={"name": "Leaves", "items": [483]}, years=(2010, 2010)
+To include download, run:
+
+    pytest tests/datasets/test_rnpn.py --include-downloads
+"""
+
+REFERENCE_DATA = CONFIG.cache_dir / "rnpn_load_reference.geojson"
+REFERENCE_RECIPE = dedent(
+    """\
+        dataset: RNPN
+        years:
+        - 2010
+        - 2011
+        species_ids:
+          name: Syringa
+          items:
+          - 36
+        phenophase_ids:
+          name: leaves
+          items:
+          - 483
+        use_first: true
+        aggregation_operator: median
+        """
+)
+
+
+@pytest.fixture
+def dataset():
+    return RNPN(
+        species_ids={"name": "Syringa", "items": [36]},
+        phenophase_ids={"name": "leaves", "items": [483]},
+        years=[2010, 2011],
     )
 
-    df = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5)],
-            "phenophase_id": [483],
-            "first_yes_year": [2010],
-            "first_yes_month": [1],
-            "first_yes_day": [10],
-            "first_yes_doy": [10],
-        }
-    )
 
-    result = _reformat(dataset, df)
+def test_load(dataset):
+    """Compare loaded (i.e. processed) data with stored reference."""
+    loaded_data = dataset.load()
+    reference = gpd.read_file(REFERENCE_DATA)
+    assert set(loaded_data.columns) == set(
+        reference.columns
+    ), f"""
+        Columns differ. New columns are {loaded_data.columns},
+        vs reference {reference.columns}."""
 
-    expected = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5)],
-            "datetime": [datetime(2010, 1, 10)],
-            "Leaves_doy": [10],
-        }
-    )
-    assert_frame_equal(result, expected)
+    pd.testing.assert_frame_equal(loaded_data, reference[loaded_data.columns.values])
 
 
-def test_reformat_given_phenophase_ids_and_side_first_and_double_row_per_year():
-    dataset = RNPN(
-        phenophase_ids={"name": "Leaves", "items": [483, 484]}, years=(2010, 2010)
-    )
-
-    df = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5), Point(4, 5), Point(4, 5)],
-            "phenophase_id": [483, 484, 483],
-            "first_yes_year": [2010, 2010, 2011],
-            "first_yes_month": [1, 1, 1],
-            "first_yes_day": [10, 20, 11],
-            "first_yes_doy": [10, 20, 11],
-        }
-    )
-
-    result = _reformat(dataset, df)
-
-    expected = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5), Point(4, 5)],
-            "datetime": [datetime(2010, 1, 10), datetime(2011, 1, 11)],
-            "Leaves_doy": [10, 11],
-        }
-    )
-    assert_frame_equal(result, expected)
+def test_to_recipe(dataset):
+    recipe = dataset.to_recipe()
+    assert recipe == REFERENCE_RECIPE
 
 
-def test_reformat_given_phenophase_ids_and_side_last_and_single_row():
-    dataset = RNPN(
-        phenophase_ids={"name": "Leaves", "items": [483]},
-        years=(2010, 2010),
-        use_first=False,
-    )
+def test_from_recipe(dataset):
+    reloaded = load_dataset(REFERENCE_RECIPE)
+    assert dataset == reloaded
 
-    df = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5)],
-            "phenophase_id": [483],
-            "last_yes_year": [2010],
-            "last_yes_month": [1],
-            "last_yes_day": [10],
-            "last_yes_doy": [10],
-        }
-    )
 
-    result = _reformat(dataset, df)
+def test_export_reload(dataset):
+    recipe = dataset.to_recipe()
+    reloaded = load_dataset(recipe)
+    assert dataset == reloaded
 
-    expected = gpd.GeoDataFrame(
-        {
-            "geometry": [Point(4, 5)],
-            "datetime": [datetime(2010, 1, 10)],
-            "Leaves_doy": [10],
-        }
-    )
-    assert_frame_equal(result, expected)
+
+@pytest.mark.download
+def test_download(dataset, temporary_cache_dir):
+    """Check download hasn't changed; also uses raw_load"""
+
+    # The reference data is shipped with the test suite, loaded from TEST_CACHE
+    reference = dataset.raw_load()
+
+    with temporary_cache_dir():
+        dataset.download()
+        new_data = dataset.raw_load()
+
+    pd.testing.assert_frame_equal(new_data, reference)
+
+
+@pytest.mark.update
+def test_update_reference_data(dataset, redownload):
+    """Update the reference data for these tests."""
+    if redownload:
+        from springtime.datasets.rnpn import cache_dir
+
+        shutil.rmtree(cache_dir)
+
+    loaded_data = dataset.load()
+    loaded_data.to_file(REFERENCE_DATA)

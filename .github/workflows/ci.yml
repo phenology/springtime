@@ -41,8 +41,11 @@ jobs:
     - name: ruff
       run: hatch run ruff check src
     - name: mypy
+      if: success() || failure()
       run: hatch run mypy src tests
     - name: reuse
+      if: success() || failure()
       run: hatch run reuse lint
     - name: pytest
+      if: success() || failure()
       run: hatch run pytest

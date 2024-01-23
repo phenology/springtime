@@ -28,8 +28,14 @@ from shapely import to_geojson
 
 from springtime.config import CONFIG, CONFIG_DIR
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (NamedArea, Points, ResampleConfig, YearRange,
-                              points_from_cube, resample)
+from springtime.utils import (
+    NamedArea,
+    Points,
+    ResampleConfig,
+    YearRange,
+    points_from_cube,
+    resample,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +78,7 @@ class Appeears(Dataset):
             xr.resample [2]
 
     """
+
     dataset: Literal["appears"] = "appears"
     product: str
     version: str  # TODO make optional, if not given, use latest version
@@ -82,7 +89,6 @@ class Appeears(Dataset):
     _token: Optional[TokenInfo] = None
     infer_date_offset: bool = True
     resample: Optional[ResampleConfig] = None
-
 
     @model_validator(mode="after")
     def check_points_or_area(self):
@@ -110,7 +116,6 @@ class Appeears(Dataset):
         if self.points:
             return self.load_points()
         return self.raw_load_area()
-
 
     def _check_token(self):
         token_fn = CONFIG.cache_dir / "appeears" / "token.json"
@@ -225,22 +230,24 @@ class Appeears(Dataset):
         if self.infer_date_offset:
             # For yearly data: express value as dayofyear and extract year
             for column in df.columns:
-                if column not in ['time', 'geometry']:
-                    value_as_timedelta = df[column] - df['time']
+                if column not in ["time", "geometry"]:
+                    value_as_timedelta = df[column] - df["time"]
                     df[column] = value_as_timedelta.dt.days
 
             # Convert datetime to 'year'
-            df['year'] = df['time'].dt.year
-            df = df.drop(columns='time')
+            df["year"] = df["time"].dt.year
+            df = df.drop(columns="time")
 
         else:
             if self.resample:
-                df = resample(df, freq=self.resample.frequency, operator=self.resample.operator)
+                df = resample(
+                    df, freq=self.resample.frequency, operator=self.resample.operator
+                )
 
             # (Sub)daily data: Split datetime in DOY and year, and pivot
-            df['year'] = df['time'].dt.year
-            df['DOY'] = df['time'].dt.dayofyear
-            df = df.drop(columns='time')
+            df["year"] = df["time"].dt.year
+            df["DOY"] = df["time"].dt.dayofyear
+            df = df.drop(columns="time")
 
             # Pivot
             df = df.set_index(["year", "geometry", "DOY"]).unstack("DOY")
@@ -323,7 +330,6 @@ class Appeears(Dataset):
         return files
 
     def raw_load_points(self):
-
         files = self.download_points()
         dfs = []
         for file in files:
@@ -334,9 +340,7 @@ class Appeears(Dataset):
 
         return df
 
-
     def load_points(self):
-
         df = self.raw_load_points()
 
         # Filter and rename columns
@@ -359,37 +363,39 @@ class Appeears(Dataset):
         # Mask fill values
         for layer in self.layers:
             layer_props = layers("MCD12Q2.061")
-            fill_value = layer_props['Greenup'].FillValue
+            fill_value = layer_props["Greenup"].FillValue
             for column in df.columns:
                 if layer in column:
-                    df[column] = df[column].mask(df[column]==fill_value)
+                    df[column] = df[column].mask(df[column] == fill_value)
 
         # Drop columns with are completely filled with NaN
-        df = df.dropna(axis=1, how='all')
+        df = df.dropna(axis=1, how="all")
 
         # Convert to geodataframe
         lat = df.pop("Latitude")
         lon = df.pop("Longitude")
-        df['geometry'] = gpd.points_from_xy(lon, lat)
+        df["geometry"] = gpd.points_from_xy(lon, lat)
 
         # Deduct date offset
         if self.infer_date_offset:
             for column in df.columns:
-                if column not in ['datetime', 'geometry']:
-                    value_as_datetime = df[column].map(partial(pd.Timestamp, unit='D'))
-                    value_as_timedelta = value_as_datetime - df['datetime']
+                if column not in ["datetime", "geometry"]:
+                    value_as_datetime = df[column].map(partial(pd.Timestamp, unit="D"))
+                    value_as_timedelta = value_as_datetime - df["datetime"]
                     df[column] = value_as_timedelta.dt.days
-            df['year'] = df['datetime'].dt.year
-            df = df.drop(columns='datetime')
+            df["year"] = df["datetime"].dt.year
+            df = df.drop(columns="datetime")
 
         else:
             if self.resample:
-                df = resample(df, freq=self.resample.frequency, operator=self.resample.operator)
+                df = resample(
+                    df, freq=self.resample.frequency, operator=self.resample.operator
+                )
 
             # Daily data: Split datetime in DOY and year, and pivot
-            df['year'] = df['datetime'].dt.year
-            df['DOY'] = df['datetime'].dt.dayofyear
-            df = df.drop(columns='datetime')
+            df["year"] = df["datetime"].dt.year
+            df["DOY"] = df["datetime"].dt.dayofyear
+            df = df.drop(columns="datetime")
 
             # Pivot
             df = df.set_index(["year", "geometry", "DOY"]).unstack("DOY")
@@ -397,6 +403,7 @@ class Appeears(Dataset):
             df = df.reset_index()
 
         return gpd.GeoDataFrame(df)
+
 
 def _read_credentials():
     # TODO get config dir from session

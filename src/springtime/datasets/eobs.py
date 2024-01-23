@@ -80,8 +80,13 @@ from xarray import open_mfdataset
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (NamedArea, Point, Points, get_points_from_raster,
-                              split_time)
+from springtime.utils import (
+    NamedArea,
+    Point,
+    Points,
+    get_points_from_raster,
+    split_time,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -147,8 +152,10 @@ class EOBS(Dataset):
             re-downloading for new years/areas. Default is False, i.e. keep the full
             EOBS grid.
 
-        [1] https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-        [2] https://docs.xarray.dev/en/stable/generated/xarray.Dataset.resample.html
+        [1]
+        https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+        [2]
+        https://docs.xarray.dev/en/stable/generated/xarray.Dataset.resample.html
     """
 
     dataset: Literal["E-OBS"] = "E-OBS"

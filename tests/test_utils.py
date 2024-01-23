@@ -10,8 +10,7 @@ from geopandas.testing import assert_geodataframe_equal
 from numpy.testing import assert_array_equal
 from shapely.geometry import Point
 
-from springtime.utils import (points_from_cube, resample, rolling_mean,
-                              transponse_df)
+from springtime.utils import points_from_cube, resample, rolling_mean, transponse_df
 
 
 def test_join_spatiotemporal_same_geometry():

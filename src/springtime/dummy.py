@@ -43,8 +43,13 @@ def pycaret_ready(n=100):
     )
 
 
-# def generate_predictor(observations, name='temperature'):
+# def generate_predictor(observations, name="temperature"):
 #     """Given a year and location, generate random temperatures for each DOY."""
-#     dummy = observations.apply(lambda row: pd.Series(np.random.randn(365), index=np.arange(1, 366), name=name), axis=1)
+#     dummy = observations.apply(
+#         lambda row: pd.Series(np.random.randn(365),index=np.arange(1, 366),name=name),
+#         axis=1,
+#     )
 #     # return dummy
-#     return observations[['year', 'geometry']].assign(temperature=[pd.Series(v) for v in dummy.values])
+#     return observations[["year", "geometry"]].assign(
+#         temperature=[pd.Series(v) for v in dummy.values]
+#     )

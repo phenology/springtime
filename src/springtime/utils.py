@@ -11,8 +11,13 @@ from typing import NamedTuple, Sequence
 import geopandas as gpd
 import pandas as pd
 import xarray as xr
-from pydantic import (BaseModel, PositiveInt, PrivateAttr, field_validator,
-                      model_validator)
+from pydantic import (
+    BaseModel,
+    PositiveInt,
+    PrivateAttr,
+    field_validator,
+    model_validator,
+)
 from shapely.geometry import Polygon
 
 logger = getLogger(__name__)

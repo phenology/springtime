@@ -1,4 +1,3 @@
-import shutil
 from textwrap import dedent
 
 import geopandas as gpd

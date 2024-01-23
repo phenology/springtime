@@ -93,8 +93,15 @@ from pydantic import field_validator, model_validator
 
 from springtime.config import CONFIG
 from springtime.datasets.abstract import Dataset
-from springtime.utils import (NamedArea, Point, Points, ResampleConfig,
-                              YearRange, resample, run_r_script)
+from springtime.utils import (
+    NamedArea,
+    Point,
+    Points,
+    ResampleConfig,
+    YearRange,
+    resample,
+    run_r_script,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -274,7 +281,7 @@ class Daymet(Dataset):
                 logger.info(f"Found {path}")
             else:
                 logger.info(f"Downloading variable {variable} for year {year}")
-                # Downloading tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
+                # Download tests/recipes/daymet.yaml:daymet_bounding_box_all_variables
                 # took more than 30s so upped timeout
                 run_r_script(self._r_download_ncss(variable, year), timeout=120)
 

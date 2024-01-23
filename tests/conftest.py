@@ -28,7 +28,7 @@ def temporary_cache_dir(tmp_path):
 
 
 ### Add markers to skip download tests and for updating reference data
-### https://docs.pytest.org/en/latest/example/simple.html#control-skipping-of-tests-according-to-command-line-option
+# https://docs.pytest.org/en/latest/example/simple.html#control-skipping-of-tests-according-to-command-line-option
 
 
 def pytest_addoption(parser):

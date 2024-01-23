@@ -225,6 +225,7 @@ class EOBS(Dataset):
     def _minimized_path(self, variable: Variable):
         """Return path with modified filename when minimize_cache is True."""
         # Same pattern, custom period/region:
+        assert self.years, "self.years should be defined"  # type narrowing
         period = f"{self.years.start}-{self.years.end}"
         minimized_filename = self._server_filename(variable, period)
 

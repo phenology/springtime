@@ -161,6 +161,7 @@ class RNPN(Dataset):
 
         paths = []
 
+        assert self.years, "years should be defined for download"  # type narrowing
         for year in self.years.range:
             filename = self._filename(year)
 

@@ -47,7 +47,7 @@ class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
         raise NotImplementedError("raw_load not implemented for this dataset.")
 
     @abstractmethod
-    def load(self, **kwargs):
+    def load(self):
         """Load, harmonize, and optionally pre-process the data.
 
         Default output of load should be compatible with recipe execution.

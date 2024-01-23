@@ -33,7 +33,7 @@ Datasets = Annotated[
 ]
 
 
-def load_dataset(recipe: str) -> Dataset:
+def load_dataset(recipe: str) -> Datasets:
     """Load a dataset formatted as (yaml) recipe.
 
     Args:

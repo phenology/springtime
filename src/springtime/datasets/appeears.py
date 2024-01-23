@@ -262,6 +262,8 @@ class Appeears(Dataset):
 
     def _point_task_name(self, points: Points):
         """Generate unique name for point download task"""
+        assert self.years, "self.years should be defined"  # type narrowing
+
         return _generate_task_name(
             product=self.product,
             points=self._points_hash(points),
@@ -274,6 +276,7 @@ class Appeears(Dataset):
         return f"{chunk}-results.csv".replace("_", "-")
 
     def _run_point_task(self, points):
+        assert self.years, "years should be defined for download"  # type narrowing
         task_name = _generate_task_name(
             product=self.product,
             points=self._points_hash(points),

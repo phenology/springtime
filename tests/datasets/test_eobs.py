@@ -8,7 +8,8 @@ import xarray as xr
 
 from springtime.config import CONFIG
 from springtime.datasets import load_dataset
-from springtime.datasets.meteo.eobs import EOBS, extract_points
+from springtime.datasets import EOBS
+from springtime.utils import extract_points
 
 """
 To update reference data, run one of the following:

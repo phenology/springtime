@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: GPL-2.0-only
-# due to import of rppo
 """
 This module contains functionality to download data from the Plant Phenology
 Ontology data portal.

@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
 import geopandas as gpd
 import numpy as np
 import pandas as pd

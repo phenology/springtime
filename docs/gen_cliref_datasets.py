@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
 """Generate the code reference pages and navigation."""
 
 from pathlib import Path

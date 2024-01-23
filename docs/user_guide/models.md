@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2023 Springtime authors
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 ## High-level ML with springtime & pycaret
 
 Springtime executes machine learning algorithms that are supported by the

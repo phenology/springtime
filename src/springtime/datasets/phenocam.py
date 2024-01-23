@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: AGPL-3.0-only
-# due to import of phenocamr
 """
 This module contains functionality to download and load data from phenocam
 observations

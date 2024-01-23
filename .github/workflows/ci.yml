@@ -38,9 +38,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install hatch
-    - name: Run checks
-      run: |
-        hatch run ruff check src
-        hatch run mypy src tests
-        hatch run reuse lint
-        hatch run pytest
+    - name: ruff
+      run: hatch run ruff check src
+    - name: mypy
+      run: hatch run mypy src tests
+    - name: reuse
+      run: hatch run reuse lint
+    - name: pytest
+      run: hatch run pytest

@@ -36,6 +36,7 @@ classifiers = [
 dependencies = [
   "xarray",
   "pyphenology",
+  "cftime"
   "scipy",  # unspecified dependency of pyphenology
   "interpret",
   "joblib",  # unspecified dependency of pyphenology

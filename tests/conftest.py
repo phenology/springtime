@@ -6,7 +6,7 @@ from springtime.config import CONFIG
 
 ### Sample data for tests is shipped with the package
 TEST_CACHE = "tests/reference_data/"
-CONFIG.cache_dir = TEST_CACHE
+CONFIG.cache_dir = TEST_CACHE  # type: ignore (pydantic will parse str to path)
 
 
 ### Temporarily change the cache dir for regression tests

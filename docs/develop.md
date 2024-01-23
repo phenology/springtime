@@ -87,7 +87,7 @@ licensed. For more info, see the [REUSE FAQ](https://reuse.software/tutorial/).
 The [reuse](https://reuse.readthedocs.io/en/latest/index.html) tool can be used for
 checking compliance with the REUSE specification.
 
-```
+```bash
 # Check licenses
 hatch run reuse lint
 ```
@@ -165,8 +165,7 @@ bug reports, or feature requests.
 If you want to make a pull request:
 
 1. discuss your idea first, before putting in a lot of effort
-1. refer to the [developer
-   documentation](https://springtime.readthedocs.io/en/latest/develop.html)
+1. refer to the this documentation
 1. if needed, fork the repository to your own Github profile
 1. work on your own feature branch
 1. make sure the existing tests still work and add new tests (if necessary)

@@ -4,12 +4,12 @@ from sklearn.base import (
     RegressorMixin,
     check_is_fitted,
 )
-from core_models import CORE_MODELS
-from loss_functions import LOSS_FUNCTIONS
 
 from numpy.typing import ArrayLike
 from scipy.optimize import basinhopping
 
+from .phenology_models import PHENOLOGY_MODELS
+from .loss_functions import LOSS_FUNCTIONS
 
 
 class BasinHopper(RegressorMixin, BaseEstimator):
@@ -44,7 +44,8 @@ class BasinHopper(RegressorMixin, BaseEstimator):
         """
         X, y = self._validate_data(X, y)
         # TODO: check additional assumptions about input
-        core_model = CORE_MODELS[self.core_model]
+
+        core_model = PHENOLOGY_MODELS[self.core_model]
         loss_function = LOSS_FUNCTIONS[self.loss_function]
 
         # Perform the fit
@@ -83,8 +84,16 @@ class BasinHopper(RegressorMixin, BaseEstimator):
         X = self._validate_data(X)
         check_is_fitted(self, 'core_params_')
 
-        core_model = CORE_MODELS[self.core_model]
+        core_model = PHENOLOGY_MODELS[self.core_model]
         return core_model.predict(X, *self.core_params_)
+
+    def _more_tags(self):
+        # Pass checks related to performance of model as the thermaltime model
+        # cannot be expected to perform well for random data.
+        # https://scikit-learn.org/stable/developers/develop.html#estimator-tags
+        return {
+            'poor_score': True
+        }
 
 
 

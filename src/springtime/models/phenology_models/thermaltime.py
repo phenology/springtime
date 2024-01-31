@@ -1,6 +1,9 @@
 import numpy as np
 
-def thermaltime(X, t1: int = 1, T: int = 5, F: int = 500):
+from .phenology_model import PhenologyModel
+
+
+def predict_thermaltime(X, t1: int = 1, T: int = 5, F: int = 500):
     """Make prediction with the thermaltime model.
 
     Args:
@@ -35,4 +38,9 @@ def thermaltime(X, t1: int = 1, T: int = 5, F: int = 500):
     return doy
 
 
-
+thermaltime = PhenologyModel(
+    predict = predict_thermaltime,
+    params_names = ('t1', 'T', 'F'),
+    params_defaults = (1, 5, 500),
+    params_bounds = ((-67, 298), (-25, 25), (0, 1000)),
+)

@@ -40,6 +40,7 @@ dependencies = [
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
   "xdg-base-dirs",
+  "sklearn",  # physical models need this
 ]
 dynamic = ["version"]
 
@@ -62,6 +63,13 @@ docs = [
   "mkdocstrings-python>=1.3.0",
   "mkdocs-literate-nav",
   "mkdocs-section-index",
+],
+# Extras for a nice complete environment and running the tutorial
+extras = [
+  "dumme",  # for modelling notebooks
+  "pycaret[models]",  # for modelling notebooks
+  "ipykernel",  # for running notebooks
+  "pyphenology",  # just for comparison
 ]
 
 [project.urls]
@@ -76,7 +84,7 @@ springtime = "springtime.main:cli"
 path = "src/springtime/__init__.py"
 
 [tool.hatch.envs.default]
-features = ["dev", "docs"]
+features = ["dev", "docs", "extras"]
 
 [tool.hatch.envs.default.scripts]
 quality-checks = [

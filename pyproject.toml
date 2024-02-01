@@ -30,7 +30,7 @@ classifiers = [
   "Intended Audience :: Science/Research",
 ]
 dependencies = [
-  "xarray=="2023.8.0",  # https://github.com/phenology/springtime/issues/198
+  "xarray==2023.8.0",  # https://github.com/phenology/springtime/issues/198
   "pyphenology",
   "cftime",
   "scipy",  # unspecified dependency of pyphenology

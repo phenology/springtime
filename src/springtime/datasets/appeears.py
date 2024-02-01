@@ -192,7 +192,6 @@ class Appeears(Dataset):
         assert self.area, "Load area requires area input"
 
         path = self.download_area()
-
         ds = xr.open_dataset(path)
         return ds
 

@@ -40,7 +40,7 @@ dependencies = [
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
   "xdg-base-dirs",
-  "scikit-learn",  # physical models need this
+  "scikit-learn"  # physical models need this
 ]
 dynamic = ["version"]
 

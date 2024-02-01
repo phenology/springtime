@@ -68,6 +68,9 @@ def pytest_collection_modifyitems(config, items):
         items[:] = update_items
         return
 
+    skip_download = pytest.mark.skip(reason="need --include-downloads option to run")
+    skip_update = pytest.mark.skip(reason="need --update-reference option to run")
+
     if not config.getoption("--include-downloads"):
         skip_download = pytest.mark.skip(
             reason="need --include-downloads option to run"
@@ -75,6 +78,8 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "download" in item.keywords:
                 item.add_marker(skip_download)
+            if "update" in item.keywords:
+                item.add_marker(skip_update)
 
 
 @pytest.fixture()

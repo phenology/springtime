@@ -6,7 +6,6 @@ from logging import getLogger
 from typing import NamedTuple, Sequence
 
 import geopandas as gpd
-import pandas as pd
 import xarray as xr
 from pydantic import (
     BaseModel,
@@ -376,8 +375,8 @@ def get_points_from_raster(points: Point | Points, ds: xr.Dataset) -> xr.Dataset
         geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
         ds = extract_points(ds, geometry)
     elif isinstance(points, Sequence):
-        x = [p.x for p in points]
-        y = [p.y for p in points]
+        x = [p.x for p in points]  # type: ignore  # Mypy struggles in CI
+        y = [p.y for p in points]  # type: ignore  # Mypy struggles in CI
         geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
         ds = extract_points(ds, geometry)
     else:
@@ -438,18 +437,17 @@ def join_dataframes(dfs, index_cols=["year", "geometry"]):
 
 def split_time(ds, freq="daily"):
     """Split datetime coordinate into year and dayofyear or month."""
-    year = ds.time.dt.year.values
+    year = ds.time.dt.year.data
 
-    if freq == "daily":
-        doy = ds.time.dt.dayofyear.values
-        cols = [year, doy]
-        colnames = ["year", "doy"]
-    elif freq == "monthly":
-        month = ds.time.dt.month.values
-        cols = [year, month]
-        colnames = ["year", "month"]
+    if freq in ["daily", "day", "D"]:
+        freqdim = ds.time.dt.dayofyear.data
+    elif freq in ["monthly", "month", "M"]:
+        freqdim = ds.time.dt.month.data
     else:
         raise ValueError("Unknown frequency. Choose daily or monthly.")
 
-    split_time = pd.MultiIndex.from_arrays(cols, names=colnames)
-    return ds.assign_coords(time=split_time).unstack("time")
+    return (
+        ds.assign_coords(year=("time", year), timeinyear=("time", freqdim))
+        .set_index(time=("year", "timeinyear"))
+        .unstack("time")
+    )

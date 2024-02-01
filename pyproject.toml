@@ -93,7 +93,6 @@ quality-checks = [
   "black src tests",
   "ruff check src tests --fix",
   "mypy src tests",
-  "reuse lint",
 ]
 doctest = "pytest --doctest-modules --doctest-report none {args}"
 

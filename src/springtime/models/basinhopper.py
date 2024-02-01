@@ -1,4 +1,3 @@
-
 from sklearn.base import (
     BaseEstimator,
     RegressorMixin,
@@ -18,7 +17,17 @@ class BasinHopper(RegressorMixin, BaseEstimator):
     Can fit a model of the form f(X, *params) given the parameters ranges and
     default values.
     """
-    def __init__(self, niter= 50000, T= 0.5, stepsize= 0.5, disp=False, minimizer_method="L-BFGS-B", core_model="thermaltime", loss_function='RMSE'):
+
+    def __init__(
+        self,
+        niter=50000,
+        T=0.5,
+        stepsize=0.5,
+        disp=False,
+        minimizer_method="L-BFGS-B",
+        core_model="thermaltime",
+        loss_function="RMSE",
+    ):
         self.niter = niter
         self.T = T
         self.stepsize = stepsize
@@ -52,10 +61,10 @@ class BasinHopper(RegressorMixin, BaseEstimator):
         bh = basinhopping(
             loss_function,
             x0=core_model.params_defaults,
-            niter = self.niter,
-            T = self.T,
-            stepsize = self.stepsize,
-            disp = self.disp,
+            niter=self.niter,
+            T=self.T,
+            stepsize=self.stepsize,
+            disp=self.disp,
             minimizer_kwargs={
                 "method": self.minimizer_method,
                 "args": (core_model.predict, X, y),
@@ -82,7 +91,7 @@ class BasinHopper(RegressorMixin, BaseEstimator):
                Predicted DOY of the spring onset for each sample in X.
         """
         X = self._validate_data(X)
-        check_is_fitted(self, 'core_params_')
+        check_is_fitted(self, "core_params_")
 
         core_model = PHENOLOGY_MODELS[self.core_model]
         return core_model.predict(X, *self.core_params_)
@@ -91,10 +100,4 @@ class BasinHopper(RegressorMixin, BaseEstimator):
         # Pass checks related to performance of model as the thermaltime model
         # cannot be expected to perform well for random data.
         # https://scikit-learn.org/stable/developers/develop.html#estimator-tags
-        return {
-            'poor_score': True
-        }
-
-
-
-
+        return {"poor_score": True}

@@ -39,8 +39,8 @@ def predict_thermaltime(X, t1: int = 1, T: int = 5, F: int = 500):
 
 
 thermaltime = PhenologyModel(
-    predict = predict_thermaltime,
-    params_names = ('t1', 'T', 'F'),
-    params_defaults = (1, 5, 500),
-    params_bounds = ((-67, 298), (-25, 25), (0, 1000)),
+    predict=predict_thermaltime,
+    params_names=("t1", "T", "F"),
+    params_defaults=(1, 5, 500),
+    params_bounds=((-67, 298), (-25, 25), (0, 1000)),
 )

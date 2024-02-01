@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class PhenologyModel():
+class PhenologyModel:
     predict: Callable
     params_names: tuple[str, ...]
     params_defaults: tuple[float, ...]

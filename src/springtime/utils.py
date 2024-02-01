@@ -376,8 +376,8 @@ def get_points_from_raster(points: Point | Points, ds: xr.Dataset) -> xr.Dataset
         geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
         ds = extract_points(ds, geometry)
     elif isinstance(points, Sequence):
-        x = [p.x for p in points]
-        y = [p.y for p in points]
+        x = [p.x for p in points]  # type: ignore  # Mypy struggles in CI
+        y = [p.y for p in points]  # type: ignore  # Mypy struggles in CI
         geometry = gpd.GeoSeries(gpd.points_from_xy(x, y), name="geometry")
         ds = extract_points(ds, geometry)
     else:

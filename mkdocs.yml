@@ -6,7 +6,7 @@ repo_name: Springtime
 nav:
   - Home: index.md
   - User guide:
-    - Installation: setup.md
+    - Installation: installation.md
     - Intro: user_guide/intro.ipynb
     - Datasets:
       - Overview: user_guide/datasets/overview.md

@@ -1,44 +1,57 @@
 # Getting started
 
-This project requires python and R. We provide two ways to simplify the
-installation: [using mamba](#installing-with-mamba) and [using docker](#installing-with-docker).
+Springtime is a Python library, but it relies on R packages for some of the data
+downloads. Depending on your situation, the options below may be applicable:
 
-## Installing with mamba
+1. You want to [create a new (conda/mamba)
+   environment](#create-a-new-condamamba-environment) that contains both R and
+   python, and [install springtime](#install-springtime) and [the relevant R
+   packages](#install-r-dependencies) inside it.
+2. You want to [install springtime](#install-springtime) and [its R
+   dependencies](#install-r-dependencies) in an existing environment where R and
+   Python are already available
+3. You want to [use a docker container](#use-springtime-through-docker) where
+   everything is already pre-installed.
+4. You want to [install springtime in an isolated environment on
+   CRIB](#install-on-crib-or-other-managed-jupyterhub-service) or a similar
+   JupyterHub service.
 
-### Create environment
+## Create a new (conda/mamba) environment
 
-Create a new Anaconda environment using [Mamba
-forge](https://github.com/conda-forge/miniforge#mambaforge) and our environment
-file:
+You need to have mamba/conda available on your system. To create a new environment
+and activate it, run
+
+```bash
+mamba create --name springtime python="3.11"
+mamba activate springtime
+```
+
+### Add pre-compiled R dependencies
+
+In the next step, we will install the R dependencies. However, these can take a long time to compile. Alternatively, most of the dependencies are available as pre-compiled binaries via conda. You may choose to install these in your new environment by using the environment shipped with springtime.
 
 ```shell
 curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/main/environment.yml
-mamba env create --file environment.yml
-conda activate springtime
+mamba env update -n springtime -f environment.yml
 ```
 
-This environment contains python, R, and some of the dependencies of our project
-that are available on conda-forge.
+## Install springtime
 
-You can verify that the environment is configured correctly by running
+Springtime is available on PyPI and can be installed with pip:
 
 ```bash
-python -m rpy2.situation
+pip install springtime
 ```
 
-If everything is okay, it should print something like:
+This only installs the bare package. We provide an 'extras' option that additionally installs some ML models, ipykernel for working in notebooks. To install these extras along with springtime, run
 
 ```bash
-...
-Calling `R RHOME`: /home/peter/miniconda3/envs/springtime/lib/R
-Environment variable R_LIBS_USER: None
-...
+pip install springtime[extras]
 ```
 
-### Install R dependencies
+## Install R dependencies
 
-Additional [R](https://www.r-project.org/) libraries that are not available from
-conda-forge need to be added manuallyL
+R dependencies can be installed with the following:
 
 ```bash
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
@@ -46,15 +59,7 @@ Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
 ```
 
-### Install springtime
-
-Now, you can install springtime along with it's (python) dependencies like so:
-
-```bash
-pip install git+https://github.com/phenology/springtime.git
-```
-
-## Installing with docker
+## Use springtime through docker
 
 An alternative way to use springtime is via docker. We have prepared a docker
 image that can be found
@@ -158,9 +163,9 @@ that should make specification of the output or data directories more flexible.
 
 ## Install on CRIB or other managed JupyterHub service
 
-If you want to run or develop springtime using JupyterHub on a machine that you
-don't manage, you can add your own environment by making a new (conda or
-virtualenv) environment, and adding it to the Jupyter kernelspec list. To this end:
+Sometimes the existing environment may clash with your springtime environment,
+or you don't have complete control over the default environment. In that case,
+it may be possible to create a custom kernel for springtime. To this end:
 
 ```bash
 # 0. Start Intel x86_64 machine

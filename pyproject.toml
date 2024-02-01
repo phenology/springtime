@@ -65,7 +65,7 @@ docs = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/phenology/springtime#readme"
+Documentation = "https://springtime.readthedocs.io/en/latest/"
 Issues = "https://github.com/phenology/springtime/issues"
 Source = "https://github.com/phenology/springtime"
 

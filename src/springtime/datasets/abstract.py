@@ -1,42 +1,60 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
+"""
+Standard interface for springtime datasets.
+
+All springtime datasets should inherit from the abstract Dataset class and
+implement the basic functionality described here.
+"""
+
 from abc import ABC, abstractmethod
-from typing import Optional
-from pydantic import BaseModel, validator
 
-from springtime.utils import ResampleConfig, YearRange
+import yaml
+from pydantic import BaseModel
+
+from springtime.utils import YearRange
 
 
-class Dataset(BaseModel, ABC):
+class Dataset(BaseModel, ABC, validate_default=True, validate_assignment=True):
+    """Base class for springtime datasets.
+
+    Attributes:
+        dataset: The name of the dataset.
+        years: timerange. For example years=[2000, 2002] downloads data for
+            three years.
+    """
+
     dataset: str
-    """The name of the dataset."""
-    years: YearRange
-    """ years is passed as range for example years=[2000, 2002] downloads data
-    for three years."""
-    resample: Optional[ResampleConfig] = None
-    """Resample the dataset to a different time resolution. If None, no resampling."""
-    # TODO run multiple resamplings like weekly, monthly with min and max?
-
-    @validator("years")
-    def _validate_year_range(cls, values: YearRange):
-        assert (
-            values.start <= values.end
-        ), f"start year ({values.start}) should be smaller than end year ({values.end})"
-        return values
+    years: YearRange | None = None  # TODO not optional or not in abstract
 
     @abstractmethod
     def download(self):
         """Download the data.
 
-        Only downloads if data is not in CONFIG.data_dir or CONFIG.force_override
+        Only downloads if data is not in CONFIG.cache_dir or
+        CONFIG.force_override
         is TRUE.
         """
 
+    def raw_load(self):
+        """Loads from disk with minimal modification.
+
+        Mostly intended to provide insight into the modifications made in the
+        load method.
+        """
+        raise NotImplementedError("raw_load not implemented for this dataset.")
+
     @abstractmethod
     def load(self):
-        """Load the dataset from disk into memory.
+        """Load, harmonize, and optionally pre-process the data.
 
-        This may include pre-processing operations as specified by the context, e.g.
-        filter certain variables, remove data points with too many NaNs, reshape data.
+        Default output of load should be compatible with recipe execution.
+
+        kwargs can be used to control behaviour that is useful in API, but
+        breaks the recipe. For example, don't convert to geopandas.
         """
+
+    def to_recipe(self):
+        """Print out a recipe to reproduce this dataset."""
+        recipe = self.model_dump(
+            mode="json", exclude_none=True, exclude=["credential_file"]
+        )
+        return yaml.dump(recipe, sort_keys=False)

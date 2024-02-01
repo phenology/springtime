@@ -1,16 +1,160 @@
-<!--
-SPDX-FileCopyrightText: 2023 Springtime authors
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 # Getting started
 
-{%
-   include-markdown "../README.md"
-   start="<!--installation-start-->"
-   end="<!--installation-end-->"
-%}
+This project requires python and R. We provide two ways to simplify the
+installation: [using mamba](#installing-with-mamba) and [using docker](#installing-with-docker).
+
+## Installing with mamba
+
+### Create environment
+
+Create a new Anaconda environment using [Mamba
+forge](https://github.com/conda-forge/miniforge#mambaforge) and our environment
+file:
+
+```shell
+curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/main/environment.yml
+mamba env create --file environment.yml
+conda activate springtime
+```
+
+This environment contains python, R, and some of the dependencies of our project
+that are available on conda-forge.
+
+You can verify that the environment is configured correctly by running
+
+```bash
+python -m rpy2.situation
+```
+
+If everything is okay, it should print something like:
+
+```bash
+...
+Calling `R RHOME`: /home/peter/miniconda3/envs/springtime/lib/R
+Environment variable R_LIBS_USER: None
+...
+```
+
+### Install R dependencies
+
+Additional [R](https://www.r-project.org/) libraries that are not available from
+conda-forge need to be added manuallyL
+
+```bash
+Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
+Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
+Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
+```
+
+### Install springtime
+
+Now, you can install springtime along with it's (python) dependencies like so:
+
+```bash
+pip install git+https://github.com/phenology/springtime.git
+```
+
+## Installing with docker
+
+An alternative way to use springtime is via docker. We have prepared a docker
+image that can be found
+[here](https://github.com/phenology/springtime/pkgs/container/springtime). This
+image is based on [the official jupyter docker
+stack](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-r-notebook)
+with R already installed. On top of that, we have already installed springtime
+with all its dependencies.
+
+To use it, you need to have docker installed on your system.
+
+Official instructions for installing docker desktop can be found
+[here](https://docs.docker.com/engine/install/). Alternatively, many third-party
+instructions can be found online to install docker without docker
+desktop, for example in WSL.
+
+Once you have docker, you can pull the springtime image using
+
+```bash
+docker pull ghcr.io/phenology/springtime:latest
+```
+
+After the download completes, the image should be listed when you type `docker images`.
+
+### Using the docker image
+
+You can use the docker image in two ways. The following command will start a
+jupyter lab instance in which the springtime environment is installed:
+
+```bash
+docker run --rm -it -p 8888:8888 -v "${PWD}":/home/jovyan/work ghcr.io/phenology/springtime:latest
+```
+
+Alternatively, you can use the docker image to use the springtime command on
+your terminal:
+
+```bash
+docker run --rm ghcr.io/phenology/springtime:latest springtime --help
+```
+
+You could also set an alias like so:
+
+```bash
+# By setting this alias
+alias springtime="docker run --rm ghcr.io/phenology/springtime:latest springtime"
+
+# you can now run
+springtime --help
+
+# which will effectively execute
+docker run --rm ghcr.io/phenology/springtime:latest springtime --help
+```
+
+As such, you can effectively use the docker version of springtime exactly like
+you would use a local installation.
+
+### Customizing the docker command to your needs
+
+Essentially, the commands above can be split into a few parts:
+
+```
+docker run <OPTIONS> ghcr.io/phenology/springtime:latest <COMMAND>
+```
+
+The core command `docker run ghcr.io/phenology/springtime:latest` starts a container based on the
+`springtime` image you just pulled. The `--rm` option makes sure it is deleted
+again after it is done executing `<COMMAND>`. The default command is to start a
+jupyter lab instance, so that's what happens if you don't specify `<COMMAND>`.
+Above, we executed the command `springtime --help`.
+
+The `-v "${PWD}":/home/jovyan/work` tells docker to make your current working
+directory (on your own system) available to the docker container. Inside the
+container this directory will be available as `/home/jovyan/work`, i.e. the
+`work` folder you see by default in jupyter lab. Changes inside this folder will
+remain available on your host system. Changes in any other directory will be
+lost when the container is destroyed. Note that you can mount multiple
+directories in this way.
+
+The `-it` makes it possible to interact with the running program, intead of
+simply executing and exiting. Thus container will terminate once you terminate
+your jupyter lab session.
+
+Additional options may be added to the docker command as well. For example, to
+run on a macbook, we had to add `--platform linux/amd64`:
+
+```
+docker run --rm --platform linux/amd64 ghcr.io/phenology/springtime springtime --help
+```
+
+Be aware that docker containers can consume significant resources on your
+system. Make sure that they're always properly removed when you're ready. You
+can run `docker ps -a` to see all containers lingering around on your system,
+and you can remove them with `docker rm <ID OR NAME>`.
+
+### Note: tmp/data
+
+By default, currently, springtime stores any data or output in /tmp/data. That
+means it will be lost when the docker container is destroyed. To persist it, for
+now, move it to the work folder. We are planning to add additional configuration
+that should make specification of the output or data directories more flexible.
 
 ## Install mamba on CRIB
 

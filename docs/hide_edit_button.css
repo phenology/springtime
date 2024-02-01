@@ -1,0 +1,5 @@
+
+/* Hide "edit on github" button from pages */
+.md-content__button {
+    display: none;
+}

@@ -1,10 +1,4 @@
-<!--
-SPDX-FileCopyrightText: 2023 Springtime authors
-
-SPDX-License-Identifier: Apache-2.0
--->
-
-## Requirements
+# Requirements
 
 This project requires Python and R. To simplify installation of the (indirect) R
 depencencies we recommend creating a conda environment using [Mamba
@@ -72,26 +66,6 @@ hatch run mypy --install-types  # say yes
 hatch run mypy --ignore-missing-imports src tests
 ```
 
-## Licensing
-
-In principle, we like to publish our code under a permissive Apache-2.0 license.
-However, some of our dependencies are released under different licenses.
-Therefore, we use multi-licensing where each file specifies its own licensing
-conditions. We follow the REUSE specification, where every file should have
-license information in its header or, if this is not possible, as a separate
-`file.ext.license` file. Notebooks are by default licensed under AGPL via the
-`.reuse/dep5` file.
-
-When adding new code, you should verify that it is appropriately
-licensed. For more info, see the [REUSE FAQ](https://reuse.software/tutorial/).
-The [reuse](https://reuse.readthedocs.io/en/latest/index.html) tool can be used for
-checking compliance with the REUSE specification.
-
-```
-# Check licenses
-hatch run reuse lint
-```
-
 ## Hatch run quality-checks
 
 For convenience, we configured hatch to perform all the checks above with a
@@ -116,6 +90,14 @@ hatch run pytest tests/test_main.py
 hatch run pytest tests/test_main.py::test_cli
 ```
 
+To test examples in docstrings use:
+
+```bash
+hatch run doctest <file to test>
+# For example
+hatch run doctest src/springtime/utils.py
+```
+
 ## Documentation
 
 Documentation is build with [mkdocs](https://www.mkdocs.org/)
@@ -132,6 +114,22 @@ hatch run mkdocs serve
 hatch run mkdocs build --clean --strict
 ```
 
+## Docker build
+
+The docker image is hosted on [GitHub Container Registry
+(GHCR)](https://github.com/phenology/springtime/pkgs/container/springtime).
+
+You need to setup a personal access token following the instructions
+[here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic).
+
+Then build and push the image to GHCR:
+
+```bash
+# In the root of the repository
+docker build -t ghcr.io/phenology/springtime:latest .
+docker push ghcr.io/phenology/springtime:latest
+```
+
 ## Contributing guidelines
 
 We welcome contributions from everyone. Please use our [GitHub issue
@@ -141,8 +139,7 @@ bug reports, or feature requests.
 If you want to make a pull request:
 
 1. discuss your idea first, before putting in a lot of effort
-1. refer to the [developer
-   documentation](https://springtime.readthedocs.io/en/latest/develop.html)
+1. refer to the this documentation
 1. if needed, fork the repository to your own Github profile
 1. work on your own feature branch
 1. make sure the existing tests still work and add new tests (if necessary)
@@ -150,13 +147,8 @@ If you want to make a pull request:
 1. make sure your code follows the style guidelines
 1. don't be afraid to ask help with any of the above steps. We're happy to help!
 
-By participating in this project, you agree to abide by the [code of
-conduct](https://github.com/phenology/springtime/blob/main/CODE_OF_CONDUCT.md).
-
 ## Code of conduct
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone. We pledge to act and
-interact in ways that contribute to an open, welcoming, diverse, inclusive, and
-healthy community. For more information, see the
-[contributor-covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+By participating in this project, you agree to abide by the [code of
+conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) as
+spelled out in the contributor-covenant version 2.1

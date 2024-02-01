@@ -1,19 +1,18 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
 import logging
+from datetime import datetime
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import click
 import pandas as pd
 import yaml
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
+from springtime.config import CONFIG
+from springtime.config import Config as SpringtimeConfig
 from springtime.datasets import Datasets
-from springtime.utils import PointsFromOther, resample, transponse_df
+from springtime.utils import PointsFromOther, join_dataframes
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ class Session(BaseModel):
 
     output_dir: Path = Path(gettempdir()) / "output"
 
-    @validator("output_dir")
+    @field_validator("output_dir")
     def _make_dir(cls, path):
         """Create dirs if they don't exist yet."""
         if not path.exists():
@@ -31,16 +30,25 @@ class Session(BaseModel):
             path.mkdir(parents=True)
         return path
 
+    @classmethod
+    def for_recipe(
+        cls,
+        recipe: Path,
+        output_dir: Path | None = None,
+        config: SpringtimeConfig = CONFIG,
+    ) -> "Session":
+        if output_dir is None:
+            now = datetime.now().strftime("%Y%m%d-%H%M%S")
+            output_dir = config.output_root_dir / f"springtime-{recipe.stem}-{now}"
+        return cls(output_dir=output_dir)
+
     class Config:
-        validate_all = True
+        validate_default = True
 
 
 class Workflow(BaseModel):
-    datasets: Dict[str, Datasets]
-    cross_validation: List = []
-    models: List = []
-    recipe: Optional[Path] = None
-    session: Optional[Session] = None
+    datasets: Dict[str, Datasets] = {}
+    # preparation: Preparation = Preparation()
 
     @classmethod
     def from_recipe(cls, recipe: Path):
@@ -49,89 +57,76 @@ class Workflow(BaseModel):
 
         return cls(**options)
 
-    def execute(self):
-        """(Down)load data, pre-process, run models, evaluate."""
-        self.create_session()
+    def to_recipe(self):
+        """Return thew workflow as a recipe string."""
+        return yaml.dump(self.model_dump(mode="json"), sort_keys=False)
 
-        dataframes = {}
+    def save_recipe(self, path: Path):
+        """Save the workflow as a recipe file."""
+
+        with open(path, "w") as f:
+            yaml.dump(self.model_dump(mode="json"), f, sort_keys=False)
+
+    def execute(self, session: Session):
+        """(Down)load data, pre-process, run models, evaluate."""
+        self.save_recipe(session.output_dir / "recipe.yaml")
+
+        dataframes: dict[str, pd.DataFrame] = {}
         # TODO check for dependencies to infer order
         for dataset_name, dataset in self.datasets.items():
             if hasattr(dataset, "points") and isinstance(
                 dataset.points, PointsFromOther
             ):
                 dataset.points.get_points(dataframes[dataset.points.source])
-            print("Downloading dataset: ", dataset_name)
-            dataset.download()
-            ds = dataset.load()
-            logger.warning(f"Dataset {dataset_name} loaded with {len(ds)} rows")
-            if dataset.resample:
-                if issubclass(ds.__class__, pd.DataFrame):
-                    ds = resample(
-                        ds,
-                        freq=dataset.resample.frequency,
-                        operator=dataset.resample.operator,
-                    )
-                    # Transpose
-                    ds = transponse_df(
-                        ds,
-                        index=("year", "geometry"),
-                        columns=(dataset.resample.frequency,),
-                    )
-                else:
-                    # TODO resample xarray dataset
-                    raise NotImplementedError()
-            else:
-                # make sure "year" column exist.
-                ds["year"] = ds.datetime.dt.year
-                ds.drop("datetime", axis="columns", inplace=True)
-            logger.warning(f"Dataset {dataset_name} resampled to {len(ds)} rows")
+
+            df = dataset.load()
+            logger.info(f"Dataset {dataset_name} loaded with {len(df)} rows")
+
             # TODO add a check whether the combination of (year and geometry) is unique.
-            dataframes[dataset_name] = ds
+            dataframes[dataset_name] = df
 
-        # do join
-        others = [
-            ds.set_index(["year", "geometry"])
-            for ds in dataframes.values()
-            if issubclass(ds.__class__, pd.DataFrame)
-        ]
-        main_df = others.pop(0)
-        df = main_df.join(others, how="outer")
-        logger.warning(f"Datesets joined to shape: {df.shape}")
-        data_fn = self.session.output_dir / "data.csv"
+        # TODO refactor to generic "join" utility
+        df = join_dataframes(dataframes.values())
+
+        # # TODO: refactor to generic "prepare" utility
+        # df = self.preparation.prepare(df)
+
+        logger.info(f"Datasets joined to shape: {df.shape}")
+        data_fn = session.output_dir / "data.csv"
         df.to_csv(data_fn)
-        logger.warning(f"Data saved to: {data_fn}")
-
-        # TODO do something with datacubes
-        # self.run_experiments(df)
-
-    def create_session(self):
-        """Create a context for executing the experiment."""
-        # TDDO make session dir unique on each run
-        self.session = Session()
-        if self.recipe is not None:
-            self.recipe.copy(self.session.output_dir / "data.csv")
-
-    def run_experiments(self, df):
-        """Train and evaluate ML models."""
-        scores = {}
-        for model in self.models:
-            with self.cross_validation:
-                model.fit(df)
-                score = model.score()
-                scores[model] = score
-
-        with open(self.session.output_dir / "data.csv", "w") as output_file:
-            yaml.dump(scores, output_file)
+        logger.info(f"Data saved to: {data_fn}")
 
 
-def main(recipe):
-    Workflow.from_recipe(recipe).execute()
+def main(recipe, output_dir: Optional[Path]):
+    session = Session.for_recipe(recipe, output_dir)
+
+    Workflow.from_recipe(recipe).execute(session)
 
 
-@click.command()
-@click.argument("recipe")
-def cli(recipe):
-    main(recipe)
+@click.command
+@click.argument("recipe", type=click.Path(exists=True, path_type=Path))
+@click.option("--cache-dir", default=CONFIG.cache_dir, type=click.Path(path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(path_type=Path))
+@click.option(
+    "--output-root-dir", default=CONFIG.output_root_dir, type=click.Path(path_type=Path)
+)
+@click.option(
+    "--pep725-credentials-file",
+    default=CONFIG.pep725_credentials_file,
+    type=click.Path(path_type=Path),
+)
+def cli(
+    recipe: Path,
+    cache_dir: Path,
+    output_dir: Optional[Path],
+    output_root_dir: Path,
+    pep725_credentials_file: Path,
+):
+    logging.basicConfig(level=logging.INFO)
+    CONFIG.cache_dir = cache_dir
+    CONFIG.output_root_dir = output_root_dir
+    CONFIG.pep725_credentials_file = pep725_credentials_file
+    main(recipe, output_dir)
 
 
 if __name__ == "__main__":

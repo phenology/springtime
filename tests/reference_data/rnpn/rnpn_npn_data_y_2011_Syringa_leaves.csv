@@ -1,0 +1,26 @@
+"site_id","latitude","longitude","elevation_in_meters","state","species_id","genus","species","common_name","kingdom","individual_id","phenophase_id","phenophase_description","first_yes_year","first_yes_month","first_yes_day","first_yes_doy","first_yes_julian_date","numdays_since_prior_no","last_yes_year","last_yes_month","last_yes_day","last_yes_doy","last_yes_julian_date","numdays_until_next_no"
+17924,35.592316,-83.053261,4048,"NC",36,"Syringa","vulgaris","common lilac","Plantae",70360,483,"Leaves",2011,4,13,103,2455665,-9999,2011,4,13,103,2455665,-9999
+17925,35.594631,-80.531532,782,"NC",36,"Syringa","vulgaris","common lilac","Plantae",70364,483,"Leaves",2011,3,14,73,2455635,-9999,2011,3,14,73,2455635,-9999
+17928,35.656872,-84.170967,902,"TN",36,"Syringa","vulgaris","common lilac","Plantae",70375,483,"Leaves",2011,3,10,69,2455631,-9999,2011,3,10,69,2455631,-9999
+17944,36.399269,-86.966896,723,"TN",36,"Syringa","vulgaris","common lilac","Plantae",70436,483,"Leaves",2011,2,25,56,2455618,-9999,2011,2,25,56,2455618,-9999
+17950,36.658627,-91.788452,998,"MO",36,"Syringa","vulgaris","common lilac","Plantae",70461,483,"Leaves",2011,3,21,80,2455642,-9999,2011,3,21,80,2455642,-9999
+17974,38.717739,-90.154846,417,"IL",36,"Syringa","vulgaris","common lilac","Plantae",70538,483,"Leaves",2011,3,19,78,2455640,-9999,2011,3,19,78,2455640,-9999
+17975,38.82653,-83.823738,916,"OH",36,"Syringa","vulgaris","common lilac","Plantae",70544,483,"Leaves",2011,3,23,82,2455644,-9999,2011,3,23,82,2455644,-9999
+17976,38.882881,-84.520149,880,"KY",36,"Syringa","vulgaris","common lilac","Plantae",70549,483,"Leaves",2011,3,21,80,2455642,-9999,2011,3,21,80,2455642,-9999
+17980,38.993721,-85.245987,948,"IN",36,"Syringa","vulgaris","common lilac","Plantae",70561,483,"Leaves",2011,4,11,101,2455663,-9999,2011,4,11,101,2455663,-9999
+17986,39.24728,-81.547379,673,"WV",36,"Syringa","vulgaris","common lilac","Plantae",70581,483,"Leaves",2011,3,18,77,2455639,-9999,2011,3,18,77,2455639,-9999
+17998,39.720467,-77.484016,1406,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70617,483,"Leaves",2011,4,11,101,2455663,-9999,2011,4,11,101,2455663,-9999
+18025,40.664722,-79.893631,1155,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70720,483,"Leaves",2011,4,4,94,2455656,-9999,2011,4,4,94,2455656,-9999
+18029,40.852467,-73.119926,90,"NY",36,"Syringa","vulgaris","common lilac","Plantae",70730,483,"Leaves",2011,3,22,81,2455643,-9999,2011,3,22,81,2455643,-9999
+18033,40.984875,-77.443741,1164,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70745,483,"Leaves",2011,4,14,104,2455666,-9999,2011,4,14,104,2455666,-9999
+18036,41.041199,-80.297379,932,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70757,483,"Leaves",2011,4,13,103,2455665,-9999,2011,4,13,103,2455665,-9999
+18042,41.123333,-74.595016,578,"NJ",36,"Syringa","vulgaris","common lilac","Plantae",70780,483,"Leaves",2011,4,30,120,2455682,-9999,2011,4,30,120,2455682,-9999
+18043,41.134251,-80.81221,926,"OH",36,"Syringa","vulgaris","common lilac","Plantae",70783,483,"Leaves",2011,5,1,121,2455683,-9999,2011,5,1,121,2455683,-9999
+18046,41.214397,-85.127502,864,"IN",36,"Syringa","vulgaris","common lilac","Plantae",70794,483,"Leaves",2011,4,15,105,2455667,-9999,2011,4,15,105,2455667,-9999
+18068,41.911221,-72.633461,87,"CT",36,"Syringa","vulgaris","common lilac","Plantae",70863,483,"Leaves",2011,4,27,117,2455679,-9999,2011,4,27,117,2455679,-9999
+18071,42.01947,-80.335876,713,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70874,483,"Leaves",2011,4,29,119,2455681,-9999,2011,4,29,119,2455681,-9999
+18075,42.09705,-79.269127,1408,"NY",36,"Syringa","vulgaris","common lilac","Plantae",70886,483,"Leaves",2011,4,23,113,2455675,-9999,2011,4,23,113,2455675,-9999
+18079,42.130302,-80.014175,788,"PA",36,"Syringa","vulgaris","common lilac","Plantae",70901,483,"Leaves",2011,4,20,110,2455672,-9999,2011,4,20,110,2455672,-9999
+18083,42.334991,-73.651398,394,"NY",36,"Syringa","vulgaris","common lilac","Plantae",70911,483,"Leaves",2011,4,18,108,2455670,-9999,2011,4,18,108,2455670,-9999
+18087,42.491047,-83.215118,697,"MI",36,"Syringa","vulgaris","common lilac","Plantae",70924,483,"Leaves",2011,4,23,113,2455675,-9999,2011,4,23,113,2455675,-9999
+18101,42.98386,-88.164078,967,"WI",36,"Syringa","vulgaris","common lilac","Plantae",70964,483,"Leaves",2011,5,12,132,2455694,-9999,2011,5,12,132,2455694,-9999

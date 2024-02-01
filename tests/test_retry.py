@@ -1,11 +1,8 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
 import subprocess
 import time
 
 import pytest
+
 from springtime.utils import TimeoutError, retry
 
 

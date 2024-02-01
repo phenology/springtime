@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2023 Springtime authors
-#
-# SPDX-License-Identifier: Apache-2.0
-
 [build-system]
 requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
@@ -10,7 +6,7 @@ build-backend = "hatchling.build"
 name = "springtime"
 description = "Spatiotemporal phenology research with interpretable models"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = "AGPL-3.0-or-later AND Apache-2.0 AND CC-BY-4.0 AND CC0-1.0 AND GPL-2.0-only"
 keywords = [
   "phenology",
@@ -34,17 +30,22 @@ classifiers = [
   "Intended Audience :: Science/Research",
 ]
 dependencies = [
-  "xarray",
+  "xarray==2023.8.0",  # https://github.com/phenology/springtime/issues/198
   "pyphenology",
+  "cftime",
   "scipy",  # unspecified dependency of pyphenology
+  "interpret",
   "joblib",  # unspecified dependency of pyphenology
   "pyyaml",
   "pandas",
-  "pydantic",
-  "click",
+  "pycaret[models]",
+  "pydantic==2.*",
+  "click==8.1.3", # Workaround until https://github.com/pallets/click/issues/2558 is fixed
   "geopandas",
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
+  "dumme",
+  "xdg-base-dirs",
 ]
 dynamic = ["version"]
 
@@ -59,6 +60,7 @@ dev = [
   "reuse",
   "ruff",
   "types-pyyaml", # https://github.com/python/mypy/issues/10632
+  "types-requests",
 ]
 docs = [
   "mkdocs>=1.4.2",
@@ -66,6 +68,10 @@ docs = [
   "mkdocs-jupyter>=0.22.0",
   "mkdocs-gen-files",
   "mkdocs-include-markdown-plugin",
+  "mkdocstrings[python]",
+  "mkdocstrings-python>=1.3.0",
+  "mkdocs-literate-nav",
+  "mkdocs-section-index",
 ]
 
 [project.urls]
@@ -87,8 +93,12 @@ quality-checks = [
   "black src tests",
   "ruff check src tests --fix",
   "mypy src tests",
-  "reuse lint",
 ]
+doctest = "pytest --doctest-modules --doctest-report none {args}"
 
 [tool.mypy]
 ignore_missing_imports = true
+plugins = "pydantic.mypy"
+
+[tool.hatch.metadata]
+allow-direct-references = true

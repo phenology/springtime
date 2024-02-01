@@ -40,7 +40,7 @@ dependencies = [
   "dask",  # needed for xarray.open_mfdataset()
   "netCDF4",
   "xdg-base-dirs",
-  "scikit-learn",
+  "scikit-learn"
 ]
 dynamic = ["version"]
 
@@ -68,7 +68,7 @@ extras = [
   "dumme",  # for modelling notebooks
   "pycaret[models]",  # for modelling notebooks
   "ipykernel",  # for running notebooks
-  "pyphenology",  # just for comparison
+  "pyphenology",
 ]
 
 [project.urls]

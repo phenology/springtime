@@ -63,7 +63,7 @@ docs = [
   "mkdocstrings-python>=1.3.0",
   "mkdocs-literate-nav",
   "mkdocs-section-index",
-],
+]
 # Extras for a nice complete environment and running the tutorial
 extras = [
   "dumme",  # for modelling notebooks

@@ -320,10 +320,12 @@ class EOBS(Dataset):
             operator_key = resample_kwargs.pop("operator", "mean")
             operator = operators[operator_key]
             ds = ds.resample(time=frequency, **resample_kwargs).reduce(operator)
+        else:
+            frequency = "daily"
 
         # Extract year and DOY columns
         if "time" in ds.dims:
-            ds = split_time(ds)
+            ds = split_time(ds, freq=frequency)
 
         # Early return if no points are extracted
         if self.points is None:
@@ -345,13 +347,13 @@ class EOBS(Dataset):
         # TODO simplify; maybe add other option, to include data as list?
         if "index" in ds.coords:
             df = ds.to_dataframe()
-            df = df.set_index(["year", "geometry"], append=True).unstack("doy")
+            df = df.set_index(["year", "geometry"], append=True).unstack("timeinyear")
             df.columns = df.columns.map("{0[0]}|{0[1]}".format)
             df = df.reset_index("index", drop=True).reset_index()
             df = gpd.GeoDataFrame(df)
         else:
             df = ds.to_dataframe().reset_index()
-            df = df.set_index(["year", "geometry", "doy"]).unstack("doy")
+            df = df.set_index(["year", "geometry", "timeinyear"]).unstack("timeinyear")
             df.columns = df.columns.map("{0[0]}|{0[1]}".format)
             df = df.reset_index()
             df = gpd.GeoDataFrame(df)

@@ -68,12 +68,8 @@ def pytest_collection_modifyitems(config, items):
         items[:] = update_items
         return
 
-    skip_download = pytest.mark.skip(
-        reason="need --include-downloads option to run"
-    )
-    skip_update = pytest.mark.skip(
-        reason="need --update-reference option to run"
-    )
+    skip_download = pytest.mark.skip(reason="need --include-downloads option to run")
+    skip_update = pytest.mark.skip(reason="need --update-reference option to run")
 
     if not config.getoption("--include-downloads"):
         skip_download = pytest.mark.skip(

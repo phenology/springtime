@@ -1,6 +1,9 @@
 [![Documentation Status](https://readthedocs.org/projects/springtime/badge/?version=latest)](https://springtime.readthedocs.io/en/latest/?badge=latest)
 [![RSD](https://img.shields.io/badge/RSD-springtime-blue)](https://research-software-directory.org/software/springtime)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7835299.svg)](https://doi.org/10.5281/zenodo.7835299)
+[![PyPI version](https://badge.fury.io/py/springtime.svg)](https://badge.fury.io/py/springtime)
+
+
 
 For detailed information and instruction, please refer to the
 [documentation](https://springtime.readthedocs.io/)

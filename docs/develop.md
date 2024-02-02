@@ -1,33 +1,35 @@
-# Requirements
+# Developer guide
 
-This project requires Python and R. To simplify installation of the (indirect) R
-depencencies we recommend creating a conda environment using [Mamba
-forge](https://github.com/conda-forge/miniforge#mambaforge) with:
+If you want to make changes to springtime, you can [create an editable
+installation from source](#install-from-source).
+
+If your work might be useful for others, we encourage you to [contribute your
+changes](#contributing-guidelines) to the package. We are happy to help!
+
+Instructions on [adding datasets](../user_guide/datasets/adding_datasets) or [adding
+models](../user_guide/modelling/adding_models) are part of the user guide.
+
+This page lists everything you need to know about [code
+formatting](#linting-and-formatting), [testing](#testing), and [writing
+documentation](#documentation).
+
+## Install from source
+
+Follow the [installation instructions](../user_guide/installation) to set up your environment. Then clone the springtime git repo and create an editable installation with development dependencies:
 
 ```shell
 # Clone the repo
 git clone git@github.com:phenology/springtime
 cd springtime
-
-# Create and activate environment
-mamba env create --file environment.yml
-conda activate springtime
-
-# Install R requirements
-Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
-Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
-Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
+pip install --editable .[dev,docs,extras]
 ```
 
-If you already have a conda environment you can update the springtime dependencies with
+Now, whenever, you change the source code and restart the python interpreter,
+your changes will be reflected.
 
-```shell
-mamba env update --file environment.yml --name <name of conda environment>
-```
+### Using hatch
 
-## Development setup
-
-This package is built with [hatch](https://hatch.pypa.io/latest/).
+Alternatively, you can use hatch[hatch](https://hatch.pypa.io/latest/):
 
 ```bash
 # Create development environment for springtime
@@ -38,8 +40,9 @@ hatch shell
 springtime --help
 exit  # get out/deactivate
 
-# Alternatively, use hatch run to execute command in default env
+# Alternatively, use hatch run to execute commands in default env, e.g.
 hatch run springtime --help
+hatch run pytest
 ```
 
 ## Linting and formatting
@@ -64,14 +67,8 @@ hatch run ruff check src tests --fix
 # Run static type checking
 hatch run mypy --install-types  # say yes
 hatch run mypy --ignore-missing-imports src tests
-```
 
-## Hatch run quality-checks
-
-For convenience, we configured hatch to perform all the checks above with a
-single command:
-
-```bash
+# Run all of the above with a single command
 hatch run quality-checks
 ```
 
@@ -145,7 +142,8 @@ If you want to make a pull request:
 1. make sure the existing tests still work and add new tests (if necessary)
 1. update or expand the documentation;
 1. make sure your code follows the style guidelines
-1. don't be afraid to ask help with any of the above steps. We're happy to help!
+
+Don't hesitate seek assistance with any of these steps. We're happy to help!
 
 ## Code of conduct
 

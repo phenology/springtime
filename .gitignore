@@ -134,3 +134,6 @@ dmypy.json
 # R
 .RData
 .Rhistory
+
+# API token for appeears is placed in test folder
+token.json

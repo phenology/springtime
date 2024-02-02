@@ -8,7 +8,7 @@ Uses [rppo](https://docs.ropensci.org/rppo/) to get data from
 Example:
 
     ```python
-    from springtime.datasets.insitu.ppo import RPPO
+    from springtime.datasets.ppo import RPPO
     dataset = RPPO(
         genus="Quercus Pinus",
         termID="obo:PPO_0002313",

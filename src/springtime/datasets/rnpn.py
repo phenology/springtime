@@ -97,14 +97,14 @@ class RNPN(Dataset):
         species_ids: formatted as a dictionary of the form `{"name": "myname",
             "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
             functional type as a string. Use
-            [npn_species][springtime.datasets.insitu.rnpn.npn_species] or
-            [npn_species_ids_by_functional_type][springtime.datasets.insitu.rnpn.npn_species_ids_by_functional_type]
+            [npn_species][springtime.datasets.rnpn.npn_species] or
+            [npn_species_ids_by_functional_type][springtime.datasets.rnpn.npn_species_ids_by_functional_type]
             to see options.
         phenophase_ids: formatted as a dictionary of the form `{"name": "myname",
             "items": [id1, id2, ...]}`. Alternatively, you can supply a valid
             phenophase name as a string. Use
-            [npn_phenophases][springtime.datasets.insitu.rnpn.npn_phenophases] or
-            [npn_phenophase_ids_by_name][springtime.datasets.insitu.rnpn.npn_phenophase_ids_by_name]
+            [npn_phenophases][springtime.datasets.rnpn.npn_phenophases] or
+            [npn_phenophase_ids_by_name][springtime.datasets.rnpn.npn_phenophase_ids_by_name]
             to see options.
         area: A dictionary of the form
             `{"name": "yourname", "bbox": [xmin, ymin, xmax, ymax]}`.

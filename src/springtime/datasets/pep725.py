@@ -16,7 +16,7 @@ Email adress on first line, password on second line.
 Example:
 
     ```python
-    from springtime.datasets.insitu.pep725 import PEP725Phenor
+    from springtime.datasets.pep725 import PEP725Phenor
     dataset = PEP725Phenor(species='Syringa vulgaris', years=[2000, 2000])
     dataset.download()
     df = dataset.load()

@@ -120,7 +120,7 @@ you would use a local installation.
 
 Essentially, the commands above can be split into a few parts:
 
-```
+```bash
 docker run <OPTIONS> ghcr.io/phenology/springtime:latest <COMMAND>
 ```
 
@@ -165,7 +165,9 @@ that should make specification of the output or data directories more flexible.
 
 Sometimes the existing environment may clash with your springtime environment,
 or you don't have complete control over the default environment. In that case,
-it may be possible to create a custom kernel for springtime. To this end:
+it may be possible to create a custom kernel for springtime.
+
+This worked for us on CRIB:
 
 ```bash
 # 0. Start Intel x86_64 machine

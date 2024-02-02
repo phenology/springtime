@@ -17,14 +17,15 @@ nav:
       - EOBS: user_guide/datasets/eobs.ipynb
       - Daymet: user_guide/datasets/daymet.ipynb
       - MODIS: user_guide/datasets/modis.ipynb
-    - Workflows: user_guide/combining_data.ipynb
+      - Combining data: user_guide/datasets/combining_data.ipynb
+      - Adding datasets: user_guide/datasets/adding_datasets.ipynb
     - Modelling:
       - Intro: user_guide/modelling/intro.ipynb
       - Adding: user_guide/modelling/adding_models.ipynb
     - Example use cases:
-      - Experiment 1: user_guide/examples/overview.md
-      - Experiment 2: user_guide/examples/overview.md
-  - Contributing:
+      - Experiment 1: user_guide/examples/use_case_1.ipynb
+      - Experiment 2: user_guide/examples/use_case_2.ipynb
+  - Developer guide:
     - Developer Guide: develop.md
     - API Reference: reference/
 

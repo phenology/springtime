@@ -79,7 +79,7 @@ class Appeears(Dataset):
     dataset: Literal["appears"] = "appears"
     product: str
     version: str  # TODO make optional, if not given, use latest version
-    layers: conset(str, min_length=1)  # type: ignore
+    layers: list[str]
     # TODO rename to variables or bands?
     area: NamedArea | None = None
     points: Points | None = None

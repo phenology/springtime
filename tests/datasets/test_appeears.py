@@ -56,7 +56,7 @@ def reference_args():
         years=[2009, 2011],
         product="MCD12Q2",
         version="061",
-        layers=("Greenup", "Dormancy"),
+        layers=["Greenup", "Dormancy"],
         points=[(9.1, 49.1), (9.6, 49.6), (9.9, 49.9)],
         area={"name": "eastfrankfurt", "bbox": [9.0, 49.0, 10.0, 50.0]},
     )

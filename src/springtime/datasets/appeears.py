@@ -20,7 +20,7 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import xarray as xr
-from pydantic import BaseModel, Field, conset
+from pydantic import BaseModel, Field
 from shapely import to_geojson
 
 from springtime.config import CONFIG, CONFIG_DIR
@@ -79,7 +79,7 @@ class Appeears(Dataset):
     dataset: Literal["appears"] = "appears"
     product: str
     version: str  # TODO make optional, if not given, use latest version
-    layers: conset(str, min_length=1)  # type: ignore
+    layers: list[str]
     # TODO rename to variables or bands?
     area: NamedArea | None = None
     points: Points | None = None

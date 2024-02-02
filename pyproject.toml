@@ -56,7 +56,7 @@ dev = [
 docs = [
   "mkdocs",
   "mkdocs-material",
-  "mkdocs-jupyter,
+  "mkdocs-jupyter",
   "mkdocs-gen-files",
   "mkdocs-include-markdown-plugin",
   "mkdocstrings[python]",

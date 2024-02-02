@@ -20,7 +20,7 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import xarray as xr
-from pydantic import BaseModel, Field, conset
+from pydantic import BaseModel, Field
 from shapely import to_geojson
 
 from springtime.config import CONFIG, CONFIG_DIR

@@ -117,5 +117,6 @@ watch:
 - src
 
 extra_css:
-  - "api.css"
-  - "hide_edit_button.css"
+  - "css_api.css"
+  - "css_render_xarray.css"
+  - "css_hide_edit_button.css"

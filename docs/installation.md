@@ -161,6 +161,22 @@ means it will be lost when the docker container is destroyed. To persist it, for
 now, move it to the work folder. We are planning to add additional configuration
 that should make specification of the output or data directories more flexible.
 
+## Install mamba on CRIB
+
+Select one of the CRIB Intel x86_64 machines. Then open a terminal and run the code below:
+
+```bash
+curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+bash Mambaforge-Linux-x86_64.sh
+```
+You may reply yes to this question:
+
+```bash
+Do you wish the installer to initialize Mambaforge
+by running conda init? [yes|no]
+[no] >>> yes
+```
+
 ## Install on CRIB or other managed JupyterHub service
 
 Sometimes the existing environment may clash with your springtime environment,
@@ -183,10 +199,10 @@ git clone https://github.com/phenology/springtime.git
 cd springtime
 
 # 2. Create new environment
-mamba env create --file environment.yml
+mamba env create --file environment.yml --name springtime_x86
 
 # 3. Activate the environment
-mamba activate springtime
+mamba activate springtime_x86
 
 # 4. Developer installation
 pip install -e .

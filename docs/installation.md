@@ -22,7 +22,7 @@ You need to have mamba/conda available on your system. To create a new environme
 and activate it, run
 
 ```bash
-mamba create --name springtime python="3.11"
+mamba create --name springtime python="3.10"
 mamba activate springtime
 ```
 

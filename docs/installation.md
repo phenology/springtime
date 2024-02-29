@@ -35,6 +35,8 @@ curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/m
 mamba env update -n springtime -f environment.yml
 ```
 
+Note that some of the R dependencies are not available as pre-compiled binaries for some operating systems and architectures. If the command above fails, follow [the step below](#install-r-dependencies) to build the R dependencies on your system.
+
 ## Install springtime
 
 Springtime is available on PyPI and can be installed with pip:
@@ -54,6 +56,7 @@ pip install springtime[extras]
 R dependencies can be installed with the following:
 
 ```bash
+Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'

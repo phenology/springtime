@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2024-03-02
+
+### Added
+
+- GitHub Action to build and push Docker image
+
+### Changed
+
+- Small fixes in documentation and docstrings
+- Dockerfile includes extra packages
+
 ## [0.2.0] - 2024-02-02
 
 ### Added
@@ -37,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation
 - License information
 
-[Unreleased]: https://github.com/phenology/springtime/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/phenology/springtime/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/phenology/springtime/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/phenology/springtime/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/phenology/springtime/releases/tag/v0.1.0

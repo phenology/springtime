@@ -13,7 +13,7 @@ RUN Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 RUN Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'
 
 # Install springtime + bonus packages
-RUN pip install springtime[extra]
+RUN pip install springtime[extras]
 
 # Editable install of cloned repo
 # WORKDIR /home/jovyan

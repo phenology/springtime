@@ -10,8 +10,8 @@ Requires phenor R package. Install with
 devtools::install_github("bluegreen-labs/phenor@v1.3.1")
 ```
 
-Requires `~/.config/pep725_credentials.txt` file with your PEP725 credentials.
-Email adress on first line, password on second line.
+Requires `~/.config/springtime/pep725_credentials.txt` file with your
+PEP725 credentials. Email adress on first line, password on second line.
 
 Example:
 

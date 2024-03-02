@@ -27,5 +27,5 @@ jobs:
         context: image
         push: true
         tags: |
-          ${REPO}:${{ github.ref_name }}
-          ${REPO}:latest
+          ghcr.io/${{ env.REPO }}:${{ github.ref_name }}
+          ghcr.io/${{ env.REPO }}:latest

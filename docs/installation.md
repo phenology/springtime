@@ -26,7 +26,7 @@ mamba create --name springtime python="3.10"
 mamba activate springtime
 ```
 
-### Add pre-compiled R dependencies
+### Install R and add pre-compiled R dependencies
 
 In the next step, we will install the R dependencies. However, these can take a long time to compile. Alternatively, most of the dependencies are available as pre-compiled binaries via conda. You may choose to install these in your new environment by using the environment shipped with springtime.
 
@@ -34,6 +34,8 @@ In the next step, we will install the R dependencies. However, these can take a 
 curl -o environment.yml https://raw.githubusercontent.com/phenology/springtime/main/environment.yml
 mamba env update -n springtime -f environment.yml
 ```
+
+Note that this step is only meant to speed up installation of some of the dependencies, and it does not replace any of the steps below. Also note that this only works for some operating systems and architectures for which pre-compiled libraries are available. Thus, if the command above fails, you can still [download and install R](https://cran.r-project.org), then follow [the step below](#install-r-dependencies) to build the required R dependencies on your system.
 
 ## Install springtime
 
@@ -54,6 +56,7 @@ pip install springtime[extras]
 R dependencies can be installed with the following:
 
 ```bash
+Rscript -e 'install.packages("devtools", repos = "http://cran.us.r-project.org")'
 Rscript -e 'devtools::install_github("bluegreen-labs/phenor", upgrade="never")'
 Rscript -e 'devtools::install_github("ropensci/rppo", upgrade="never")'
 Rscript -e 'install.packages(c("daymetr", "MODISTools", "phenocamr", "rnpn"), repos = "http://cran.us.r-project.org")'

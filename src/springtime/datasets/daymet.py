@@ -306,7 +306,7 @@ class Daymet(Dataset):
         Lat/lon is in csv headers. Add geometry column instead.
         """
         file = self._point_path(point)
-        df = pd.read_csv(file, skiprows=7)
+        df = pd.read_csv(file, skiprows=6)
 
         # Add geometry since we want to batch read dataframes with different coords
         geometry = gpd.points_from_xy([point.x] * len(df), [point.y] * len(df))

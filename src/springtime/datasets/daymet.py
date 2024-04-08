@@ -254,6 +254,7 @@ class Daymet(Dataset):
     def download_point(self, point: Point):
         """Download data for a single point."""
         path = self._point_path(point)
+        path.parent.mkdir(exist_ok=True, parents=True)
 
         if path.exists() and not CONFIG.force_override:
             logger.info(f"Found {path}")

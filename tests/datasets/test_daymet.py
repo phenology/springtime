@@ -136,6 +136,28 @@ def test_update_reference_data(reference_args, redownload):
 
 
 @pytest.mark.download
+def test_download_points(temporary_cache_dir, reference_args):
+    """Check that the downloaded CSV file is properly parsed"""
+    reference_args.update(area=None, frequency="daily")
+    dataset = Daymet(**reference_args)
+
+    with temporary_cache_dir():
+        data = dataset.raw_load()
+
+    # check number of entries
+    num_points = len(reference_args["points"])
+    year_range = reference_args["years"]
+    num_years = year_range[1] - year_range[0] + 1
+    assert len(data) == num_points*num_years*365
+
+    # check column headers
+    assert "year" in data.columns
+    assert "yday" in data.columns
+    for variable in reference_args["variables"]:
+        assert data.columns.str.contains(variable).any()
+
+
+@pytest.mark.download
 def test_download(temporary_cache_dir, reference_args):
     """Check download hasn't changed; also uses raw_load"""
     dataset = Daymet(**reference_args)

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Automated publishing to PyPI upon release. PyPI is now a trusted publisher. Now you don't
+  need to be a maintainer on PyPI anymore to publish a release.
+
 ## [0.2.1] - 2024-03-02
 
 ### Added

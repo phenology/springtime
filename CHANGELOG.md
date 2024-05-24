@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2024-05-24
+
 ### Added
 
 - Automated publishing to PyPI upon release. PyPI is now a trusted publisher. Now you don't
   need to be a maintainer on PyPI anymore to publish a release.
+
+### Fixed
+
+- Fixed issue with loading data got from the Daymet point dowloader.
+- Fixed issue with GitHub action to push Docker image to GHCR.
 
 ## [0.2.1] - 2024-03-02
 
